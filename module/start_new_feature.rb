@@ -19,11 +19,18 @@ if matched
   # Module feature
   GitflowOperator.new.create_feature(module_path, feature_name)
 
-  PodfileOperator.new.find_and_replace(%Q(#{main_path}/Podfile), %Q('#{module_name}'), ModuleType::PATH, module_path)
+  PodfileOperator.new.find_and_replace(%Q(#{main_path}/Podfile),
+                                       %Q('#{module_name}'),
+                                       ModuleType::PATH,
+                                       module_path)
 
-  puts `LANG=en_US.UTF-8 pod install --project-directory=/Users/mmoaay/Documents/eleme/LPDEngineeringAutomation/Example/`# + params[:main_path]
+  IO.popen(%Q(pod install --project-directory=#{main_path})) { |io|
+    io.each do |line|
+      puts line
+    end
+  }
 else
   raise module_name + ' not found'
 end
 
-IO.popen('open ' + params[:main_path] + '*.xcworkspace') { |f| puts f.gets }
+IO.popen(%Q(open #{main_path}/*.xcworkspace))

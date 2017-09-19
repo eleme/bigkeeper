@@ -15,4 +15,16 @@ class GitInfo
   def initialize(base, type, addition)
     @base, @type, @addition = base, type, addition
   end
+
+  def type
+    @type
+  end
+
+  def base
+    @base
+  end
+
+  def addition
+    @addition
+  end
 end
