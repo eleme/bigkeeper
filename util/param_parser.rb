@@ -2,7 +2,7 @@ require 'optparse'
 
 # Parser for parameters
 class ParamParser
-  def self.start_new_feature_parser
+  def start_new_feature_parser
     params = {}
     OptionParser.new do |opts|
       opts.banner = 'Here is help messages of the start new feature command.'
