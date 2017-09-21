@@ -11,19 +11,12 @@ module_path = File.expand_path(params[:module_path])
 module_name = params[:module_name]
 
 matched = PodfileOperator.new.has(%Q(#{main_path}/Podfile), %Q('#{module_name}'))
-if matched
-  PodfileOperator.new.find_and_replace(%Q(#{main_path}/Podfile),
-                                       %Q('#{module_name}'),
-                                       ModuleType::PATH,
-                                       module_path)
+raise module_name + ' not found' unless matched
 
-  IO.popen(%Q(pod install --project-directory=#{main_path})) { |io|
-    io.each do |line|
-      puts line
-    end
-  }
-else
-  raise module_name + ' not found'
-end
+PodfileOperator.new.find_and_replace(%Q(#{main_path}/Podfile),
+                                     %Q('#{module_name}'),
+                                     ModuleType::PATH,
+                                     module_path)
 
-IO.popen(%Q(open #{main_path}/*.xcworkspace))
+puts `pod install --project-directory=#{main_path}`
+puts `open #{main_path}/*.xcworkspace`
