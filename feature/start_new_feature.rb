@@ -26,5 +26,5 @@ PodfileOperator.new.find_and_replace(%Q(#{main_path}/Podfile),
                                      ModuleType::PATH,
                                      module_path)
 
-puts `pod install --project-directory=#{main_path}`
-puts `open #{main_path}/*.xcworkspace`
+p `pod install --project-directory=#{main_path}`
+p `open #{main_path}/*.xcworkspace`
