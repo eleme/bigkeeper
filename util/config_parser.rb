@@ -1,82 +1,111 @@
-$config = {}
-$current_user = ''
-
 def version(name)
-  $config[:version] = name
+  ConfigParser.parse_version(name)
 end
 
 def user(name)
-  $current_user = name
-  users = $config[:users]
-  users = {} if users == nil
-  users[name] = {}
-  $config[:users] = users
+  ConfigParser.parse_user(name)
   yield if block_given?
 end
 
-def home(name, params)
-  users = $config[:users]
-  user = users[$current_user]
-  user[:home] = params
-  $config[:users] = users
+def home(_name, params)
+  ConfigParser.parse_home(params)
 end
 
 def pod(name, params)
-  if params[:path]
-    users = $config[:users]
-    user = users[$current_user]
-    pods = user[:pods]
-    pods = {} if pods == nil
-    pods[name] = params
-    user[:pods] = pods
-    $config[:users] = users
-  elsif params[:git]
-    modules = $config[:modules]
-    modules[name] = params
-    $config[:modules] = modules
-  else
-    raise %Q(There should be ':path =>' or ':git =>' for pod #{name})
-  end
+  ConfigParser.parse_pod(name, params)
 end
 
 def modules
-  modules = $config[:modules]
-  modules = {} if modules == nil
-  $config[:modules] = modules
+  ConfigParser.parse_modules
   yield if block_given?
 end
 
+# Bigkeeper file parser
 class ConfigParser
-  def initialize
-    content = File.read '/Users/mmoaay/Documents/eleme/BigKeeperMain/Bigkeeper'
+  @@config = {}
+  @@current_user = ''
+
+  def self.parse(podfile)
+    content = File.read podfile
     eval content
-    $current_user = ''
-
-    p $config
+    p @@config
   end
 
-  def get_home_path(user_name)
-    $config[:users][user_name][:home][:path]
+  def self.parse_version(name)
+    @@config[:version] = name
   end
 
-  def get_module_path(user_name, module_name)
-    $config[:users][user_name][:pods][module_name][:path]
+  def self.parse_user(name)
+    @@current_user = name
+    users = @@config[:users]
+    users = {} if users.nil?
+    users[name] = {}
+    @@config[:users] = users
   end
 
-  def get_module_git(module_name)
-    $config[:modules][module_name][:git]
+  def self.parse_home(params)
+    users = @@config[:users]
+    user = users[@@current_user]
+    user[:home] = params
+    @@config[:users] = users
   end
 
-  def get_modules
-    $config[:modules].keys
+  def self.parse_pod(name, params)
+    if params[:path]
+      parse_user_pod(name, params)
+    elsif params[:git]
+      parse_modules_pod(name, params)
+    else
+      raise %(There should be ':path =>' or ':git =>' for pod #{name})
+    end
   end
 
-  def get_config
-    $config
+  def self.parse_user_pod(name, params)
+    users = @@config[:users]
+    user = users[@@current_user]
+    pods = user[:pods]
+    pods = {} if pods.nil?
+    pods[name] = params
+    user[:pods] = pods
+    @@config[:users] = users
+  end
+
+  def self.parse_modules_pod(name, params)
+    modules = @@config[:modules]
+    modules[name] = params
+    @@config[:modules] = modules
+  end
+
+  def self.parse_modules
+    modules = @@config[:modules]
+    modules = {} if modules.nil?
+    @@config[:modules] = modules
+  end
+
+  def self.home_path(user_name)
+    @@config[:users][user_name][:home][:path]
+  end
+
+  def self.module_path(user_name, module_name)
+    @@config[:users][user_name][:pods][module_name][:path]
+  end
+
+  def self.module_git(module_name)
+    @@config[:modules][module_name][:git]
+  end
+
+  def self.module_names
+    @@config[:modules].keys
+  end
+
+  def self.config
+    @@config
   end
 end
 
-p ConfigParser.new.get_home_path('perry')
-p ConfigParser.new.get_module_path('perry', 'BigKeeperModular')
-p ConfigParser.new.get_module_git('BigKeeperModular')
-p ConfigParser.new.get_modules
+ConfigParser.parse('/Users/mmoaay/Documents/eleme/BigKeeperMain/Bigkeeper')
+
+p ConfigParser.home_path('perry')
+p ConfigParser.module_path('perry', 'BigKeeperModular')
+p ConfigParser.module_git('BigKeeperModular')
+p ConfigParser.module_names
