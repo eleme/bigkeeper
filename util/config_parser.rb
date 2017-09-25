@@ -1,9 +1,6 @@
 $config = {}
 $current_user = ''
 
-def build(name)
-  $config[:build] = name
-end
 def version(name)
   $config[:version] = name
 end
@@ -17,7 +14,7 @@ def user(name)
   yield if block_given?
 end
 
-def home(params)
+def home(name, params)
   users = $config[:users]
   user = users[$current_user]
   user[:home] = params
@@ -25,17 +22,28 @@ def home(params)
 end
 
 def pod(name, params)
-  users = $config[:users]
-  user = users[$current_user]
-  pods = user[:pods]
-  pods = {} if pods == nil
-  pods[name] = params
-  user[:pods] = pods
-  $config[:users] = users
+  if params[:path]
+    users = $config[:users]
+    user = users[$current_user]
+    pods = user[:pods]
+    pods = {} if pods == nil
+    pods[name] = params
+    user[:pods] = pods
+    $config[:users] = users
+  elsif params[:git]
+    modules = $config[:modules]
+    modules[name] = params
+    $config[:modules] = modules
+  else
+    raise %Q(There should be ':path =>' or ':git =>' for pod #{name})
+  end
 end
 
-def modules(modules)
+def modules
+  modules = $config[:modules]
+  modules = {} if modules == nil
   $config[:modules] = modules
+  yield if block_given?
 end
 
 class ConfigParser
@@ -55,15 +63,20 @@ class ConfigParser
     $config[:users][user_name][:pods][module_name][:path]
   end
 
-  def get_module_git(user_name, module_name)
-    $config[:users][user_name][:pods][module_name][:git]
+  def get_module_git(module_name)
+    $config[:modules][module_name][:git]
+  end
+
+  def get_modules
+    $config[:modules].keys
   end
 
   def get_config
-    $config[:target]
+    $config
   end
 end
 
 p ConfigParser.new.get_home_path('perry')
-# p ConfigParser.new.get_module_path('perry', 'BigKeeperModular')
-# p ConfigParser.new.get_module_git('perry', 'BigKeeperModular')
+p ConfigParser.new.get_module_path('perry', 'BigKeeperModular')
+p ConfigParser.new.get_module_git('BigKeeperModular')
+p ConfigParser.new.get_modules
