@@ -1,1 +1,6 @@
-gem 'rubocop', '~> 0.49.1', require: false
+source "https://ruby.taobao.org"
+
+git_source(:github) {|repo_name| "https://github.com/#{repo_name}" }
+
+# Specify your gem's dependencies in big_keeper.gemspec
+gemspec
