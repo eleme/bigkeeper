@@ -42,4 +42,3 @@ git tag -m "update podspec" $thisTag
 git push --tags
 
 pod repo push specs $podSpecName.podspec --allow-warnings
-
