@@ -1,0 +1,24 @@
+PATH
+  remote: .
+  specs:
+    big_keeper (0.1.0)
+
+GEM
+  remote: https://ruby.taobao.org/
+  specs:
+    big_stash (0.1.0)
+    gli (2.16.1)
+    rake (10.5.0)
+
+PLATFORMS
+  ruby
+
+DEPENDENCIES
+  big_keeper!
+  big_stash (~> 0.1)
+  bundler (~> 1.15)
+  gli (~> 2.16)
+  rake (~> 10.0)
+
+BUNDLED WITH
+   1.15.4
