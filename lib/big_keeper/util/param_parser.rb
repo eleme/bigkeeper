@@ -98,5 +98,18 @@ module BigKeeper
 
       params
     end
+    def detect_podfile_unlock_items
+      params = {}
+      OptionParser.new do |opts|
+        opts.banner = 'Here is help messages of the switch to debug command.'
+        params[:mainpath] = './'
+        opts.on('-m',
+                '--mainpath=MainPath',
+                'Path of the main project, end with /') do |main_path|
+          params[:main_path] = main_path
+        end
+      end.parse!
+      params
+    end
   end
 end
