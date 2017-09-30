@@ -18,9 +18,9 @@ module BigKeeper
   raise module_name + ' not found' unless matched
 
   # 主工程 feature
-  GitflowOperator.new.create_feature(main_path, feature_name)
+  GitflowOperator.new.start_feature(main_path, feature_name)
   # Module feature
-  GitflowOperator.new.create_feature(module_path, feature_name)
+  GitflowOperator.new.start_feature(module_path, feature_name)
 
   PodfileOperator.new.find_and_replace(%Q(#{main_path}/Podfile),
                                        %Q('#{module_name}'),

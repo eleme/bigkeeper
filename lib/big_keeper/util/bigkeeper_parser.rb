@@ -1,42 +1,45 @@
+# Bigkeeper module
 module BigKeeper
   def self.version(name)
-    ConfigParser.parse_version(name)
+    BigkeeperParser.parse_version(name)
   end
 
   def self.user(name)
-    ConfigParser.parse_user(name)
+    BigkeeperParser.parse_user(name)
     yield if block_given?
   end
 
   def self.home(_name, params)
-    ConfigParser.parse_home(params)
+    BigkeeperParser.parse_home(params)
   end
 
   def self.pod(name, params)
-    ConfigParser.parse_pod(name, params)
+    BigkeeperParser.parse_pod(name, params)
   end
 
   def self.modules
-    ConfigParser.parse_modules
+    BigkeeperParser.parse_modules
     yield if block_given?
   end
 
   # Bigkeeper file parser
-  class ConfigParser
+  class BigkeeperParser
     @@config = {}
     @@current_user = ''
 
     def self.parse(bigkeeper)
-      content = File.read bigkeeper
+      if @@config.empty?
+        content = File.read bigkeeper
 
-      content.gsub!(/version\s/, 'BigKeeper::version ')
-      content.gsub!(/user\s/, 'BigKeeper::user ')
-      content.gsub!(/home\s/, 'BigKeeper::home ')
-      content.gsub!(/pod\s/, 'BigKeeper::pod ')
-      content.gsub!(/modules\s/, 'BigKeeper::modules ')
+        content.gsub!(/version\s/, 'BigKeeper::version ')
+        content.gsub!(/user\s/, 'BigKeeper::user ')
+        content.gsub!(/home\s/, 'BigKeeper::home ')
+        content.gsub!(/pod\s/, 'BigKeeper::pod ')
+        content.gsub!(/modules\s/, 'BigKeeper::modules ')
 
-      eval content
-      p @@config
+        eval content
+        p @@config
+      end
     end
 
     def self.parse_version(name)
@@ -111,10 +114,11 @@ module BigKeeper
     end
   end
 
-  ConfigParser.parse('/Users/mmoaay/Documents/eleme/BigKeeperMain/Bigkeeper')
+  BigkeeperParser.parse('/Users/mmoaay/Documents/eleme/BigKeeperMain/Bigkeeper')
+  BigkeeperParser.parse('/Users/mmoaay/Documents/eleme/BigKeeperMain/Bigkeeper')
 
-  p ConfigParser.home_path('perry')
-  p ConfigParser.module_path('perry', 'BigKeeperModular')
-  p ConfigParser.module_git('BigKeeperModular')
-  p ConfigParser.module_names
+  p BigkeeperParser.home_path('perry')
+  p BigkeeperParser.module_path('perry', 'BigKeeperModular')
+  p BigkeeperParser.module_git('BigKeeperModular')
+  p BigkeeperParser.module_names
 end
