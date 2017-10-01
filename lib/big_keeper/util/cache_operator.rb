@@ -1,7 +1,7 @@
 require 'fileutils'
 require 'json'
 
-module Bigkeeper
+module BigKeeper
   class CacheOperator
     def initialize
       @cache_path = File.expand_path('~/.bigkeeper')

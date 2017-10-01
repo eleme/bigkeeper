@@ -11,6 +11,7 @@ require 'gli'
 include GLI::App
 
 module BigKeeper
+
   # Your code goes here...
   program_desc 'Efficiency improvement for iOS modular development, iOSer using this tool can make modular development easier.'
 
@@ -19,7 +20,7 @@ module BigKeeper
 
   path, user = ''
 
-  pre do |global_options, _command, _options, _args|
+  pre do |global_options, _command, options, args|
     path = global_options[:path]
     user = global_options[:user]
   end
@@ -28,20 +29,23 @@ module BigKeeper
   command :feature do |c|
     c.desc 'Start a new feature with name for given modules and main project'
     c.command :start do |start|
-      start.action do |_global_options, _options, _args|
-        # start_new_feature(path, [])
+      start.action do |global_options, options, args|
+        help_now!('feature name and modules is required') if args.length != 2
+        name = args[0]
+        modules = args[1].split(",")
+        start_new_feature(path, user, name, modules)
       end
     end
 
     c.desc 'Switch to the feature with name'
     c.command :switch do |switch|
-      switch.action do |_global_options, _options, _args|
+      switch.action do |global_options, options, args|
       end
     end
 
     c.desc 'Finish the feature with name'
     c.command :finish do |finish|
-      finish.action do |_global_options, _options, _args|
+      finish.action do |global_options, options, args|
       end
     end
 
@@ -60,19 +64,19 @@ module BigKeeper
     c.command :home do |home|
       home.desc 'Start release home project'
       home.command :start do |start|
-        start.action do |_global_options, _options, _args|
+        start.action do |global_options, options, args|
         end
       end
       home.desc 'Finish release home project'
       home.command :finish do |finish|
-        finish.action do |_global_options, _options, _args|
+        finish.action do |global_options, options, args|
         end
       end
     end
 
     c.desc 'Release a modular with name'
     c.command :modular do |modular|
-      modular.action do |_global_options, _options, _args|
+      modular.action do |global_options, options, args|
       end
     end
   end

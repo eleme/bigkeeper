@@ -6,13 +6,17 @@ require './big_keeper/util/bigkeeper_parser'
 require './big_keeper/model/podfile_type'
 
 module BigKeeper
-  def self.start_new_feature(user, name, path, modules)
+  def self.start_new_feature(path, user, name, modules)
     main_path = File.expand_path(path)
     BigkeeperParser.parse(main_path)
 
-    feature_name = "#{BigkeeperParser.version}_#{user}_#{name}"
+    p modules
 
+    feature_name = "#{BigkeeperParser.version}_#{user}_#{name}"
+    p feature_name
   end
+
+  def self.start_home_feature(main_path, feature_name)
   # params = ParamParser.new.start_new_feature_parser
   #
   # main_path = File.expand_path(params[:main_path])
