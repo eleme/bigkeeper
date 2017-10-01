@@ -1,4 +1,7 @@
-require "big_keeper/version"
+#!/usr/bin/env ruby
+
+require 'big_keeper/version'
+require 'big_keeper/util/bigkeeper_parser'
 
 require 'gli'
 
@@ -6,36 +9,26 @@ include GLI::App
 
 module BigKeeper
   # Your code goes here...
-  program_desc 'Enhancement for git stash'
+  program_desc 'Efficiency improvement for iOS modular development, iOSer using this tool can make modular development easier.'
 
   flag [:p,:path], :default_value => './'
+  flag [:u,:user], :default_value => ''
 
-  path = ''
+  path, user = ''
 
   pre do |global_options,command,options,args|
     path = global_options[:path]
+    user = global_options[:user]
   end
 
-  desc 'Add a stash with name'
-  command :add do |c|
-    c.action do |global_options, options, args|
-      help_now!('stash name is required') if args.empty?
-      BigStash::StashOperator.new(path).stash(args.first)
-    end
-  end
+  BigkeeperParser.parse(path)
 
-  desc 'Apply a stash with name'
-  command :apply do |c|
-    c.action do |global_options, options, args|
-      help_now!('stash name is required') if args.empty?
-      BigStash::StashOperator.new(path).apply_stash(args.first)
-    end
-  end
-
-  desc 'List all the stashes'
-  command :list do |c|
-    c.action do
-      p BigStash::StashOperator.new(path).stashes
+  command :feature do |c|
+    desc 'Add a stash with name'
+    command :apply do |c|
+      c.action do |global_options, options, args|
+        help_now!('stash name is required') if args.empty?
+      end
     end
   end
 

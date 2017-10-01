@@ -9,7 +9,7 @@ module BigKeeper
     yield if block_given?
   end
 
-  def self.home(_name, params)
+  def self.home(params)
     BigkeeperParser.parse_home(params)
   end
 
@@ -55,10 +55,7 @@ module BigKeeper
     end
 
     def self.parse_home(params)
-      users = @@config[:users]
-      user = users[@@current_user]
-      user[:home] = params
-      @@config[:users] = users
+      @@config[:home] = params
     end
 
     def self.parse_pod(name, params)
@@ -93,16 +90,24 @@ module BigKeeper
       @@config[:modules] = modules
     end
 
-    def self.home_path(user_name)
-      @@config[:users][user_name][:home][:path]
+    def self.home_git()
+      @@config[:home][:git]
+    end
+
+    def self.home_pulls()
+      @@config[:home][:pulls]
     end
 
     def self.module_path(user_name, module_name)
-      @@config[:users][user_name][:pods][module_name][:path]
+      user_name.empty? ? "../#{module_name}" : @@config[:users][user_name][:pods][module_name][:path]
     end
 
     def self.module_git(module_name)
       @@config[:modules][module_name][:git]
+    end
+
+    def self.module_pulls(module_name)
+      @@config[:modules][module_name][:pulls]
     end
 
     def self.module_names
@@ -117,8 +122,12 @@ module BigKeeper
   BigkeeperParser.parse('/Users/mmoaay/Documents/eleme/BigKeeperMain/Bigkeeper')
   BigkeeperParser.parse('/Users/mmoaay/Documents/eleme/BigKeeperMain/Bigkeeper')
 
-  p BigkeeperParser.home_path('perry')
+  p BigkeeperParser.home_git()
+  p BigkeeperParser.home_pulls()
   p BigkeeperParser.module_path('perry', 'BigKeeperModular')
+  p BigkeeperParser.module_path('', 'BigKeeperModular')
   p BigkeeperParser.module_git('BigKeeperModular')
+  pulls = BigkeeperParser.module_pulls('BigKeeperModular')
+  `open #{pulls}`
   p BigkeeperParser.module_names
 end
