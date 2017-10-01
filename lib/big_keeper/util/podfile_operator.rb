@@ -1,7 +1,7 @@
 
 require 'tempfile'
 require 'fileutils'
-require '../model/podfile_type'
+require './big_keeper/model/podfile_type'
 
 module BigKeeper
   # Operator for podfile

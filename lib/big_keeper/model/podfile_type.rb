@@ -9,7 +9,7 @@ module BigKeeper
     MASTER = 1
     BRANCH = 2
     TAG = 3
-    COMMIT =
+    COMMIT = 4
   end
 
   class GitInfo

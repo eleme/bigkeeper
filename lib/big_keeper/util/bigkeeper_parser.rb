@@ -9,8 +9,8 @@ module BigKeeper
     yield if block_given?
   end
 
-  def self.home(params)
-    BigkeeperParser.parse_home(params)
+  def self.home(name, params)
+    BigkeeperParser.parse_home(name, params)
   end
 
   def self.pod(name, params)
@@ -38,7 +38,7 @@ module BigKeeper
         content.gsub!(/modules\s/, 'BigKeeper::modules ')
 
         eval content
-        p @@config
+        # p @@config
       end
     end
 
@@ -54,8 +54,9 @@ module BigKeeper
       @@config[:users] = users
     end
 
-    def self.parse_home(params)
+    def self.parse_home(name, params)
       @@config[:home] = params
+      @@config[:name] = name
     end
 
     def self.parse_pod(name, params)
@@ -90,6 +91,14 @@ module BigKeeper
       @@config[:modules] = modules
     end
 
+    def self.version
+      @@config[:version]
+    end
+
+    def self.home_name
+      @@config[:name]
+    end
+
     def self.home_git()
       @@config[:home][:git]
     end
@@ -119,15 +128,15 @@ module BigKeeper
     end
   end
 
-  BigkeeperParser.parse('/Users/mmoaay/Documents/eleme/BigKeeperMain/Bigkeeper')
-  BigkeeperParser.parse('/Users/mmoaay/Documents/eleme/BigKeeperMain/Bigkeeper')
-
-  p BigkeeperParser.home_git()
-  p BigkeeperParser.home_pulls()
-  p BigkeeperParser.module_path('perry', 'BigKeeperModular')
-  p BigkeeperParser.module_path('', 'BigKeeperModular')
-  p BigkeeperParser.module_git('BigKeeperModular')
-  pulls = BigkeeperParser.module_pulls('BigKeeperModular')
-  `open #{pulls}`
-  p BigkeeperParser.module_names
+  # BigkeeperParser.parse('/Users/mmoaay/Documents/eleme/BigKeeperMain/Bigkeeper')
+  # BigkeeperParser.parse('/Users/mmoaay/Documents/eleme/BigKeeperMain/Bigkeeper')
+  #
+  # p BigkeeperParser.home_git()
+  # p BigkeeperParser.home_pulls()
+  # p BigkeeperParser.module_path('perry', 'BigKeeperModular')
+  # p BigkeeperParser.module_path('', 'BigKeeperModular')
+  # p BigkeeperParser.module_git('BigKeeperModular')
+  # pulls = BigkeeperParser.module_pulls('BigKeeperModular')
+  # `open #{pulls}`
+  # p BigkeeperParser.module_names
 end
