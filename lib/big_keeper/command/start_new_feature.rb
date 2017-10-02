@@ -17,6 +17,7 @@ module BigKeeper
   end
 
   def self.start_home_feature(main_path, feature_name)
+  end
   # params = ParamParser.new.start_new_feature_parser
   #
   # main_path = File.expand_path(params[:main_path])
