@@ -1,6 +1,5 @@
 #!/usr/bin/ruby
-require 'rexml/document'
-include REXML
+require 'plist' # gem install plist
 require 'big_stash/stash_operator'
 require 'pathname'
 
@@ -15,6 +14,13 @@ module BigKeeper
 
       p `Version will change to #{{version}}`
       // # TODO: --
+      result = Plist.parse_xml(info_plist_path)
+      if result['CFBundleShortVersionString'] = version
+
+      end
+      result['CFBundleShortVersionString'] = version.to_s
+      result['CFBundleVersion'] = getBuildVersion(version).to_s
+      Plist::Emit.save_plist(result, info_plist_path)
     end
 
     # Find Info.plist file path
@@ -30,6 +36,12 @@ module BigKeeper
         end
       }
       projectPath
+    end
+
+    private
+    def getBuildVersion(version)
+      versionArr = version.split('.')
+      return versionArr[0] * 100 + versionArr[1] * 10 + versionArr[2]
     end
   end
 end
