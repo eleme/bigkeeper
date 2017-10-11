@@ -5,6 +5,7 @@ require './big_keeper/util/bigkeeper_parser'
 require './big_keeper/command/start_new_feature'
 require './big_keeper/util/cache_operator'
 require './big_keeper/util/bigkeeper_parser'
+require './big_keeper/command/start_main_release'
 
 require 'gli'
 
@@ -17,12 +18,14 @@ module BigKeeper
 
   flag %i[p path], default_value: './'
   flag %i[u user], default_value: ''
+  flag %i[v version], default_value: ''
 
-  path, user = ''
+  path, user, version = ''
 
   pre do |global_options, _command, options, args|
     path = global_options[:path]
     user = global_options[:user]
+    version = global_options[:version]
   end
 
   desc 'Feature operations'
@@ -77,6 +80,15 @@ module BigKeeper
     c.desc 'Release a modular with name'
     c.command :modular do |modular|
       modular.action do |global_options, options, args|
+      end
+    end
+
+    c.desc 'Start main project to release'
+    c.command :main do |main|
+      main.action do |global_options, options, args|
+        # help_now!('project path and version is required') if args.length != 1
+        # modules = args[0].split(",")
+        start_main_release(path, version)
       end
     end
   end

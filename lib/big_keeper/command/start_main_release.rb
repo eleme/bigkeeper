@@ -1,11 +1,8 @@
 #!/usr/bin/ruby
-require 'rexml/document'
-include REXML
-
-require '../util/podfile_operator'
-require '../util/gitflow_operator'
-require '../model/podfile_type'
-require '../util/info_plist_operator'
+require './big_keeper/util/podfile_operator'
+require './big_keeper/util/gitflow_operator'
+require './big_keeper/model/podfile_type'
+require './big_keeper/util/info_plist_operator'
 
 # 1.切换主工程的分支到 release分支
 # 2.替换当前 podfile 中每个 module 为 pod #{module_name}, :git => '#{source.base}', :tag => '#{source.addition}'
@@ -15,36 +12,32 @@ module BigKeeper
   def self.start_main_release(path, version)
     main_path = File.expand_path(path)
     BigkeeperParser.parse(main_path)
-
-    p modules
-
-    feature_name = "#{BigkeeperParser.version}_#{user}_#{name}"
-    p feature_name
-    start_new_feature(main_path, BigkeeperParser.version, modules)
+    start_release(path, version, BigkeeperParser::module_names, git_info = GitInfo.new(BigkeeperParser::home_git, GitType::TAG, version))
   end
 
-  def start_new_feature(path, version, modules)
-    p %Q(cd #{main_path})
-    # step 0
-    # check git status
+  def self.start_release(path, version, modules, source)
+    projectPath = path.chomp("/Bigkeeper")
+    Dir.chdir(projectPath) do
+      # step 0
+      # check git status
 
-    # step 1 checkout release
-    branches = `git branch -a`
-    puts branches
-    if branches.include?'release'
+      # step 1 checkout release
+      branches = `git branch`
+      if branches.include? "release"
         p `git checkout release`
-        else
+      else
         p `git branch release`
-        start_new_feature(path, version, modules)
+        p `git checkout release`
+      end
+      # step 2 replace_modules
+
+      PodfileOperator.new.replace_all_module_release(%Q(#{projectPath}/Podfile),
+                                                      modules,
+                                                      version,
+                                                      source)
+
+      # step 3 change Info.plist value
+      InfoPlistOperator.new.change_version_build(projectPath, version)
     end
-
-    # step 2 replace_modules
-    PodfileOperator.new.replace_all_module_release(%Q(#{path}/Podfile,
-                                                    module_names,
-                                                    version,
-                                                    GitType::TAG))
-
-    # step 3 change Info.plist value
-
   end
 end

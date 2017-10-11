@@ -1,0 +1,35 @@
+== gli - create scaffolding for a GLI-powered application
+
+v2.12.1
+
+=== Global Options
+=== -r|--root arg
+
+Root dir of project
+
+[Default Value] .
+This is the directory where the project''s directory will be made, so if you 
+specify a project name ''foo'' and the root dir of ''.'', the directory 
+''./foo'' will be created'
+
+=== --help
+Show this message
+
+
+
+=== -n
+Dry run; dont change the disk
+
+
+
+=== -v
+Be verbose
+
+
+
+=== --version
+Display the program version
+
+
+
+=== Commands

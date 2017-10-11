@@ -12,14 +12,10 @@ module BigKeeper
       end
       info_plist_path = find_infoPlist_filePath(path)
 
-      p `Version will change to #{{version}}`
-      // # TODO: --
+      puts %Q('Version will change to #{version}')
       result = Plist.parse_xml(info_plist_path)
-      if result['CFBundleShortVersionString'] = version
-
-      end
       result['CFBundleShortVersionString'] = version.to_s
-      result['CFBundleVersion'] = getBuildVersion(version).to_s
+      result['CFBundleVersion'] = getBuildVersion(version, result['CFBundleShortVersionString'], result['CFBundleVersion'])
       Plist::Emit.save_plist(result, info_plist_path)
     end
 
@@ -39,9 +35,13 @@ module BigKeeper
     end
 
     private
-    def getBuildVersion(version)
-      versionArr = version.split('.')
-      return versionArr[0] * 100 + versionArr[1] * 10 + versionArr[2]
+    def getBuildVersion(build_string, old_build_string, old_build_version)
+      if build_string == old_build_string
+        return old_build_version.to_i + 1
+      else
+        version_arr = build_string.split('.')
+        return version_arr[0].to_i * 1000 + version_arr[1].to_i * 100 + version_arr[2].to_i * 10
+      end
     end
   end
 end

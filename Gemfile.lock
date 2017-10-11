@@ -12,6 +12,7 @@ GEM
     parallel (1.12.0)
     parser (2.4.0.0)
       ast (~> 2.2)
+    plist (3.3.0)
     powerpack (0.1.1)
     rainbow (2.2.2)
       rake
@@ -34,6 +35,7 @@ DEPENDENCIES
   big_stash (~> 0.1)
   bundler (~> 1.15)
   gli (~> 2.16)
+  plist
   rake (~> 10.0)
   rubocop (~> 0.50.0)
 
