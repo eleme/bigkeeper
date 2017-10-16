@@ -36,7 +36,6 @@ module BigKeeper
         content.gsub!(/home\s/, 'BigKeeper::home ')
         content.gsub!(/pod\s/, 'BigKeeper::pod ')
         content.gsub!(/modules\s/, 'BigKeeper::modules ')
-
         eval content
         # p @@config
       end
