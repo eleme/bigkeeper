@@ -29,8 +29,8 @@ module BigKeeper
         p `git branch release`
         p `git checkout release`
       end
-      # step 2 replace_modules
 
+      # step 2 replace_modules
       PodfileOperator.new.replace_all_module_release(%Q(#{projectPath}/Podfile),
                                                       modules,
                                                       version,

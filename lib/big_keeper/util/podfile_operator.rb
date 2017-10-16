@@ -42,8 +42,8 @@ module BigKeeper
       if ModuleType::PATH == module_type
         module_config = %Q(  pod #{module_name}, :path => '#{source}')
       elsif ModuleType::GIT == module_type
-        puts source.base
-        puts source.addition
+        # puts source.base
+        # puts source.addition
         if GitType::BRANCH == source.type
           module_config = %Q(  pod '#{module_name}', :git => '#{source.base}', :branch => '#{source.addition}')
         elsif GitType::TAG == source.type

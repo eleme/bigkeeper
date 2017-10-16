@@ -11,12 +11,11 @@ module BigKeeper
         raise %(Not find be Info.plist at #{path})
       end
       info_plist_path = find_infoPlist_filePath(path)
-
-      puts %Q('Version will change to #{version}')
       result = Plist.parse_xml(info_plist_path)
       result['CFBundleShortVersionString'] = version.to_s
       result['CFBundleVersion'] = getBuildVersion(version, result['CFBundleShortVersionString'], result['CFBundleVersion'])
       Plist::Emit.save_plist(result, info_plist_path)
+      puts %Q('Version has changed to #{version}')
     end
 
     # Find Info.plist file path
