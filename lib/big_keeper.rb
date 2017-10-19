@@ -5,7 +5,8 @@ require './big_keeper/util/bigkeeper_parser'
 require './big_keeper/command/start_new_feature'
 require './big_keeper/util/cache_operator'
 require './big_keeper/util/bigkeeper_parser'
-require './big_keeper/command/start_main_release'
+require './big_keeper/command/start_home_release'
+require './big_keeper/command/start_module_release'
 
 require 'gli'
 
@@ -68,29 +69,30 @@ module BigKeeper
       home.desc 'Start release home project'
       home.command :start do |start|
         start.action do |global_options, options, args|
+          # path(optional): path of the Bigkeeper file in project
+          # version(optional): if null, will read verson in Bigkeeper file
+          # e.g: ruby big_keeper.rb -p /Users/SFM/Downloads/BigKeeperMain-master
+          # /Bigkeeper  -v 3.0.0 release home start
+          start_home_release(path, version)
         end
       end
+
       home.desc 'Finish release home project'
       home.command :finish do |finish|
         finish.action do |global_options, options, args|
         end
       end
-    end
 
-    c.desc 'Release a modular with name'
-    c.command :modular do |modular|
-      modular.action do |global_options, options, args|
+      home.desc 'Start release module'
+      home.command :module do |finish|
+        finish.action do |global_options, options, args|
+          help_now!('module name is required') if args.length != 1
+          module_name = args[0]
+          start_module_release(path, module_name)
+        end
       end
     end
 
-    c.desc 'Start main project to release'
-    c.command :main do |main|
-      main.action do |global_options, options, args|
-        # help_now!('project path and version is required') if args.length != 1
-        # modules = args[0].split(",")
-        start_main_release(path, version)
-      end
-    end
   end
 
   exit run(ARGV)
