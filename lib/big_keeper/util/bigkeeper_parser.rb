@@ -107,7 +107,11 @@ module BigKeeper
     end
 
     def self.module_path(user_name, module_name)
-      user_name.empty? ? "../#{module_name}" : @@config[:users][user_name][:pods][module_name][:path]
+      if @@config[:users][user_name][:pods][module_name][:path]
+        @@config[:users][user_name][:pods][module_name][:path]
+      else
+        "../#{module_name}"
+      end
     end
 
     def self.module_git(module_name)
@@ -116,6 +120,12 @@ module BigKeeper
 
     def self.module_pulls(module_name)
       @@config[:modules][module_name][:pulls]
+    end
+
+    def self.verify_modules(modules)
+      modules.each do |item|
+        raise "Can not find module #{item} in Bigkeeper file" unless @@config[:modules][item]
+      end
     end
 
     def self.module_names
