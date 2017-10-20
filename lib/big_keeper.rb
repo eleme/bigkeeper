@@ -69,11 +69,15 @@ module BigKeeper
       home.desc 'Start release home project'
       home.command :start do |start|
         start.action do |global_options, options, args|
-          # path(optional): path of the Bigkeeper file in project
+          # path(optional): project path
           # version(optional): if null, will read verson in Bigkeeper file
-          # e.g: ruby big_keeper.rb -p /Users/SFM/Downloads/BigKeeperMain-master
-          # /Bigkeeper  -v 3.0.0 release home start
+          # e.g: ruby big_keeper.rb -p /Users/SFM/workspace/BigKeeperMain/Bigkeeper -v 3.0.0 release home start
           start_home_release(path, version)
+          start.command :release do |release|
+              release.action do |global_options, options, args|
+                start_home_finish_release(path, version)
+              end
+          end
         end
       end
 
