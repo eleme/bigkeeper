@@ -23,7 +23,7 @@ module BigKeeper
   flag %i[v version], default_value: 'Version in Bigkeeper file'
   path, version = ''
   pre do |global_options, _command, options, args|
-    path = global_options[:path]
+    path = File.expand_path(global_options[:path])
     version = global_options[:version]
   end
 
@@ -42,7 +42,7 @@ module BigKeeper
         help_now!('feature name is required') if args.length < 1
         name = args[0]
         modules = args[(1...args.length)] if args.length > 1
-        start_new_feature(path, user, name, modules)
+        feature_start(path, user, name, modules)
       end
     end
 
