@@ -1,5 +1,3 @@
-require 'big_stash/stash_operator'
-
 module BigKeeper
   # Operator for gitflow
   class GitflowOperator
@@ -38,21 +36,5 @@ module BigKeeper
         p `git flow release finish #{release_name}`
       end
     end
-
-    def stash(path, feature_name)
-      BigStash::StashOperator.new(path).stash(feature_name)
-    end
-
-    def apply_stash(path, feature_name)
-      BigStash::StashOperator.new(path).apply_stash(feature_name)
-    end
-
-    def current_branch(path)
-      Dir.chdir(path) do
-        `git rev-parse --abbrev-ref HEAD`.chop
-      end
-    end
   end
-
-  # p GitflowOperator.new.current_branch('/Users/mmoaay/Documents/eleme/BigKeeperMain')
 end
