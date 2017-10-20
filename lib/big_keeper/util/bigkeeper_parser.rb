@@ -106,8 +106,24 @@ module BigKeeper
       @@config[:home][:pulls]
     end
 
+    def self.module_full_path(home_path, user_name, module_name)
+      if @@config[:users] \
+        && @@config[:users][user_name] \
+        && @@config[:users][user_name][:pods] \
+        && @@config[:users][user_name][:pods][module_name] \
+        && @@config[:users][user_name][:pods][module_name][:path]
+        @@config[:users][user_name][:pods][module_name][:path]
+      else
+        File.expand_path("#{home_path}/../#{module_name}")
+      end
+    end
+
     def self.module_path(user_name, module_name)
-      if @@config[:users][user_name][:pods][module_name][:path]
+      if @@config[:users] \
+        && @@config[:users][user_name] \
+        && @@config[:users][user_name][:pods] \
+        && @@config[:users][user_name][:pods][module_name] \
+        && @@config[:users][user_name][:pods][module_name][:path]
         @@config[:users][user_name][:pods][module_name][:path]
       else
         "../#{module_name}"

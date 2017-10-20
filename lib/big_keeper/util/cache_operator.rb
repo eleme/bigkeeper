@@ -17,7 +17,7 @@ module BigKeeper
     end
 
     def modules_for_branch(home_name, branch_name)
-      @cache[home_name][branch_name]
+      @cache[home_name] && @cache[home_name][branch_name]?@cache[home_name][branch_name]:[]
     end
 
     def branchs_for_home(home_name)
