@@ -2,9 +2,11 @@
 
 require './big_keeper/version'
 require './big_keeper/util/bigkeeper_parser'
-require './big_keeper/command/start_new_feature'
+# require './big_keeper/command/feature_finish'
 require './big_keeper/util/cache_operator'
 require './big_keeper/util/bigkeeper_parser'
+require './big_keeper/util/git_operator'
+require './big_keeper/command/feature_start'
 require './big_keeper/command/start_home_release'
 require './big_keeper/command/start_module_release'
 
@@ -18,25 +20,28 @@ module BigKeeper
   program_desc 'Efficiency improvement for iOS modular development, iOSer using this tool can make modular development easier.'
 
   flag %i[p path], default_value: './'
-  flag %i[u user], default_value: ''
-  flag %i[v version], default_value: ''
-
-  path, user, version = ''
-
+  flag %i[v version], default_value: 'Version in Bigkeeper file'
+  path, version = ''
   pre do |global_options, _command, options, args|
     path = global_options[:path]
-    user = global_options[:user]
     version = global_options[:version]
   end
 
   desc 'Feature operations'
   command :feature do |c|
+
+    c.flag %i[u user], default_value: GitOperator.new.user
+    user = GitOperator.new.user
+    c.pre do |global_options, _command, options, args|
+      user = global_options[:user]
+    end
+
     c.desc 'Start a new feature with name for given modules and main project'
     c.command :start do |start|
       start.action do |global_options, options, args|
-        help_now!('feature name and modules is required') if args.length != 2
+        help_now!('feature name is required') if args.length < 1
         name = args[0]
-        modules = args[1].split(",")
+        modules = args[(1...args.length)] if args.length > 1
         start_new_feature(path, user, name, modules)
       end
     end
