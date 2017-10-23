@@ -42,7 +42,7 @@ module BigKeeper
         help_now!('feature name is required') if args.length < 1
         name = args[0]
         modules = args[(1...args.length)] if args.length > 1
-        feature_start(path, user, name, modules)
+        feature_start(path, version, user, name, modules)
       end
     end
 

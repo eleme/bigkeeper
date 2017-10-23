@@ -7,6 +7,22 @@ module BigKeeper
       end
     end
 
+    def has_branch(path, branch_name)
+      has_branch = false
+      IO.popen("cd #{path}; git branch -a") do |io|
+        io.each do |line|
+          has_branch = true if line.include? branch_name
+        end
+      end
+      has_branch
+    end
+
+    def git_rebase(path, branch_name)
+      Dir.chdir(path) do
+        `git rebase #{branch_name}`
+      end
+    end
+
     def user
       `git config user.name`.chop
     end

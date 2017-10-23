@@ -6,6 +6,17 @@ require '../model/podfile_type'
 
 
 module BigKeeper
+
+  def self.feature_finish(path, user, name)
+    begin
+      # Parse Bigkeeper file
+      BigkeeperParser.parse("#{path}/Bigkeeper")
+
+      modules = BigkeeperParser.module_names
+    ensure
+    end
+  end
+
   params = ParamParser.new.switch_to_push_parser
 
   main_path = File.expand_path(params[:main_path])

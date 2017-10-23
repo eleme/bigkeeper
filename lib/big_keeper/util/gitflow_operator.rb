@@ -3,8 +3,13 @@ module BigKeeper
   class GitflowOperator
     def start_feature(path, feature_name)
       init_git_flow(path)
-      Dir.chdir(path) do
-        p `git flow feature start #{feature_name}`
+      branch_name = GitOperator.new.current_branch(path)
+      if branch_name != "feature/#{feature_name}"
+        Dir.chdir(path) do
+          p `git flow feature start #{feature_name}`
+        end
+      else
+        p "Current feature name is the same with new feature, continue..."
       end
     end
 
