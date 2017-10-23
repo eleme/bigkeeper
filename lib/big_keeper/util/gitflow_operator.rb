@@ -1,18 +1,74 @@
-require 'big_stash'
-
 module BigKeeper
   # Operator for gitflow
   class GitflowOperator
-    def create_feature(path, feature_name)
-      p `cd #{path}; git flow feature start #{feature_name}`
+    def start_feature(path, feature_name)
+      init_git_flow(path)
+      Dir.chdir(path) do
+        p `git flow feature start #{feature_name}`
+      end
     end
 
-    def stash(path, feature_name)
-      BigStash::StashOperator.new(path).stash(feature_name)
+    def init_git_flow(path)
+      Dir.chdir(path) do
+        clear_flag = 'Already initialized for gitflow'
+        IO.popen("git flow init -d") do |io|
+          io.each do |line|
+            unless line.include? clear_flag
+              `git push origin master`
+              `git push origin develop`
+            end
+          end
+        end
+      end
     end
 
-    def apply_stash(path, feature_name)
-      BigStash::StashOperator.new(path).apply_stash(feature_name)
+    def commit(path, message)
+      Dir.chdir(path) do
+        `git add .`
+        `git commit -m "#{message}"`
+      end
+    end
+
+    def publish_feature(path, feature_name)
+      Dir.chdir(path) do
+        p `git push origin feature/#{feature_name}`
+      end
+    end
+
+    def pull_feature(path, feature_name)
+      Dir.chdir(path) do
+        p `git flow feature pull #{feature_name}`
+      end
+    end
+
+    def finish_feature(path, feature_name)
+      Dir.chdir(path) do
+        p `git flow feature finish #{feature_name}`
+      end
+    end
+
+    def start_hotfix(path, hotfix_name)
+      Dir.chdir(path) do
+        p `git flow hotfix start #{hotfix_name}`
+      end
+    end
+
+    def finish_hotfix(path, hotfix_name)
+      Dir.chdir(path) do
+        p `git flow hotfix finish #{hotfix_name}`
+      end
+    end
+
+    def start_release(path, release_name)
+      Dir.chdir(path) do
+        p `git flow release start #{release_name}`
+      end
+    end
+
+    def finish_release(path, release_name)
+      Dir.chdir(path) do
+        p `git flow release finish #{release_name}`
+      end
     end
   end
 end
