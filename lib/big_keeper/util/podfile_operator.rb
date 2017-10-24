@@ -16,13 +16,13 @@ module BigKeeper
       false
     end
 
-    def path_type_modules(podfile, modules)
+    def modules_with_type(podfile, modules, type)
       p modules
       matched_modules = []
       File.open(podfile, 'r') do |file|
         file.each_line do |line|
           modules.each do |module_name|
-            if line =~ /pod\s*'#{module_name}',\s*:path\s*/
+            if line =~ /pod\s*'#{module_name}',#{ModuleType.regex(type)}/
               matched_modules << module_name
               break
             end

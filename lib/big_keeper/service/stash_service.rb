@@ -1,5 +1,4 @@
 require 'big_stash/stash_operator'
-require './big_keeper/util/cache_operator'
 require './big_keeper/util/bigkeeper_parser'
 require './big_keeper/util/git_operator'
 
