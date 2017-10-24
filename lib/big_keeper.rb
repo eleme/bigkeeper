@@ -1,12 +1,12 @@
 #!/usr/bin/env ruby
 
 require './big_keeper/version'
-require './big_keeper/util/bigkeeper_parser'
-# require './big_keeper/command/feature_finish'
-require './big_keeper/util/cache_operator'
+
 require './big_keeper/util/bigkeeper_parser'
 require './big_keeper/util/git_operator'
+
 require './big_keeper/command/feature_start'
+require './big_keeper/command/feature_finish'
 require './big_keeper/command/start_home_release'
 require './big_keeper/command/start_module_release'
 
@@ -42,7 +42,7 @@ module BigKeeper
         help_now!('feature name is required') if args.length < 1
         name = args[0]
         modules = args[(1...args.length)] if args.length > 1
-        feature_start(path, user, name, modules)
+        feature_start(path, version, user, name, modules)
       end
     end
 
@@ -55,6 +55,7 @@ module BigKeeper
     c.desc 'Finish the feature with name'
     c.command :finish do |finish|
       finish.action do |global_options, options, args|
+        feature_finish(path, user, name)
       end
     end
 

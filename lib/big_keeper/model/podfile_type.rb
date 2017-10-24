@@ -3,6 +3,18 @@ module BigKeeper
     PATH = 1
     GIT = 2
     SPEC = 3
+
+    def self.regex(type)
+      if PATH == type
+        "\s*:path\s*=>\s*"
+      elsif GIT == type
+        "\s*:git\s*=>\s*"
+      elsif SPEC == type
+        "\s*'"
+      else
+        name
+      end
+    end
   end
 
   module GitType
