@@ -9,20 +9,27 @@ require './big_keeper/util/info_plist_operator'
 # 3.替换 info.plist 中的 build version
 
 module BigKeeper
-  def self.start_home_release(path, version)
+  def self.release_home_start(path, version)
     main_path = File.expand_path(path + "/BigKeeper")
-    puts main_path
     BigkeeperParser.parse(main_path)
     start_release(path, version, BigkeeperParser::module_names, git_info = GitInfo.new(BigkeeperParser::home_git, GitType::TAG, version))
   end
 
+  def self.release_home_finish(path, version)
+    p `git add .`
+    p `git commit -m "release: V #{version}"`
+    GitflowOperator.new.finish_release(path, version)
+  end
+
+  private
   def self.start_release(projectPath, version, modules, source)
     Dir.chdir(projectPath) do
-      # step 0 check git stash
-      # p `big-stash -p #{projectPath} add "start_release_version"`
+      # step 0 Stash current branch
+      # StashService.new.stash(projectPath, user)
 
       # step 1 checkout release
-      GitflowOperator.new.start_release(projectPath, version)
+      # GitflowOperator.new.start_release(projectPath, version)
+      # p `git push`
 
       # step 2 replace_modules
       PodfileOperator.new.replace_all_module_release(%Q(#{projectPath}/Podfile),
@@ -33,11 +40,5 @@ module BigKeeper
       # step 3 change Info.plist value
       InfoPlistOperator.new.change_version_build(projectPath, version)
     end
-  end
-
-  def self.start_home_finish_release(path, version)
-    p `git add .`
-    p `git commit -m "release: V #{version}"`
-    GitflowOperator.new.finish_release(path, version)
   end
 end

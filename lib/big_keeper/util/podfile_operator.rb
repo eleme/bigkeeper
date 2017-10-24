@@ -60,25 +60,35 @@ module BigKeeper
     end
 
     def replace_all_module_release(podfile, module_names, version, source)
-      temp_file = Tempfile.new('.Podfile.tmp')
-      begin
-        File.open(podfile, 'r') do |file|
-          file.each_line do |line|
-            module_names.each do |module_name|
-              if line.include?module_name
-                temp_file.puts generate_module_config(module_name, ModuleType::GIT, source)
-              else
-                temp_file.puts line
-              end
-            end
-          end
-        end
-        temp_file.close
-        FileUtils.mv(temp_file.path, podfile)
-      ensure
-        temp_file.close
-        temp_file.unlink
+
+      module_names.each do |module_name|
+        PodfileOperator.new.find_and_replace(podfile,
+                                             module_name,
+                                             ModuleType::GIT,
+                                             source)
       end
+
+
+
+      # temp_file = Tempfile.new('.Podfile.tmp')
+      # begin
+      #   File.open(podfile, 'r') do |file|
+      #     file.each_line do |line|
+      #       module_names.each do |module_name|
+      #         if line.include?module_name
+      #           temp_file.puts generate_module_config(module_name, ModuleType::GIT, source)
+      #         else
+      #           # temp_file.puts line
+      #         end
+      #       end
+      #     end
+      #   end
+      #   temp_file.close
+      #   FileUtils.mv(temp_file.path, podfile)
+      # ensure
+      #   temp_file.close
+      #   temp_file.unlink
+      # end
     end
 
     private :generate_module_config

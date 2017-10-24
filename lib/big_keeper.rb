@@ -7,8 +7,8 @@ require './big_keeper/util/cache_operator'
 require './big_keeper/util/bigkeeper_parser'
 require './big_keeper/util/git_operator'
 require './big_keeper/command/feature_start'
-require './big_keeper/command/start_home_release'
-require './big_keeper/command/start_module_release'
+require './big_keeper/command/release_home'
+require './big_keeper/command/release_module'
 
 require 'gli'
 
@@ -76,11 +76,12 @@ module BigKeeper
         start.action do |global_options, options, args|
           # path(optional): project path
           # version(optional): if null, will read verson in Bigkeeper file
-          # e.g: ruby big_keeper.rb -p /Users/SFM/workspace/BigKeeperMain/Bigkeeper -v 3.0.0 release home start
-          start_home_release(path, version)
+          # # e.g: ruby big_keeper.rb -p /Users/SFM/workspace/LPDTeamiOS -v 2.8.5 release home start
+          # e.g: ruby big_keeper.rb -p /Users/SFM/workspace/BigKeeperMain -v 3.0.0 release home start
+          release_home_start(path, version)
           start.command :release do |release|
               release.action do |global_options, options, args|
-                start_home_finish_release(path, version)
+                release_home_finish(path, version)
               end
           end
         end
