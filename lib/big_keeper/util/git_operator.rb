@@ -1,17 +1,6 @@
 module BigKeeper
   # Operator for got
   class GitOperator
-    def verify_branch(path, branch_name)
-      git_fetch(path, branch_name)
-
-      if current_branch(path) == branch_name
-        raise %Q(Current branch is '#{branch_name}' already. Use 'update' please)
-      end
-      if has_branch(path, branch_name)
-        raise %Q(Branch '#{branch_name}' already exists. Use 'switch' please)
-      end
-    end
-
     def current_branch(path)
       Dir.chdir(path) do
         `git rev-parse --abbrev-ref HEAD`.chop
@@ -28,7 +17,13 @@ module BigKeeper
       has_branch
     end
 
-    def git_fetch(path, branch_name)
+    def git_checkout(path, branch_name)
+      Dir.chdir(path) do
+        `git checkout #{branch_name}`
+      end
+    end
+
+    def git_fetch(path)
       Dir.chdir(path) do
         `git fetch origin`
       end

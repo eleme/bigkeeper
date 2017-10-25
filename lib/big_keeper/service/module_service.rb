@@ -1,3 +1,4 @@
+require './big_keeper/service/git_service'
 
 module BigKeeper
   # Operator for got
@@ -17,19 +18,18 @@ module BigKeeper
     end
 
     def finish(path, user, module_name)
-      module_full_path = BigkeeperParser.module_full_path(path, user, module_name)
-      p module_full_path
-      GitOperator.new.git_rebase(module_full_path, 'develop')
-
-      module_pulls = BigkeeperParser.module_pulls(module_name)
-      p module_pulls
-      `open #{module_pulls}`
-
       module_git = BigkeeperParser.module_git(module_name)
+      module_full_path = BigkeeperParser.module_full_path(path, user, module_name)
+      branch_name = GitOperator.new.current_branch(module_full_path)
+
       PodfileOperator.new.find_and_replace("#{path}/Podfile",
                                            %Q('#{module_name}'),
                                            ModuleType::GIT,
-                                           GitInfo.new(module_git, GitType::BRANCH, 'develop'))
+                                           GitInfo.new(module_git, GitType::BRANCH, branch_name))
+
+      GitService.new.verify_rebase(module_full_path, 'develop', module_name)
+
+      `open #{BigkeeperParser.module_pulls(module_name)}`
     end
 
     def del(path, user, module_name, name, type)
