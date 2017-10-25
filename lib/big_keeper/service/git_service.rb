@@ -1,4 +1,5 @@
 require './big_keeper/util/git_operator'
+require './big_keeper/model/gitflow_type'
 
 module BigKeeper
   # Operator for got
@@ -7,17 +8,29 @@ module BigKeeper
       GitOperator.new.git_fetch(path)
 
       if GitOperator.new.current_branch(path) == branch_name
-        raise %Q(Current branch is '#{branch_name}' already. Use 'update' please)
+        raise %(Current branch is '#{branch_name}' already. Use 'update' please)
       end
       if GitOperator.new.has_branch(path, branch_name)
-        raise %Q(Branch '#{branch_name}' already exists. Use 'switch' please)
+        raise %(Branch '#{branch_name}' already exists. Use 'switch' please)
       end
+    end
+
+    def branchs_with_type(path, type)
+      branchs = []
+      Dir.chdir(path) do
+        IO.popen('git branch -a') do |io|
+          io.each do |line|
+            branchs << line.rstrip if line =~ /(\* |  )#{GitflowType.name(type)}*/
+          end
+        end
+      end
+      branchs
     end
 
     def verify_rebase(path, branch_name, name)
       Dir.chdir(path) do
         IO.popen("git rebase #{branch_name} --ignore-whitespace") do |io|
-          if !io.gets
+          unless io.gets
             raise "#{name} is already in a rebase-apply, Please:\n\
                   1.Resolve it;\n\
                   2.Commit the changes;\n\
@@ -26,14 +39,13 @@ module BigKeeper
                   5.Run 'finish' again."
           end
           io.each do |line|
-            if line.include? 'Merge conflict'
-              raise "Merge conflict in #{name}, Please:\n\
-                    1.Resolve it;\n\
-                    2.Commit the changes;\n\
-                    3.Push to remote;\n\
-                    4.Create a MR;\n\
-                    5.Run 'finish' again."
-            end
+            next unless line.include? 'Merge conflict'
+            raise "Merge conflict in #{name}, Please:\n\
+                  1.Resolve it;\n\
+                  2.Commit the changes;\n\
+                  3.Push to remote;\n\
+                  4.Create a MR;\n\
+                  5.Run 'finish' again."
           end
         end
         `git push -f origin #{branch_name}`
