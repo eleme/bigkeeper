@@ -61,29 +61,23 @@ module BigKeeper
     c.desc 'Pull remote changes for current feature'
     c.command :pull do |pull|
       pull.action do |global_options, options, args|
-        feature_pull(path, user, name)
+        feature_pull(path, user)
       end
     end
 
     c.desc 'Push local changes to remote for current feature'
     c.command :push do |push|
-      push.flag %i[m comment], default_value: ''
-
-      comment = ''
-      push.pre do |global_options, _command, options, args|
-        comment = global_options[:comment]
-      end
-
       push.action do |global_options, options, args|
-        p comment
-        feature_push(path, user, name, comment)
+        help_now!('comment message is required') if args.length < 1
+        comment = args[0]
+        feature_push(path, user, comment)
       end
     end
 
     c.desc 'Finish current feature'
     c.command :finish do |finish|
       finish.action do |global_options, options, args|
-        feature_finish(path, user, name)
+        feature_finish(path, user)
       end
     end
 
