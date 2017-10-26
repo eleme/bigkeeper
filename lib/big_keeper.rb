@@ -5,10 +5,16 @@ require './big_keeper/version'
 require './big_keeper/util/bigkeeper_parser'
 require './big_keeper/util/git_operator'
 
+require './big_keeper/model/gitflow_type'
+
 require './big_keeper/command/feature_start'
 require './big_keeper/command/feature_finish'
+require './big_keeper/command/feature_pull'
+require './big_keeper/command/feature_push'
 require './big_keeper/command/start_home_release'
 require './big_keeper/command/start_module_release'
+
+require './big_keeper/service/git_service'
 
 require 'gli'
 
@@ -52,18 +58,36 @@ module BigKeeper
       end
     end
 
-    c.desc 'Finish the feature with name'
+    c.desc 'Pull remote changes for current feature'
+    c.command :pull do |pull|
+      pull.action do |global_options, options, args|
+        feature_pull(path, user)
+      end
+    end
+
+    c.desc 'Push local changes to remote for current feature'
+    c.command :push do |push|
+      push.action do |global_options, options, args|
+        help_now!('comment message is required') if args.length < 1
+        comment = args[0]
+        feature_push(path, user, comment)
+      end
+    end
+
+    c.desc 'Finish current feature'
     c.command :finish do |finish|
       finish.action do |global_options, options, args|
-        feature_finish(path, user, name)
+        feature_finish(path, user)
       end
     end
 
     c.desc 'List all the features'
     c.command :list do |list|
       list.action do
-        BigkeeperParser.parse(File.expand_path(path))
-        p CacheOperator.new.features_for_home(BigkeeperParser.home_name)
+        branchs = GitService.new.branchs_with_type(File.expand_path(path), GitflowType::FEATURE)
+        branchs.each do |branch|
+          p branch
+        end
       end
     end
   end

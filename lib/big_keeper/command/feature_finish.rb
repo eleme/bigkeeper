@@ -7,7 +7,7 @@ require './big_keeper/model/podfile_type'
 
 module BigKeeper
 
-  def self.feature_finish(path, user, name)
+  def self.feature_finish(path, user)
     begin
       # Parse Bigkeeper file
       BigkeeperParser.parse("#{path}/Bigkeeper")
