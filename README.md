@@ -20,7 +20,7 @@ Or install it yourself as:
 
 ## Usage
 
-Run `big-keeper` to learn how to use big-stash.
+Run `big-keeper` to learn how to use big-keeper.
 
 ## Development
 
