@@ -21,16 +21,18 @@ require 'gli'
 include GLI::App
 
 module BigKeeper
-
   # Your code goes here...
   program_desc 'Efficiency improvement for iOS modular development, iOSer using this tool can make modular development easier.'
 
   flag %i[p path], default_value: './'
-  flag %i[v version], default_value: 'Version in Bigkeeper file'
-  path, version = ''
+  flag %i[v ver], default_value: 'Version in Bigkeeper file'
+
+  path = ''
+  version = ''
+
   pre do |global_options, _command, options, args|
     path = File.expand_path(global_options[:path])
-    version = global_options[:version]
+    version = global_options[:ver]
   end
 
   desc 'Feature operations'
@@ -130,7 +132,6 @@ module BigKeeper
         end
       end
     end
-
   end
 
   exit run(ARGV)
