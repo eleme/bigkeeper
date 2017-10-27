@@ -9,10 +9,11 @@ require './big_keeper/util/info_plist_operator'
 # 3.替换 info.plist 中的 build version
 
 module BigKeeper
-  def self.release_home_start(path, version)
+  def self.release_home_start(path, version, user)
+    puts user
     main_path = File.expand_path(path + "/BigKeeper")
     BigkeeperParser.parse(main_path)
-    start_release(path, version, BigkeeperParser::module_names, git_info = GitInfo.new(BigkeeperParser::home_git, GitType::TAG, version))
+    start_release(path, version, BigkeeperParser::module_names, GitInfo.new(BigkeeperParser::home_git, GitType::TAG, version), user)
   end
 
   def self.release_home_finish(path, version)
@@ -22,18 +23,27 @@ module BigKeeper
   end
 
   private
-  def self.start_release(projectPath, version, modules, source)
+  def self.start_release(projectPath, version, modules, source, user)
     Dir.chdir(projectPath) do
       # step 0 Stash current branch
-      # StashService.new.stash(projectPath, user)
+      StashService.new.stash(projectPath, GitOperator.new.current_branch(projectPath), user, modules)
 
       # step 1 checkout release
-      # GitflowOperator.new.start_release(projectPath, version)
-      # p `git push`
+      if GitOperator.new.current_branch(projectPath) != "release/#{version}"
+        if GitOperator.new.has_branch(projectPath, "release/#{version}")
+          p `git checkout release/#{version}`
+        else
+          # GitflowOperator.new.start_release(projectPath, version)
+          #     def start(path, name, type)
+          GitflowOperator.new.start(projectPath, version, GitflowType::RELEASE)
+          p `git push --set-upstream origin release/#{version}`
+        end
+      end
 
       # step 2 replace_modules
       PodfileOperator.new.replace_all_module_release(%Q(#{projectPath}/Podfile),
                                                       modules,
+
                                                       version,
                                                       source)
 

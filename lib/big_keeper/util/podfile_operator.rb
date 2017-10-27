@@ -16,6 +16,22 @@ module BigKeeper
       false
     end
 
+    def modules_with_type(podfile, modules, type)
+      p modules
+      matched_modules = []
+      File.open(podfile, 'r') do |file|
+        file.each_line do |line|
+          modules.each do |module_name|
+            if line =~ /pod\s*'#{module_name}',#{ModuleType.regex(type)}/
+              matched_modules << module_name
+              break
+            end
+          end
+        end
+      end
+      matched_modules
+    end
+
     def find_and_replace(podfile, module_name, module_type, source)
       temp_file = Tempfile.new('.Podfile.tmp')
 
