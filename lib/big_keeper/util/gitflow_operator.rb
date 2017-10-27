@@ -27,7 +27,13 @@ module BigKeeper
 
     def finish_release(path, release_name)
       Dir.chdir(path) do
-        p `git flow release finish #{release_name}`
+        p `git checkout master`
+        p `git merge release/#{release_name}`
+        p `git push`
+        p `git checkout develop`
+        p `git merge release/#{release_name}`
+        p `git push`
+        p `git branch -d release/#{release_name}`
       end
     end
   end
