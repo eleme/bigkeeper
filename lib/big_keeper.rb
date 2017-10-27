@@ -5,10 +5,16 @@ require './big_keeper/version'
 require './big_keeper/util/bigkeeper_parser'
 require './big_keeper/util/git_operator'
 
+require './big_keeper/model/gitflow_type'
+
 require './big_keeper/command/feature_start'
-require './big_keeper/command/release_home'
-require './big_keeper/command/release_module'
 require './big_keeper/command/feature_finish'
+require './big_keeper/command/feature_pull'
+require './big_keeper/command/feature_push'
+require './big_keeper/command/start_home_release'
+require './big_keeper/command/start_module_release'
+
+require './big_keeper/service/git_service'
 
 require 'gli'
 
@@ -42,9 +48,6 @@ module BigKeeper
         help_now!('feature name is required') if args.length < 1
         name = args[0]
         modules = args[(1...args.length)] if args.length > 1
-        puts name
-        puts modules
-        puts path
         feature_start(path, version, user, name, modules)
       end
     end
@@ -55,48 +58,58 @@ module BigKeeper
       end
     end
 
-    c.desc 'Finish the feature with name'
+    c.desc 'Pull remote changes for current feature'
+    c.command :pull do |pull|
+      pull.action do |global_options, options, args|
+        feature_pull(path, user)
+      end
+    end
+
+    c.desc 'Push local changes to remote for current feature'
+    c.command :push do |push|
+      push.action do |global_options, options, args|
+        help_now!('comment message is required') if args.length < 1
+        comment = args[0]
+        feature_push(path, user, comment)
+      end
+    end
+
+    c.desc 'Finish current feature'
     c.command :finish do |finish|
       finish.action do |global_options, options, args|
-        feature_finish(path, user, name)
+        feature_finish(path, user)
       end
     end
 
     c.desc 'List all the features'
     c.command :list do |list|
       list.action do
-        BigkeeperParser.parse(File.expand_path(path))
-        p CacheOperator.new.features_for_home(BigkeeperParser.home_name)
+        branchs = GitService.new.branchs_with_type(File.expand_path(path), GitflowType::FEATURE)
+        branchs.each do |branch|
+          p branch
+        end
       end
     end
   end
 
   desc 'Release operations'
   command :release do |c|
-
-    c.flag %i[u user], default_value: GitOperator.new.user
-    user = GitOperator.new.user
-    c.pre do |global_options, _command, options, args|
-      user = global_options[:user]
-    end
-
     c.desc 'Release home project operations'
     c.command :home do |home|
       home.desc 'Start release home project'
       home.command :start do |start|
         start.action do |global_options, options, args|
-          # path(optional): project path
+          # path(optional): path of the Bigkeeper file in project
           # version(optional): if null, will read verson in Bigkeeper file
-          # # e.g: ruby big_keeper.rb -p /Users/SFM/workspace/LPDTeamiOS -v 2.8.5 release home start
-          # e.g: ruby big_keeper.rb -p /Users/SFM/workspace/BigKeeperMain -v 3.0.0 release home start
-          release_home_start(path, version, user)
+          # e.g: ruby big_keeper.rb -p /Users/SFM/Downloads/BigKeeperMain-master
+          # /Bigkeeper  -v 3.0.0 release home start
+          start_home_release(path, version)
         end
       end
 
       home.desc 'Finish release home project'
       home.command :finish do |finish|
         finish.action do |global_options, options, args|
-          release_home_finish(path, version)
         end
       end
 

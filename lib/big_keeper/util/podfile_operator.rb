@@ -17,7 +17,6 @@ module BigKeeper
     end
 
     def modules_with_type(podfile, modules, type)
-      p modules
       matched_modules = []
       File.open(podfile, 'r') do |file|
         file.each_line do |line|
