@@ -94,6 +94,13 @@ module BigKeeper
 
   desc 'Release operations'
   command :release do |c|
+
+    c.flag %i[u user], default_value: GitOperator.new.user
+    user = GitOperator.new.user
+    c.pre do |global_options, _command, options, args|
+      user = global_options[:user]
+    end
+
     c.desc 'Release home project operations'
     c.command :home do |home|
       home.desc 'Start release home project'

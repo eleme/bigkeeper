@@ -45,12 +45,14 @@ module BigKeeper
       # step 2 replace_modules
       PodfileOperator.new.replace_all_module_release(%Q(#{project_path}/Podfile),
                                                       modules,
-
                                                       version,
                                                       source)
 
       # step 3 change Info.plist value
       InfoPlistOperator.new.change_version_build(project_path, version)
+
+      p `pod install --project-directory=#{project_path}`
+      p `open #{project_path}/*.xcworkspace`
     end
   end
 end
