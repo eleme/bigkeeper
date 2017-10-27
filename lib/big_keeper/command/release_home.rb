@@ -27,30 +27,30 @@ module BigKeeper
   end
 
   private
-  def self.start_release(projectPath, version, modules, source, user)
-    Dir.chdir(projectPath) do
+  def self.start_release(project_path, version, modules, source, user)
+    Dir.chdir(project_path) do
       # step 0 Stash current branch
-      StashService.new.stash(projectPath, GitOperator.new.current_branch(projectPath), user, modules)
+      StashService.new.stash(project_path, GitOperator.new.current_branch(project_path), user, modules)
 
       # step 1 checkout release
-      if GitOperator.new.current_branch(projectPath) != "release/#{version}"
-        if GitOperator.new.has_branch(projectPath, "release/#{version}")
+      if GitOperator.new.current_branch(project_path) != "release/#{version}"
+        if GitOperator.new.has_branch(project_path, "release/#{version}")
           p `git checkout release/#{version}`
         else
-          GitflowOperator.new.start(projectPath, version, GitflowType::RELEASE)
+          GitflowOperator.new.start(project_path, version, GitflowType::RELEASE)
           p `git push --set-upstream origin release/#{version}`
         end
       end
 
       # step 2 replace_modules
-      PodfileOperator.new.replace_all_module_release(%Q(#{projectPath}/Podfile),
+      PodfileOperator.new.replace_all_module_release(%Q(#{project_path}/Podfile),
                                                       modules,
 
                                                       version,
                                                       source)
 
       # step 3 change Info.plist value
-      InfoPlistOperator.new.change_version_build(projectPath, version)
+      InfoPlistOperator.new.change_version_build(project_path, version)
     end
   end
 end

@@ -17,14 +17,14 @@ module BigKeeper
   end
 
   private
-  def self.module_release(projectPath, module_name, source)
-    Dir.chdir(projectPath) do
-      PodfileOperator.new.find_and_replace(%Q(#{projectPath}/Podfile),
+  def self.module_release(project_path, module_name, source)
+    Dir.chdir(project_path) do
+      PodfileOperator.new.find_and_replace(%Q(#{project_path}/Podfile),
                                                       module_name,
                                                       ModuleType::GIT,
                                                         source)
-      p `pod install --project-directory=#{projectPath}`
-      p `open #{projectPath}/*.xcworkspace`
+      p `pod install --project-directory=#{project_path}`
+      p `open #{project_path}/*.xcworkspace`
     end
   end
 end
