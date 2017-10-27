@@ -27,6 +27,7 @@ module BigKeeper
 
     def finish_release(path, release_name)
       Dir.chdir(path) do
+        puts release_name
         p `git flow release finish #{release_name}`
       end
     end
