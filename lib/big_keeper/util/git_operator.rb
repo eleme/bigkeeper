@@ -31,7 +31,7 @@ module BigKeeper
 
     def git_rebase(path, branch_name)
       Dir.chdir(path) do
-        `git rebase #{branch_name}`
+        `git rebase origin/#{branch_name}`
       end
     end
 
