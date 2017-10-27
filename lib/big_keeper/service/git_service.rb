@@ -1,18 +1,31 @@
 require './big_keeper/util/git_operator'
 require './big_keeper/model/gitflow_type'
+require './big_keeper/model/operate_type'
 
 module BigKeeper
   # Operator for got
   class GitService
-    def verify_branch(path, branch_name)
+    def verify_branch(path, branch_name, type)
       GitOperator.new.git_fetch(path)
 
-      if GitOperator.new.current_branch(path) == branch_name
-        raise %(Current branch is '#{branch_name}' already. Use 'update' please)
+      if OperateType::START == type
+        if GitOperator.new.current_branch(path) == branch_name
+          raise %(Current branch is '#{branch_name}' already. Use 'update' please)
+        end
+        if GitOperator.new.has_branch(path, branch_name)
+          raise %(Branch '#{branch_name}' already exists. Use 'switch' please)
+        end
+      else if OperateType::SWITCH == type
+        if !GitOperator.new.has_branch(path, branch_name)
+          raise %(Can't find a branch named '#{branch_name}'. Use 'start' please)
+        end
+        if GitOperator.new.current_branch(path) == branch_name
+          raise %(Current branch is '#{branch_name}' already. Use 'update' please)
+        end
+      else if OperateType::UPDATE == type
+      else
       end
-      if GitOperator.new.has_branch(path, branch_name)
-        raise %(Branch '#{branch_name}' already exists. Use 'switch' please)
-      end
+
     end
 
     def branchs_with_type(path, type)
