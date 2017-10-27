@@ -11,8 +11,8 @@ require './big_keeper/command/feature_start'
 require './big_keeper/command/feature_finish'
 require './big_keeper/command/feature_pull'
 require './big_keeper/command/feature_push'
-require './big_keeper/command/start_home_release'
-require './big_keeper/command/start_module_release'
+require './big_keeper/command/release_home'
+require './big_keeper/command/release_module'
 
 require './big_keeper/service/git_service'
 
@@ -103,13 +103,14 @@ module BigKeeper
           # version(optional): if null, will read verson in Bigkeeper file
           # e.g: ruby big_keeper.rb -p /Users/SFM/Downloads/BigKeeperMain-master
           # /Bigkeeper  -v 3.0.0 release home start
-          start_home_release(path, version)
+          release_home_start(path, version, user)
         end
       end
 
       home.desc 'Finish release home project'
       home.command :finish do |finish|
         finish.action do |global_options, options, args|
+          release_home_finish(path, version)
         end
       end
 
