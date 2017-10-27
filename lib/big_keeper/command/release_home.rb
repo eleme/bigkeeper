@@ -19,7 +19,7 @@ module BigKeeper
   def self.release_home_finish(path, version)
     p `git add .`
     p `git commit -m "release: V #{version}"`
-    GitflowOperator.new.finish_release(path, version)
+    GitflowOperator.new.finish_release(path, "release/#{version}")
   end
 
   private
@@ -33,8 +33,6 @@ module BigKeeper
         if GitOperator.new.has_branch(projectPath, "release/#{version}")
           p `git checkout release/#{version}`
         else
-          # GitflowOperator.new.start_release(projectPath, version)
-          #     def start(path, name, type)
           GitflowOperator.new.start(projectPath, version, GitflowType::RELEASE)
           p `git push --set-upstream origin release/#{version}`
         end
