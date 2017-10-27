@@ -80,6 +80,13 @@ module BigKeeper
     def user
       `git config user.name`.chop
     end
+
+    def tag(path, version)
+      Dir.chdir(path) do
+        p `git tag -a #{version} -m "release: V #{version}" master`
+        p `git push --tags`
+      end
+    end
   end
 
   # p GitOperator.new.user

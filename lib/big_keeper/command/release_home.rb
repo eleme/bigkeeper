@@ -22,6 +22,7 @@ module BigKeeper
       p `git commit -m "release: V #{version}"`
       p `git push origin release/#{version}`
       GitflowOperator.new.finish_release(path, version)
+      GitOperator.new.tag(path, version)
     end
   end
 
