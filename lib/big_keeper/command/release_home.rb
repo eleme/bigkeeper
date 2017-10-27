@@ -19,7 +19,7 @@ module BigKeeper
   def self.release_home_finish(path, version)
     p `git add .`
     p `git commit -m "release: V #{version}"`
-    GitflowOperator.new.finish_release(path, "release/#{version}")
+    GitflowOperator.new.finish_release(path, version)
   end
 
   private
