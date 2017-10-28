@@ -15,17 +15,23 @@ module BigKeeper
         if GitOperator.new.has_branch(path, branch_name)
           raise %(Branch '#{branch_name}' already exists. Use 'switch' please)
         end
-      else if OperateType::SWITCH == type
+      elsif OperateType::SWITCH == type
         if !GitOperator.new.has_branch(path, branch_name)
           raise %(Can't find a branch named '#{branch_name}'. Use 'start' please)
         end
         if GitOperator.new.current_branch(path) == branch_name
           raise %(Current branch is '#{branch_name}' already. Use 'update' please)
         end
-      else if OperateType::UPDATE == type
+      elsif OperateType::UPDATE == type
+        if !GitOperator.new.has_branch(path, branch_name)
+          raise %(Can't find a branch named '#{branch_name}'. Use 'start' please)
+        end
+        if GitOperator.new.current_branch(path) != branch_name
+          raise %(Current branch is not '#{branch_name}'. Use 'switch' please)
+        end
       else
+        raise %(Not a valid command for '#{branch_name}'.)
       end
-
     end
 
     def branchs_with_type(path, type)

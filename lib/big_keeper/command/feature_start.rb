@@ -28,7 +28,7 @@ module BigKeeper
     feature_name = "#{version}_#{user}_#{name}"
     branch_name = "#{GitflowType.name(GitflowType::FEATURE)}/#{feature_name}"
 
-    GitService.new.verify_branch(path, branch_name)
+    GitService.new.verify_branch(path, branch_name, OperateType::START)
 
     # Stash current branch
     StashService.new.stash(path, branch_name, user, modules)

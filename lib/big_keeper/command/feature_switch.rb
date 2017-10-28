@@ -14,7 +14,7 @@ module BigKeeper
       feature_name = "#{version}_#{user}_#{name}"
       branch_name = "#{GitflowType.name(GitflowType::FEATURE)}/#{feature_name}"
 
-      GitService.new.verify_branch(path, branch_name)
+      GitService.new.verify_branch(path, branch_name, OperateType::SWITCH)
 
       modules = PodfileOperator.new.modules_with_type("#{path}/Podfile",
                                 BigkeeperParser.module_names, ModuleType::PATH)
