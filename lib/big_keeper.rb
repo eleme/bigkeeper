@@ -9,6 +9,8 @@ require './big_keeper/model/gitflow_type'
 
 require './big_keeper/command/feature_start'
 require './big_keeper/command/feature_finish'
+require './big_keeper/command/feature_switch'
+require './big_keeper/command/feature_update'
 require './big_keeper/command/feature_pull'
 require './big_keeper/command/feature_push'
 require './big_keeper/command/release_home'
@@ -54,9 +56,22 @@ module BigKeeper
       end
     end
 
+    c.desc 'Update moduels for the feature with name'
+    c.command :update do |update|
+      update.action do |global_options, options, args|
+        help_now!('feature name is required') if args.length < 1
+        name = args[0]
+        modules = args[(1...args.length)] if args.length > 1
+        feature_update(path, version, user, name, modules)
+      end
+    end
+
     c.desc 'Switch to the feature with name'
     c.command :switch do |switch|
       switch.action do |global_options, options, args|
+        help_now!('feature name is required') if args.length < 1
+        name = args[0]
+        feature_switch(path, version, user, name)
       end
     end
 

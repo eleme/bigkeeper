@@ -3,20 +3,6 @@ require './big_keeper/service/git_service'
 module BigKeeper
   # Operator for got
   class ModuleService
-    def add(path, user, module_name, name, type)
-      branch_name = "#{GitflowType.name(type)}/#{name}"
-      module_full_path = BigkeeperParser.module_full_path(path, user, module_name)
-
-      GitflowOperator.new.start(module_full_path, name, type)
-      GitOperator.new.push(module_full_path, branch_name)
-
-      module_path = BigkeeperParser.module_path(user, module_name)
-      PodfileOperator.new.find_and_replace("#{path}/Podfile",
-                                           %('#{module_name}'),
-                                           ModuleType::PATH,
-                                           module_path)
-    end
-
     def pull(path, user, module_name, branch_name)
       module_full_path = BigkeeperParser.module_full_path(path, user, module_name)
 
@@ -66,6 +52,20 @@ module BigKeeper
       GitService.new.verify_rebase(module_full_path, 'develop', module_name)
 
       `open #{BigkeeperParser.module_pulls(module_name)}`
+    end
+
+    def add(path, user, module_name, name, type)
+      branch_name = "#{GitflowType.name(type)}/#{name}"
+      module_full_path = BigkeeperParser.module_full_path(path, user, module_name)
+
+      GitflowOperator.new.start(module_full_path, name, type)
+      GitOperator.new.push(module_full_path, branch_name)
+
+      module_path = BigkeeperParser.module_path(user, module_name)
+      PodfileOperator.new.find_and_replace("#{path}/Podfile",
+                                           %('#{module_name}'),
+                                           ModuleType::PATH,
+                                           module_path)
     end
 
     def del(path, user, module_name, name, type)
