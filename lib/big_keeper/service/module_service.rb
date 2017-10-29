@@ -25,11 +25,32 @@ module BigKeeper
         GitOperator.new.clone(File.expand_path("#{module_full_path}/../"), module_git)
         GitOperator.new.git_checkout(module_full_path, branch_name)
       else
-        p "Start pulling #{module_name}..."
         module_branch_name = GitOperator.new.current_branch(module_full_path)
-        GitOperator.new.pull(module_full_path, module_branch_name)
+        if module_branch_name != branch_name
+          p "Current branch of #{module_name} is #{module_branch_name},\
+            stash it and checkout #{branch_name}..."
+          BigStash::StashOperator.new(module_full_path).stash(module_branch_name)
+          GitOperator.new.git_checkout(module_full_path, branch_name)
+        end
+        p "Start pulling #{module_name}..."
+        GitOperator.new.pull(module_full_path, branch_name)
         p "Finish pulling #{module_name}..."
       end
+    end
+
+    def switch(path, user, module_name, branch_name)
+      module_full_path = BigkeeperParser.module_full_path(path, user, module_name)
+
+      p "Start switching #{module_name}..."
+      if !File.exist? module_full_path
+        module_git = BigkeeperParser.module_git(module_name)
+        GitOperator.new.clone(File.expand_path("#{module_full_path}/../"), module_git)
+        GitOperator.new.git_checkout(module_full_path, branch_name)
+      else
+        GitOperator.new.git_checkout(module_full_path, branch_name)
+        GitOperator.new.pull(module_full_path, branch_name)
+      end
+      p "Finish switching #{module_name}..."
     end
 
     def finish(path, user, module_name)
