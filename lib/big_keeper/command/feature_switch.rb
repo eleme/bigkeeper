@@ -1,9 +1,5 @@
 #!/usr/bin/ruby
 
-require '../util/param_parser'
-require '../util/podfile_operator'
-require '../model/podfile_type'
-
 module BigKeeper
   module BigKeeper
     def self.feature_switch(path, version, user, name)
