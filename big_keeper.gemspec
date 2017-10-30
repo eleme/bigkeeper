@@ -34,4 +34,7 @@ Gem::Specification.new do |spec|
   spec.add_development_dependency "rake", "~> 10.0"
   spec.add_development_dependency "gli", "~> 2.16"
   spec.add_development_dependency "big_stash", "~> 0.1"
+  spec.add_development_dependency "cocoapods"
+  spec.add_development_dependency "plist"
+  spec.add_development_dependency "rubocop", "~> 0.50.0"
 end

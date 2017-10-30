@@ -36,9 +36,6 @@ module BigKeeper
       add_modules = modules - current_modules
       del_modules = current_modules - modules
 
-      p add_modules
-      p del_modules
-
       if add_modules.empty? and del_modules.empty?
         p "There is nothing changed with modules #{modules}."
       else
