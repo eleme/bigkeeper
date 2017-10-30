@@ -1,6 +1,6 @@
 require 'big_stash/stash_operator'
-require './big_keeper/util/bigkeeper_parser'
-require './big_keeper/util/git_operator'
+require 'big_keeper/util/bigkeeper_parser'
+require 'big_keeper/util/git_operator'
 
 module BigKeeper
   # Operator for got

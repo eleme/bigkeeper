@@ -1,4 +1,4 @@
-require './big_keeper/service/git_service'
+require 'big_keeper/service/git_service'
 
 module BigKeeper
   # Operator for got

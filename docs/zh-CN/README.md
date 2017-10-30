@@ -2,9 +2,7 @@
 
 ---
 
-# big-keeper
-
-*我好像做了一个假的模块化项目*
+# big-keeper - 我好像做了一个假的模块化项目
 
 big-keeper 是一个**iOS模块化项目过渡阶段**的效率提升工具，使用这个工具后，开发者**在主项目内**就可以完成**包括其他业务模块在内**所有代码的编写和管理。
 
@@ -44,10 +42,28 @@ big-keeper 的出现就是为了解决这些问题。
 
 ## 使用方法
 
-- [Bigkeeper 文件配置](BIGKEEPER_FILE.md);
+- [Bigkeeper 文件配置](BIGKEEPER_FILE.md)
 - `big-keeper` 工具使用：
 
   直接在命令行执行 `big-keeper` 可以查看其提供的所有功能：
+
+  ```
+  NAME
+    big-keeper - Efficiency improvement for iOS modular development, iOSer using this tool can make modular development easier.
+
+  SYNOPSIS
+    big-keeper [global options] command [command options] [arguments...]
+
+  GLOBAL OPTIONS
+    --help         - Show this message
+    -p, --path=arg - (default: ./)
+    -v, --ver=arg  - (default: Version in Bigkeeper file)
+
+  COMMANDS
+    feature - Feature operations
+    help    - Shows a list of commands or help for one command
+    release - Release operations
+  ```
 
   - [feature](FEATURE.md)：功能开发使用；
   - [release](RELEASE.md)：版本发布使用。

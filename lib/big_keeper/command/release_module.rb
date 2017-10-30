@@ -1,8 +1,8 @@
 #!/usr/bin/ruby
-require './big_keeper/util/podfile_operator'
-require './big_keeper/util/gitflow_operator'
-require './big_keeper/model/podfile_type'
-require './big_keeper/util/info_plist_operator'
+require 'big_keeper/util/podfile_operator'
+require 'big_keeper/util/gitflow_operator'
+require 'big_keeper/model/podfile_type'
+require 'big_keeper/util/info_plist_operator'
 
 # 替换当前 podfile 中某个 module 为 pod #{module_name}, :git => '#{source.base}', :tag => '#{source.addition}'
 

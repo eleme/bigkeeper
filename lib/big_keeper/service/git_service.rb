@@ -1,6 +1,6 @@
-require './big_keeper/util/git_operator'
-require './big_keeper/model/gitflow_type'
-require './big_keeper/model/operate_type'
+require 'big_keeper/util/git_operator'
+require 'big_keeper/model/gitflow_type'
+require 'big_keeper/model/operate_type'
 
 module BigKeeper
   # Operator for got

@@ -1,22 +1,22 @@
 #!/usr/bin/env ruby
 
-require './big_keeper/version'
+require 'big_keeper/version'
 
-require './big_keeper/util/bigkeeper_parser'
-require './big_keeper/util/git_operator'
+require 'big_keeper/util/bigkeeper_parser'
+require 'big_keeper/util/git_operator'
 
-require './big_keeper/model/gitflow_type'
+require 'big_keeper/model/gitflow_type'
 
-require './big_keeper/command/feature_start'
-require './big_keeper/command/feature_finish'
-require './big_keeper/command/feature_switch'
-require './big_keeper/command/feature_update'
-require './big_keeper/command/feature_pull'
-require './big_keeper/command/feature_push'
-require './big_keeper/command/release_home'
-require './big_keeper/command/release_module'
+require 'big_keeper/command/feature_start'
+require 'big_keeper/command/feature_finish'
+require 'big_keeper/command/feature_switch'
+require 'big_keeper/command/feature_update'
+require 'big_keeper/command/feature_pull'
+require 'big_keeper/command/feature_push'
+require 'big_keeper/command/release_home'
+require 'big_keeper/command/release_module'
 
-require './big_keeper/service/git_service'
+require 'big_keeper/service/git_service'
 
 require 'gli'
 
