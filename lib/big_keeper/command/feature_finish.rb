@@ -1,9 +1,9 @@
 #!/usr/bin/ruby
 
-require './big_keeper/util/podfile_operator'
-require './big_keeper/util/bigkeeper_parser'
+require 'big_keeper/util/podfile_operator'
+require 'big_keeper/util/bigkeeper_parser'
 
-require './big_keeper/model/podfile_type'
+require 'big_keeper/model/podfile_type'
 
 module BigKeeper
 

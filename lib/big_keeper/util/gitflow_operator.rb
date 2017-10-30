@@ -1,4 +1,4 @@
-require './big_keeper/model/gitflow_type'
+require 'big_keeper/model/gitflow_type'
 
 module BigKeeper
   # Operator for gitflow
