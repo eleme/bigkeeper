@@ -61,6 +61,8 @@ module BigKeeper
       GitflowOperator.new.start(module_full_path, name, type)
       GitOperator.new.push(module_full_path, branch_name)
 
+      BigStash::StashOperator.new(module_full_path).apply_stash(branch_name)
+
       module_path = BigkeeperParser.module_path(user, module_name)
       PodfileOperator.new.find_and_replace("#{path}/Podfile",
                                            %('#{module_name}'),
@@ -71,6 +73,8 @@ module BigKeeper
     def del(path, user, module_name, name, type)
       branch_name = "#{GitflowType.name(type)}/#{name}"
       module_full_path = BigkeeperParser.module_full_path(path, user, module_name)
+
+      BigStash::StashOperator.new(module_full_path).stash(branch_name)
 
       GitOperator.new.git_checkout(module_full_path, 'develop')
       GitOperator.new.del(module_full_path, branch_name)
