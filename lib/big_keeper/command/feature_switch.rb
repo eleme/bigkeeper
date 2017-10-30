@@ -1,8 +1,8 @@
 #!/usr/bin/ruby
 
 module BigKeeper
-  module BigKeeper
-    def self.feature_switch(path, version, user, name)
+  def self.feature_switch(path, version, user, name)
+    begin
       # Parse Bigkeeper file
       BigkeeperParser.parse("#{path}/Bigkeeper")
 

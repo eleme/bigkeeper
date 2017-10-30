@@ -33,6 +33,7 @@ module BigKeeper
       else
         p "Nothing to push for home."
       end
+    ensure
     end
   end
 end
