@@ -11,16 +11,15 @@ require 'big_keeper/service/module_service'
 
 
 module BigKeeper
-  def self.feature_update(path, version, user, name, modules)
+  def self.feature_update(path, user, modules)
     begin
       # Parse Bigkeeper file
       BigkeeperParser.parse("#{path}/Bigkeeper")
 
-      version = BigkeeperParser.version if version == 'Version in Bigkeeper file'
-      feature_name = "#{version}_#{user}_#{name}"
-      branch_name = "#{GitflowType.name(GitflowType::FEATURE)}/#{feature_name}"
+      branch_name = GitOperator.new.current_branch(path)
+      raise "Not a feature branch, exit." unless branch_name.include? 'feature'
 
-      GitService.new.verify_branch(path, branch_name, OperateType::UPDATE)
+      feature_name = branch_name.gsub(/feature\//, '')
 
       current_modules = PodfileOperator.new.modules_with_type("#{path}/Podfile",
                                 BigkeeperParser.module_names, ModuleType::PATH)
@@ -36,6 +35,9 @@ module BigKeeper
 
       add_modules = modules - current_modules
       del_modules = current_modules - modules
+
+      p add_modules
+      p del_modules
 
       if add_modules.empty? and del_modules.empty?
         p "There is nothing changed with modules #{modules}."

@@ -72,8 +72,8 @@ module BigKeeper
       branch_name = "#{GitflowType.name(type)}/#{name}"
       module_full_path = BigkeeperParser.module_full_path(path, user, module_name)
 
+      GitOperator.new.git_checkout(module_full_path, 'develop')
       GitOperator.new.del(module_full_path, branch_name)
-      GitOperator.new.push(module_full_path, branch_name)
 
       module_git = BigkeeperParser.module_git(module_name)
 

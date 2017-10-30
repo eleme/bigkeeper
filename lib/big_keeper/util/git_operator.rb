@@ -74,6 +74,7 @@ module BigKeeper
     def del(path, branch_name)
       Dir.chdir(path) do
         p `git branch -D #{branch_name}`
+        p `git push origin --delete #{branch_name}`
       end
     end
 

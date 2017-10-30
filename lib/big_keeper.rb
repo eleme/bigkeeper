@@ -59,10 +59,8 @@ module BigKeeper
     c.desc 'Update moduels for the feature with name'
     c.command :update do |update|
       update.action do |global_options, options, args|
-        help_now!('feature name is required') if args.length < 1
-        name = args[0]
-        modules = args[(1...args.length)] if args.length > 1
-        feature_update(path, version, user, name, modules)
+        modules = args[(0...args.length)] if args.length > 0
+        feature_update(path, user, modules)
       end
     end
 

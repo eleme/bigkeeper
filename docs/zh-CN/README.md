@@ -49,21 +49,28 @@ big-keeper 的出现就是为了解决这些问题。
 
   ```
   NAME
-    big-keeper - Efficiency improvement for iOS modular development, iOSer using this tool can make modular development easier.
+      big-keeper - Efficiency improvement for iOS modular development, iOSer using this tool can make modular development easier.
 
   SYNOPSIS
-    big-keeper [global options] command [command options] [arguments...]
+      big-keeper [global options] command [command options] [arguments...]
 
   GLOBAL OPTIONS
-    --help         - Show this message
-    -p, --path=arg - (default: ./)
-    -v, --ver=arg  - (default: Version in Bigkeeper file)
+      --help         - Show this message
+      -p, --path=arg - (default: ./)
+      -v, --ver=arg  - (default: Version in Bigkeeper file)
 
   COMMANDS
-    feature - Feature operations
-    help    - Shows a list of commands or help for one command
-    release - Release operations
+      feature - Feature operations
+      help    - Shows a list of commands or help for one command
+      release - Release operations
   ```
+
+  全局参数如下：
+
+  - -p, --path：主项目所在的目录，默认是执行 big-keeper 命令的当前目录；
+  - -v, --ver：版本号，如果没有指定的话，会以主项目 [Bigkeeper 文件](BIGKEEPER_FILE.md)中指定的版本为准。
+
+  功能列表如下：
 
   - [feature](FEATURE.md)：功能开发使用；
   - [release](RELEASE.md)：版本发布使用。
