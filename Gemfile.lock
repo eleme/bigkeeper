@@ -94,10 +94,10 @@ PLATFORMS
 
 DEPENDENCIES
   big_keeper!
-  big_stash
+  big_stash (~> 0.1)
   bundler (~> 1.15)
   cocoapods
-  gli
+  gli (~> 2.16)
   plist
   rake (~> 10.0)
   rubocop (~> 0.50.0)
