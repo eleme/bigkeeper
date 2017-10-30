@@ -7,3 +7,6 @@ gemspec
 
 gem 'rubocop', '~> 0.50.0', require: false
 gem 'plist'
+gem 'gli'
+gem 'cocoapods'
+gem 'big_stash'
