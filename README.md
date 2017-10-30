@@ -1,6 +1,8 @@
-[中文文档](docs/zh-CN/README.html)
+[中文文档请戳我](docs/zh-CN/README.md)
 
-# BigKeeper
+---
+
+# big-keeper
 
 big-keeper is an efficiency improvement for iOS modular development, iOSer using this tool can make modular development easier.
 

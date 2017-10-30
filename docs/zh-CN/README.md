@@ -1,4 +1,6 @@
-[English Documentation](../../README.html)
+[Press me to English documentation](../../README.md)
+
+---
 
 # big-keeper
 
@@ -8,7 +10,7 @@ big-keeper 是一个**iOS模块化项目过渡阶段**的效率提升工具，�
 
 > 注：目前只支持依赖 CocoaPods 管理的模块化工程。
 
-我们仿照 CocoaPods 的做法，开发者只需要在项目中加入一个 Bigkeeper 文件，然后利用我们提供的 `big-keeper` 工具，即可更便捷的实现**代码分支**和**业务模块**的管理；另外，通过我们提供的工具，也能帮助开发者养成更规范的日常开发习惯，减轻项目管理者的负担。
+我们仿照 CocoaPods 的做法，开发团队只需要在主项目中加入一个 Bigkeeper 文件，然后利用我们提供的 `big-keeper` 工具，即可更便捷的实现**代码分支**和**业务模块**的管理；另外，通过我们提供的工具，也能帮助开发者养成更规范的日常开发习惯，减轻项目管理者的负担。
 
 ## 应用场景
 
@@ -26,7 +28,7 @@ big-keeper 的出现就是为了解决这些问题。
 ## 安装
 
 - 当作 Ruby Gem 使用：
-  在项目的 Gemfile 中加入下面这行
+  在项目的 Gemfile 中加入下面这行：
 
   ```ruby
   gem 'big_keeper'
@@ -42,7 +44,10 @@ big-keeper 的出现就是为了解决这些问题。
 
 ## 使用方法
 
-直接执行 `big-keeper` 可以看到 big-keeper 提供的所有功能：
+- [Bigkeeper 文件配置](BIGKEEPER_FILE.md);
+- `big-keeper` 工具使用：
 
-- [feature](FEATURE.html)
-- [release](RELEASE.html)
+  直接在命令行执行 `big-keeper` 可以查看其提供的所有功能：
+
+  - [feature](FEATURE.md)：功能开发使用；
+  - [release](RELEASE.md)：版本发布使用。
