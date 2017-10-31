@@ -97,7 +97,16 @@ module BigKeeper
         end
       end
     end
+  end
 
+  desc 'Pod operations'
+  command :pod do |c|
+    c.desc 'Lock Podfile according to Podfile.lock'
+    c.command :lock do |lock|
+      lock.action do |global_options, options, args|
+        podfile_lock(path)
+      end
+    end
   end
 
   exit run(ARGV)
