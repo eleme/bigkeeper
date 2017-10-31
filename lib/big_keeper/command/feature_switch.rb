@@ -1,24 +1,43 @@
 #!/usr/bin/ruby
 
-require '../util/param_parser'
-require '../util/podfile_operator'
-require '../model/podfile_type'
-
 module BigKeeper
-  params = ParamParser.new.switch_to_debug_parser
+  def self.feature_switch(path, version, user, name)
+    begin
+      # Parse Bigkeeper file
+      BigkeeperParser.parse("#{path}/Bigkeeper")
 
-  main_path = File.expand_path(params[:main_path])
-  module_path = File.expand_path(params[:module_path])
-  module_name = params[:module_name]
+      version = BigkeeperParser.version if version == 'Version in Bigkeeper file'
+      feature_name = "#{version}_#{user}_#{name}"
+      branch_name = "#{GitflowType.name(GitflowType::FEATURE)}/#{feature_name}"
 
-  matched = PodfileOperator.new.has(%Q(#{main_path}/Podfile), %Q('#{module_name}'))
-  raise module_name + ' not found' unless matched
+      GitService.new.verify_branch(path, branch_name, OperateType::SWITCH)
 
-  PodfileOperator.new.find_and_replace(%Q(#{main_path}/Podfile),
-                                       %Q('#{module_name}'),
-                                       ModuleType::PATH,
-                                       module_path)
+      stath_modules = PodfileOperator.new.modules_with_type("#{path}/Podfile",
+                                BigkeeperParser.module_names, ModuleType::PATH)
 
-  p `pod install --project-directory=#{main_path}`
-  p `open #{main_path}/*.xcworkspace`
+      # Stash current branch
+      StashService.new.stash(path, branch_name, user, stath_modules)
+
+      # Switch to new feature
+      GitOperator.new.git_checkout(path, branch_name)
+      GitOperator.new.pull(path, branch_name)
+
+      modules = PodfileOperator.new.modules_with_type("#{path}/Podfile",
+                                BigkeeperParser.module_names, ModuleType::PATH)
+
+      modules.each do |module_name|
+        ModuleService.new.switch(path, user, module_name, branch_name)
+      end
+
+      # Apply stash
+      StashService.new.apply_stash(path, branch_name, user, modules)
+
+      # pod install
+      p `pod install --project-directory=#{path}`
+
+      # Open home workspace
+      p `open #{path}/*.xcworkspace`
+    ensure
+    end
+  end
 end

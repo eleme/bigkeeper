@@ -1,4 +1,8 @@
-# BigKeeper
+[中文文档请戳我](docs/zh-CN/README.md)
+
+---
+
+# big-keeper - All in home project
 
 big-keeper is an efficiency improvement for iOS modular development, iOSer using this tool can make modular development easier.
 
@@ -20,7 +24,7 @@ Or install it yourself as:
 
 ## Usage
 
-Run `big-keeper` to learn how to use big-stash.
+Run `big-keeper` to learn how to use big-keeper.
 
 ## Development
 

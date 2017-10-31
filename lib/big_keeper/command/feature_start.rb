@@ -1,16 +1,32 @@
 #!/usr/bin/ruby
 
-require './big_keeper/util/podfile_operator'
-require './big_keeper/util/gitflow_operator'
-require './big_keeper/service/stash_service'
-require './big_keeper/util/bigkeeper_parser'
-require './big_keeper/model/podfile_type'
+require 'big_keeper/util/podfile_operator'
+require 'big_keeper/util/gitflow_operator'
+require 'big_keeper/util/bigkeeper_parser'
+
+require 'big_keeper/model/podfile_type'
+
+require 'big_keeper/service/stash_service'
+require 'big_keeper/service/module_service'
+
 
 module BigKeeper
-  def self.feature_start(path, user, name, modules)
+  def self.feature_start(path, version, user, name, modules)
     begin
       # Parse Bigkeeper file
       BigkeeperParser.parse("#{path}/Bigkeeper")
+
+      version = BigkeeperParser.version if version == 'Version in Bigkeeper file'
+      feature_name = "#{version}_#{user}_#{name}"
+      branch_name = "#{GitflowType.name(GitflowType::FEATURE)}/#{feature_name}"
+
+      GitService.new.verify_branch(path, branch_name, OperateType::START)
+
+      stash_modules = PodfileOperator.new.modules_with_type("#{path}/Podfile",
+                                BigkeeperParser.module_names, ModuleType::PATH)
+
+      # Stash current branch
+      StashService.new.stash(path, branch_name, user, stash_modules)
 
       # Handle modules
       if modules
@@ -21,42 +37,20 @@ module BigKeeper
         modules = BigkeeperParser.module_names
       end
 
-      feature_name = "#{BigkeeperParser.version}_#{user}_#{name}"
-
-      # Stash current branch
-      if GitOperator.new.current_branch(path) != "feature/#{feature_name}"
-        StashService.new.stash(path, user, modules)
-      end
-
-      # Start modules feature
-      modules.each do |module_name|
-        module_path = BigkeeperParser.module_full_path(path, user, module_name)
-        GitflowOperator.new.start_feature(module_path, feature_name)
-      end
-
       # Start home feature
-      GitflowOperator.new.start_feature(path, feature_name)
+      GitflowOperator.new.start(path, feature_name, GitflowType::FEATURE)
 
-      # Modify podfile as path
+      # Modify podfile as path and Start modules feature
       modules.each do |module_name|
-        module_path = BigkeeperParser.module_path(user, module_name)
-        PodfileOperator.new.find_and_replace(%Q(#{path}/Podfile),
-                                             %Q('#{module_name}'),
-                                             ModuleType::PATH,
-                                             module_path)
+        ModuleService.new.add(path, user, module_name, feature_name, GitflowType::FEATURE)
       end
 
       # pod install
       p `pod install --project-directory=#{path}`
 
-      # Push to remote
-      GitflowOperator.new.commit(path, "init feature #{feature_name}")
-      GitflowOperator.new.publish_feature(path, feature_name)
-
-      # Cache new feature
-      CacheOperator.new.cache_modules_for_branch(BigkeeperParser.home_name,
-                                                 GitOperator.new.current_branch(path),
-                                                 modules)
+      # Push home changes to remote
+      GitOperator.new.commit(path, "init #{GitflowType.name(GitflowType::FEATURE)} #{feature_name}")
+      GitOperator.new.push(path, branch_name)
 
       # Open home workspace
       p `open #{path}/*.xcworkspace`
