@@ -10,49 +10,42 @@ require 'big_keeper/util/info_plist_operator'
 
 module BigKeeper
   def self.release_home_start(path, version, user)
-    puts user
-    main_path = File.expand_path(path + "/BigKeeper")
-    BigkeeperParser.parse(main_path)
+    BigkeeperParser.parse("#{path}/Bigkeeper")
     start_release(path, version, BigkeeperParser::module_names, GitInfo.new(BigkeeperParser::home_git, GitType::TAG, version), user)
   end
 
   def self.release_home_finish(path, version)
-    Dir.chdir(path) do
-      p `git add .`
-      p `git commit -m "release: V #{version}"`
-      p `git push origin release/#{version}`
-      GitflowOperator.new.finish_release(path, version)
-      GitOperator.new.tag(path, version)
-    end
+    GitOperator.new.commit(path, "release: V #{version}")
+    GitOperator.new.push(path, "release/#{version}")
+    GitflowOperator.new.finish_release(path, version)
+    GitOperator.new.tag(path, version)
   end
 
   private
   def self.start_release(project_path, version, modules, source, user)
-    Dir.chdir(project_path) do
-      # step 0 Stash current branch
-      StashService.new.stash(project_path, GitOperator.new.current_branch(project_path), user, modules)
+    # step 0 Stash current branch
+    StashService.new.stash(project_path, GitOperator.new.current_branch(project_path), user, modules)
 
-      # step 1 checkout release
-      if GitOperator.new.current_branch(project_path) != "release/#{version}"
-        if GitOperator.new.has_branch(project_path, "release/#{version}")
-          p `git checkout release/#{version}`
-        else
-          GitflowOperator.new.start(project_path, version, GitflowType::RELEASE)
-          p `git push --set-upstream origin release/#{version}`
-        end
+    # step 1 checkout release
+    if GitOperator.new.current_branch(project_path) != "release/#{version}"
+      if GitOperator.new.has_branch(project_path, "release/#{version}")
+        GitOperator.new.git_checkout(project_path, "release/#{version}")
+      else
+        GitflowOperator.new.start(project_path, version, GitflowType::RELEASE)
+        GitOperator.new.push(project_path, "release/#{version}")
       end
-
-      # step 2 replace_modules
-      PodfileOperator.new.replace_all_module_release(%Q(#{project_path}/Podfile),
-                                                      modules,
-                                                      version,
-                                                      source)
-
-      # step 3 change Info.plist value
-      InfoPlistOperator.new.change_version_build(project_path, version)
-
-      p `pod install --project-directory=#{project_path}`
-      p `open #{project_path}/*.xcworkspace`
     end
+
+    # step 2 replace_modules
+    PodfileOperator.new.replace_all_module_release(%Q(#{project_path}/Podfile),
+                                                    modules,
+                                                    version,
+                                                    source)
+
+    # step 3 change Info.plist value
+    InfoPlistOperator.new.change_version_build(project_path, version)
+
+    p `pod install --project-directory=#{project_path}`
+    p `open #{project_path}/*.xcworkspace`
   end
 end
