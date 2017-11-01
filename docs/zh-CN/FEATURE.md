@@ -48,4 +48,30 @@ COMMANDS
 - push：提交并推送当前 feature 主项目和业务模块的本地变更到远程 git 仓库，输入参数为提交信息；
 - list：显示当前的 feature 列表。
 
-## start - 开始一个新的 feature
+## feature 的工作区
+
+![](../../resources/readme/big-keeper-readme.001.png)
+
+## feature start 流程
+
+![](../../resources/readme/big-keeper-readme.002.png)
+
+## feature finish 流程
+
+![](../../resources/readme/big-keeper-readme.003.png)
+
+## feature switch 流程
+
+![](../../resources/readme/big-keeper-readme.004.png)
+
+## feature update 流程
+
+![](../../resources/readme/big-keeper-readme.005.png)
+
+## feature pull 流程
+
+![](../../resources/readme/big-keeper-readme.006.png)
+
+## feature push 流程
+
+![](../../resources/readme/big-keeper-readme.007.png)

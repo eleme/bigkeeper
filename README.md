@@ -1,4 +1,4 @@
-[中文文档请戳我](docs/zh-CN/README.md)
+[中文](docs/zh-CN/README.md)
 
 ---
 
