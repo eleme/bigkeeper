@@ -1,4 +1,4 @@
-[Press me to English documentation](../../README.md)
+[English](../../README.md)
 
 ---
 
@@ -72,5 +72,5 @@ big-keeper 的出现就是为了解决这些问题。
 
   功能列表如下：
 
-  - [feature](FEATURE.md)：功能开发使用；
-  - [release](RELEASE.md)：版本发布使用。
+  - [feature](FEATURE.md)：功能开发流程；
+  - [release](RELEASE.md)：版本发布流程。
