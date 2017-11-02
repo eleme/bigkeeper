@@ -26,7 +26,7 @@ module BigKeeper
       BigkeeperParser.module_names.each do |module_name|
         module_git = BigkeeperParser.module_git(module_name)
         PodfileOperator.new.find_and_replace("#{path}/Podfile",
-                                             %Q('#{module_name}'),
+                                             module_name,
                                              ModuleType::GIT,
                                              GitInfo.new(module_git, GitType::BRANCH, 'develop'))
       end

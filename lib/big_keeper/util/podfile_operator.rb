@@ -55,21 +55,21 @@ module BigKeeper
     def generate_module_config(module_name, module_type, source)
       module_config = ''
       if ModuleType::PATH == module_type
-        module_config = %Q(  pod #{module_name}, :path => '#{source}')
+        module_config = %Q(    pod '#{module_name}', :path => '#{source}')
       elsif ModuleType::GIT == module_type
         # puts source.base
         # puts source.addition
         if GitType::BRANCH == source.type
-          module_config = %Q(  pod '#{module_name}', :git => '#{source.base}', :branch => '#{source.addition}')
+          module_config = %Q(    pod '#{module_name}', :git => '#{source.base}', :branch => '#{source.addition}')
         elsif GitType::TAG == source.type
-          module_config = %Q(  pod '#{module_name}', :git => '#{source.base}', :tag => '#{source.addition}')
+          module_config = %Q(    pod '#{module_name}', :git => '#{source.base}', :tag => '#{source.addition}')
         elsif GitType::COMMIT == source.type
-          module_config = %Q(  pod '#{module_name}', :git => '#{source.base}', :commit => '#{source.addition}')
+          module_config = %Q(    pod '#{module_name}', :git => '#{source.base}', :commit => '#{source.addition}')
         else
-          module_config = %Q(  pod '#{module_name}', :git => '#{source.base}')
+          module_config = %Q(    pod '#{module_name}', :git => '#{source.base}')
         end
       else
-        module_config = %Q(  pod #{module_name}, '#{source}')
+        module_config = %Q(    pod '#{module_name}', '#{source}')
       end
       module_config
     end
