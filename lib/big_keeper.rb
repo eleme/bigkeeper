@@ -15,6 +15,7 @@ require 'big_keeper/command/feature_pull'
 require 'big_keeper/command/feature_push'
 require 'big_keeper/command/release_home'
 require 'big_keeper/command/release_module'
+require 'big_keeper/command/podfile_lock'
 
 require 'big_keeper/service/git_service'
 
@@ -147,5 +148,27 @@ module BigKeeper
     end
   end
 
+  desc 'Lock Podfile operation'
+  command :podfile do |podfile|
+    podfile.flag %i[pod podfile]
+    podfile.desc 'Podfile'
+    path = ''
+    podfile.pre do |global_options, _command, options, args|
+      path = File.expand_path(global_options[:home])
+    end
+
+    podfile.command :detect do |detect|
+      detect.desc 'Detect podname should be locked.'
+      detect.action do |global_options,options,args|
+        podfile_detect(path)
+      end
+
+      detect.command :lock do |lock|
+        lock.action do |global_options, options, args|
+          podfile_lock(path)
+        end
+      end
+  end
+end
   exit run(ARGV)
 end
