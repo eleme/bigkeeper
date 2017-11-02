@@ -63,13 +63,7 @@ module BigKeeper
         GitOperator.new.clone(File.expand_path("#{module_full_path}/../"), module_git)
       end
 
-      GitOperator.new.git_checkout(module_full_path, 'master') if GitOperator.new.has_remote_branch(module_full_path, 'master')
-      GitOperator.new.git_checkout(module_full_path, 'develop') if GitOperator.new.has_remote_branch(module_full_path, 'develop')
-
-      GitOperator.new.pull(module_full_path, 'develop') if GitOperator.new.has_remote_branch(module_full_path, 'develop')
-
-      GitflowOperator.new.start(module_full_path, name, type)
-      GitOperator.new.push(module_full_path, branch_name)
+      GitService.new.start(module_full_path, name, type)
 
       BigStash::StashOperator.new(module_full_path).apply_stash(branch_name)
 

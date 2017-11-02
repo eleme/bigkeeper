@@ -2,6 +2,10 @@ PATH
   remote: .
   specs:
     big_keeper (0.2.0)
+      big_stash (~> 0.1)
+      cocoapods
+      gli (~> 2.16)
+      plist
 
 GEM
   remote: https://ruby.taobao.org/

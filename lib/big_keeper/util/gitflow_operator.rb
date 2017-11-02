@@ -4,26 +4,26 @@ module BigKeeper
   # Operator for gitflow
   class GitflowOperator
     def start(path, name, type)
-      init_git_flow(path)
       Dir.chdir(path) do
         gitflow_type_name = GitflowType.name(type)
         p `git flow #{gitflow_type_name} start #{name}`
       end
     end
 
-    def init_git_flow(path)
+    def verify_git_flow(path)
+      has_git_flow = false
       Dir.chdir(path) do
         clear_flag = 'Already initialized for gitflow'
         IO.popen('git flow init -d') do |io|
           io.each do |line|
-            if !line.include? clear_flag
-              GitOperator.new.push(module_full_path, 'master') if !GitOperator.new.has_remote_branch(module_full_path, 'master')
-              GitOperator.new.push(module_full_path, 'develop') if !GitOperator.new.has_remote_branch(module_full_path, 'develop')
+            if line.include? clear_flag
+              has_git_flow = true
               break
             end
           end
         end
       end
+      has_git_flow
     end
 
     def finish_release(path, release_name)
