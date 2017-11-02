@@ -9,9 +9,19 @@ module BigKeeper
 
     def has_remote_branch(path, branch_name)
       has_branch = false
-      IO.popen("cd #{path}; git branch -a") do |io|
+      IO.popen("cd #{path}; git branch -r") do |io|
         io.each do |line|
-          has_branch = true if line =~ /remotes\/origin\/#{branch_name}/
+          has_branch = true if line.include? branch_name
+        end
+      end
+      has_branch
+    end
+
+    def has_local_branch(path, branch_name)
+      has_branch = false
+      IO.popen("cd #{path}; git branch") do |io|
+        io.each do |line|
+          has_branch = true if line.include? branch_name
         end
       end
       has_branch
@@ -68,6 +78,16 @@ module BigKeeper
       Dir.chdir(path) do
         p `git pull origin #{branch_name}`
       end
+    end
+
+    def has_commits(path, branch_name)
+      has_commits = false
+      IO.popen("cd #{path}; git log --branches --not --remotes") do |io|
+        io.each do |line|
+          has_commits = true if line.include? branch_name
+        end
+      end
+      has_commits
     end
 
     def has_changes(path)
