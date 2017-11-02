@@ -16,9 +16,10 @@ module BigKeeper
         clear_flag = 'Already initialized for gitflow'
         IO.popen('git flow init -d') do |io|
           io.each do |line|
-            unless line.include? clear_flag
-              `git push origin master`
-              `git push origin develop`
+            if !line.include? clear_flag
+              GitOperator.new.push(module_full_path, 'master') if !GitOperator.new.has_remote_branch(module_full_path, 'master')
+              GitOperator.new.push(module_full_path, 'develop') if !GitOperator.new.has_remote_branch(module_full_path, 'develop')
+              break
             end
           end
         end

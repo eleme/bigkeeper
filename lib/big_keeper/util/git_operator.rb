@@ -7,6 +7,16 @@ module BigKeeper
       end
     end
 
+    def has_remote_branch(path, branch_name)
+      has_branch = false
+      IO.popen("cd #{path}; git branch -a") do |io|
+        io.each do |line|
+          has_branch = true if line =~ /remotes\/origin\/#{branch_name}/
+        end
+      end
+      has_branch
+    end
+
     def has_branch(path, branch_name)
       has_branch = false
       IO.popen("cd #{path}; git branch -a") do |io|

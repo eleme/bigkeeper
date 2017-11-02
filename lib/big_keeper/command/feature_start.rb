@@ -38,6 +38,11 @@ module BigKeeper
       end
 
       # Start home feature
+      GitOperator.new.git_checkout(path, 'master') if GitOperator.new.has_remote_branch(path, 'master')
+      GitOperator.new.git_checkout(path, 'develop') if GitOperator.new.has_remote_branch(path, 'develop')
+
+      GitOperator.new.pull(path, 'develop') if GitOperator.new.has_remote_branch(path, 'develop')
+
       GitflowOperator.new.start(path, feature_name, GitflowType::FEATURE)
 
       # Modify podfile as path and Start modules feature
@@ -53,7 +58,7 @@ module BigKeeper
       GitOperator.new.push(path, branch_name)
 
       # Open home workspace
-      p `open #{path}/*.xcworkspace`
+      `open #{path}/*.xcworkspace`
     ensure
     end
   end

@@ -45,7 +45,7 @@ module BigKeeper
       branch_name = GitOperator.new.current_branch(module_full_path)
 
       PodfileOperator.new.find_and_replace("#{path}/Podfile",
-                                           %Q('#{module_name}'),
+                                           module_name,
                                            ModuleType::GIT,
                                            GitInfo.new(module_git, GitType::BRANCH, branch_name))
 
@@ -58,6 +58,16 @@ module BigKeeper
       branch_name = "#{GitflowType.name(type)}/#{name}"
       module_full_path = BigkeeperParser.module_full_path(path, user, module_name)
 
+      if !File.exist? module_full_path
+        module_git = BigkeeperParser.module_git(module_name)
+        GitOperator.new.clone(File.expand_path("#{module_full_path}/../"), module_git)
+      end
+
+      GitOperator.new.git_checkout(module_full_path, 'master') if GitOperator.new.has_remote_branch(module_full_path, 'master')
+      GitOperator.new.git_checkout(module_full_path, 'develop') if GitOperator.new.has_remote_branch(module_full_path, 'develop')
+
+      GitOperator.new.pull(module_full_path, 'develop') if GitOperator.new.has_remote_branch(module_full_path, 'develop')
+
       GitflowOperator.new.start(module_full_path, name, type)
       GitOperator.new.push(module_full_path, branch_name)
 
@@ -65,7 +75,7 @@ module BigKeeper
 
       module_path = BigkeeperParser.module_path(user, module_name)
       PodfileOperator.new.find_and_replace("#{path}/Podfile",
-                                           %('#{module_name}'),
+                                           module_name,
                                            ModuleType::PATH,
                                            module_path)
     end
@@ -82,7 +92,7 @@ module BigKeeper
       module_git = BigkeeperParser.module_git(module_name)
 
       PodfileOperator.new.find_and_replace("#{path}/Podfile",
-                                           %Q('#{module_name}'),
+                                           module_name,
                                            ModuleType::GIT,
                                            GitInfo.new(module_git, GitType::BRANCH, 'develop'))
     end
