@@ -20,7 +20,7 @@ module BigKeeper
 
       # Switch to new feature
       GitOperator.new.git_checkout(path, branch_name)
-      GitOperator.new.pull(path, branch_name)
+      GitOperator.new.pull(path)
 
       modules = PodfileOperator.new.modules_with_type("#{path}/Podfile",
                                 BigkeeperParser.module_names, ModuleType::PATH)

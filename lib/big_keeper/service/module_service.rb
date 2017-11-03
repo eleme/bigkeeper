@@ -19,7 +19,7 @@ module BigKeeper
           GitOperator.new.git_checkout(module_full_path, branch_name)
         end
         p "Pull branch #{branch_name} for module #{module_name}..."
-        GitOperator.new.pull(module_full_path, branch_name)
+        GitOperator.new.pull(module_full_path)
       end
     end
 
@@ -34,7 +34,7 @@ module BigKeeper
         GitOperator.new.git_checkout(module_full_path, branch_name)
       else
         GitOperator.new.git_checkout(module_full_path, branch_name)
-        GitOperator.new.pull(module_full_path, branch_name)
+        GitOperator.new.pull(module_full_path)
       end
     end
 

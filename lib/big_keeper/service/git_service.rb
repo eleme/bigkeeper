@@ -12,7 +12,7 @@ module BigKeeper
             raise %Q('master' has unpushed commits, you should fix it)
           else
             GitOperator.new.git_checkout(path, 'master')
-            GitOperator.new.pull(path, 'master')
+            GitOperator.new.pull(path)
           end
         else
           GitOperator.new.git_checkout(path, 'master')
@@ -25,7 +25,7 @@ module BigKeeper
             raise %Q('develop' has unpushed commits, you should fix it)
           else
             GitOperator.new.git_checkout(path, 'develop')
-            GitOperator.new.pull(path, 'develop')
+            GitOperator.new.pull(path)
           end
         else
           GitOperator.new.git_checkout(path, 'develop')
@@ -40,7 +40,7 @@ module BigKeeper
       branch_name = "#{GitflowType.name(type)}/#{name}"
       if GitOperator.new.has_branch(path, branch_name)
         GitOperator.new.git_checkout(path, branch_name)
-        GitOperator.new.pull(path, branch_name)
+        GitOperator.new.pull(path)
       else
         GitflowOperator.new.start(path, name, type)
         GitOperator.new.push(path, branch_name)

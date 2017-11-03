@@ -39,7 +39,11 @@ module BigKeeper
 
     def git_checkout(path, branch_name)
       Dir.chdir(path) do
-        `git checkout #{branch_name}`
+        IO.popen("git checkout #{branch_name}") do |io|
+          io.each do |line|
+            raise "Checkout #{branch_name} failed." if line.include? 'error'
+          end
+        end
       end
     end
 
@@ -70,13 +74,13 @@ module BigKeeper
 
     def push(path, branch_name)
       Dir.chdir(path) do
-        p `git push origin #{branch_name}`
+        p `git push -u origin #{branch_name}`
       end
     end
 
-    def pull(path, branch_name)
+    def pull(path)
       Dir.chdir(path) do
-        p `git pull origin #{branch_name}`
+        p `git pull`
       end
     end
 
