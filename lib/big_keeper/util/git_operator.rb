@@ -78,9 +78,9 @@ module BigKeeper
       end
     end
 
-    def pull(path, branch_name)
+    def pull(path)
       Dir.chdir(path) do
-        p `git pull origin #{branch_name}`
+        p `git pull`
       end
     end
 

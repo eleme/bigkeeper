@@ -172,6 +172,13 @@ module BigKeeper
         end
       end
   end
+
+  desc 'Version'
+  command :version do |version|
+    version.action do |global_options, options, args|
+      p "big-keeper (#{VERSION})"
+    end
+  end
 end
   exit run(ARGV)
 end

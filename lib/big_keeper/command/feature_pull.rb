@@ -15,7 +15,7 @@ module BigKeeper
       end
 
       p "Pull branch #{branch_name} for home..."
-      GitOperator.new.pull(path, branch_name)
+      GitOperator.new.pull(path)
     ensure
     end
   end
