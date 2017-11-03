@@ -10,6 +10,16 @@ module BigKeeper
       end
     end
 
+    def verify_git_flow_command
+      has_git_flow_command = false
+      IO.popen('command -v git-flow') do |io|
+        io.each do |line|
+          has_git_flow_command = true
+        end
+      end
+      has_git_flow_command
+    end
+
     def verify_git_flow(path)
       has_git_flow = false
       Dir.chdir(path) do
