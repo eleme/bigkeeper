@@ -16,20 +16,18 @@ module BigKeeper
         module_branch_name = GitOperator.new.current_branch(module_full_path)
 
         if GitOperator.new.has_changes(module_full_path)
-          p "Start pushing #{module_name}..."
+          p "Push branch #{branch_name} for module #{module_name}..."
           GitOperator.new.commit(module_full_path, comment)
           GitOperator.new.push(module_full_path, module_branch_name)
-          p "Finish pushing #{module_name}..."
         else
           p "Nothing to push for #{module_name}."
         end
       end
 
       if GitOperator.new.has_changes(path)
-        p "Start pushing home..."
+        p "Push branch #{branch_name} for home..."
         GitOperator.new.commit(path, comment)
         GitOperator.new.push(path, branch_name)
-        p "Finish pushing home..."
       else
         p "Nothing to push for home."
       end
