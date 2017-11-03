@@ -150,13 +150,8 @@ module BigKeeper
 
   desc 'Lock Podfile operation'
   command :podfile do |podfile|
-    podfile.flag %i[pod podfile]
+    podfile.flag %i[f podfile]
     podfile.desc 'Podfile'
-    path = ''
-    podfile.pre do |global_options, _command, options, args|
-      path = File.expand_path(global_options[:home])
-    end
-
     podfile.command :detect do |detect|
       detect.desc 'Detect podname should be locked.'
       detect.action do |global_options,options,args|
