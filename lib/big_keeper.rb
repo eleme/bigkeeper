@@ -29,27 +29,26 @@ module BigKeeper
 
   flag %i[p path], default_value: './'
   flag %i[v ver], default_value: 'Version in Bigkeeper file'
+  flag %i[u user], default_value: GitOperator.new.user
 
   path = ''
   version = ''
+  user = GitOperator.new.user
 
   pre do |global_options, _command, options, args|
     path = File.expand_path(global_options[:path])
     version = global_options[:ver]
+    user = global_options[:user]
   end
 
   desc 'Feature operations'
   command :feature do |c|
 
-    c.flag %i[u user], default_value: GitOperator.new.user
-    user = GitOperator.new.user
-    c.pre do |global_options, _command, options, args|
-      user = global_options[:user]
-    end
-
     c.desc 'Start a new feature with name for given modules and main project'
     c.command :start do |start|
       start.action do |global_options, options, args|
+        user = user.gsub(/[^0-9A-Za-z]/, '').downcase
+        help_now!('user name is required') if user and user.empty?
         help_now!('feature name is required') if args.length < 1
         name = args[0]
         modules = args[(1...args.length)] if args.length > 1
@@ -60,6 +59,8 @@ module BigKeeper
     c.desc 'Update moduels for the feature with name'
     c.command :update do |update|
       update.action do |global_options, options, args|
+        user = user.gsub(/[^0-9A-Za-z]/, '').downcase
+        help_now!('user name is required') if user and user.empty?
         modules = args[(0...args.length)] if args.length > 0
         feature_update(path, user, modules)
       end
@@ -68,6 +69,8 @@ module BigKeeper
     c.desc 'Switch to the feature with name'
     c.command :switch do |switch|
       switch.action do |global_options, options, args|
+        user = user.gsub(/[^0-9A-Za-z]/, '').downcase
+        help_now!('user name is required') if user and user.empty?
         help_now!('feature name is required') if args.length < 1
         name = args[0]
         feature_switch(path, version, user, name)
@@ -77,6 +80,8 @@ module BigKeeper
     c.desc 'Pull remote changes for current feature'
     c.command :pull do |pull|
       pull.action do |global_options, options, args|
+        user = user.gsub(/[^0-9A-Za-z]/, '').downcase
+        help_now!('user name is required') if user and user.empty?
         feature_pull(path, user)
       end
     end
@@ -84,6 +89,8 @@ module BigKeeper
     c.desc 'Push local changes to remote for current feature'
     c.command :push do |push|
       push.action do |global_options, options, args|
+        user = user.gsub(/[^0-9A-Za-z]/, '').downcase
+        help_now!('user name is required') if user and user.empty?
         help_now!('comment message is required') if args.length < 1
         comment = args[0]
         feature_push(path, user, comment)
@@ -93,6 +100,8 @@ module BigKeeper
     c.desc 'Finish current feature'
     c.command :finish do |finish|
       finish.action do |global_options, options, args|
+        user = user.gsub(/[^0-9A-Za-z]/, '').downcase
+        help_now!('user name is required') if user and user.empty?
         feature_finish(path, user)
       end
     end
@@ -111,12 +120,6 @@ module BigKeeper
   desc 'Release operations'
   command :release do |c|
 
-    c.flag %i[u user], default_value: GitOperator.new.user
-    user = GitOperator.new.user
-    c.pre do |global_options, _command, options, args|
-      user = global_options[:user]
-    end
-
     c.desc 'Release home project operations'
     c.command :home do |home|
       home.desc 'Start release home project'
@@ -126,6 +129,8 @@ module BigKeeper
           # version(optional): if null, will read verson in Bigkeeper file
           # e.g: ruby big_keeper.rb -p /Users/SFM/Downloads/BigKeeperMain-master
           # /Bigkeeper  -v 3.0.0 release home start
+          user = user.gsub(/[^0-9A-Za-z]/, '').downcase
+          help_now!('user name is required') if user and user.empty?
           release_home_start(path, version, user)
         end
       end
@@ -148,22 +153,28 @@ module BigKeeper
     end
   end
 
-  desc 'Lock Podfile operation'
+  desc 'Podfile operation'
   command :podfile do |podfile|
-    podfile.flag %i[f podfile]
+    podfile.flag %i[pod podfile]
     podfile.desc 'Podfile'
+    path = ''
+    podfile.pre do |global_options, _command, options, args|
+      path = File.expand_path(global_options[:home])
+    end
+
+    podfile.desc 'Detect podname should be locked.'
     podfile.command :detect do |detect|
-      detect.desc 'Detect podname should be locked.'
       detect.action do |global_options,options,args|
         podfile_detect(path)
       end
+    end
 
-      detect.command :lock do |lock|
-        lock.action do |global_options, options, args|
-          podfile_lock(path)
-        end
+    podfile.desc 'Lock podname should be locked.'
+    podfile.command :lock do |lock|
+      lock.action do |global_options, options, args|
+        podfile_lock(path)
       end
+    end
   end
-end
   exit run(ARGV)
 end
