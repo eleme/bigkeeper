@@ -19,11 +19,19 @@ module BigKeeper
   def self.release_home_finish(path, version)
     Dir.chdir(path) do
       if GitOperator.new.has_branch(project_path, "release/#{version}")
-        commit(path, message)
-        GitOperator.new.commit(path, "release: V #{version}")
-        GitOperator.new.push(path, "release/#{version}")
-        GitflowOperator.new.finish_release(path, version)
-        GitOperator.new.tag(path, version)
+        if GitOperator.new.current_branch(project_path) != "release/#{version}"
+          GitOperator.new.commit(path, "release: V #{version}")
+          GitOperator.new.push(path, "release/#{version}")
+          GitflowOperator.new.finish_release(path, version)
+          if GitOperator.new.current_branch(project_path) == "master"
+            GitOperator.new.tag(path, version)
+          else
+            GitOperator.new.git_checkout(project_path, "master")
+            GitOperator.new.tag(path, version)
+          end
+        else
+          raise "Not in release branch, please check your branches."
+        end
       else
         raise "Not has release branch, use release start first."
       end
