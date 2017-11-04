@@ -145,7 +145,7 @@ module BigKeeper
         finish.action do |global_options, options, args|
           help_now!('module name is required') if args.length != 1
           module_name = args[0]
-          start_module_release(path, module_name)
+          start_module_release(path, version, user, module_name)
         end
       end
     end
