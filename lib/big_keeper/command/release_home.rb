@@ -4,15 +4,9 @@ require 'big_keeper/util/gitflow_operator'
 require 'big_keeper/model/podfile_type'
 require 'big_keeper/util/info_plist_operator'
 
-# 1.切换主工程的分支到 release分支
-# 2.替换当前 podfile 中每个 module 为 pod #{module_name}, :git => '#{source.base}', :tag => '#{source.addition}'
-# 3.替换 info.plist 中的 build version
-
 module BigKeeper
   def self.release_home_start(path, version, user)
-    puts user
-    main_path = File.expand_path(path + "/BigKeeper")
-    BigkeeperParser.parse(main_path)
+    BigkeeperParser.parse("#{path}/Bigkeeper")
     start_release(path, version, BigkeeperParser::module_names, GitInfo.new(BigkeeperParser::home_git, GitType::TAG, version), user)
   end
 
