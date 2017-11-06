@@ -7,6 +7,26 @@ module BigKeeper
       end
     end
 
+    def has_remote_branch(path, branch_name)
+      has_branch = false
+      IO.popen("cd #{path}; git branch -r") do |io|
+        io.each do |line|
+          has_branch = true if line.include? branch_name
+        end
+      end
+      has_branch
+    end
+
+    def has_local_branch(path, branch_name)
+      has_branch = false
+      IO.popen("cd #{path}; git branch") do |io|
+        io.each do |line|
+          has_branch = true if line.include? branch_name
+        end
+      end
+      has_branch
+    end
+
     def has_branch(path, branch_name)
       has_branch = false
       IO.popen("cd #{path}; git branch -a") do |io|
@@ -19,7 +39,11 @@ module BigKeeper
 
     def git_checkout(path, branch_name)
       Dir.chdir(path) do
-        `git checkout #{branch_name}`
+        IO.popen("git checkout #{branch_name}") do |io|
+          io.each do |line|
+            raise "Checkout #{branch_name} failed." if line.include? 'error'
+          end
+        end
       end
     end
 
@@ -50,14 +74,24 @@ module BigKeeper
 
     def push(path, branch_name)
       Dir.chdir(path) do
-        p `git push origin #{branch_name}`
+        p `git push -u origin #{branch_name}`
       end
     end
 
-    def pull(path, branch_name)
+    def pull(path)
       Dir.chdir(path) do
-        p `git pull origin #{branch_name}`
+        p `git pull`
       end
+    end
+
+    def has_commits(path, branch_name)
+      has_commits = false
+      IO.popen("cd #{path}; git log --branches --not --remotes") do |io|
+        io.each do |line|
+          has_commits = true if line.include? branch_name
+        end
+      end
+      has_commits
     end
 
     def has_changes(path)

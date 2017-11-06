@@ -5,6 +5,48 @@ require 'big_keeper/model/operate_type'
 module BigKeeper
   # Operator for got
   class GitService
+    def start(path, name, type)
+      if GitOperator.new.has_remote_branch(path, 'master')
+        if GitOperator.new.has_local_branch(path, 'master')
+          if GitOperator.new.has_commits(path, 'master')
+            raise %Q('master' has unpushed commits, you should fix it)
+          else
+            GitOperator.new.git_checkout(path, 'master')
+            GitOperator.new.pull(path)
+          end
+        else
+          GitOperator.new.git_checkout(path, 'master')
+        end
+      end
+
+      if GitOperator.new.has_remote_branch(path, 'develop')
+        if GitOperator.new.has_local_branch(path, 'develop')
+          if GitOperator.new.has_commits(path, 'develop')
+            raise %Q('develop' has unpushed commits, you should fix it)
+          else
+            GitOperator.new.git_checkout(path, 'develop')
+            GitOperator.new.pull(path)
+          end
+        else
+          GitOperator.new.git_checkout(path, 'develop')
+        end
+      end
+
+      if !GitflowOperator.new.verify_git_flow(path)
+        GitOperator.new.push(path, 'develop') if !GitOperator.new.has_remote_branch(path, 'develop')
+        GitOperator.new.push(path, 'master') if !GitOperator.new.has_remote_branch(path, 'master')
+      end
+
+      branch_name = "#{GitflowType.name(type)}/#{name}"
+      if GitOperator.new.has_branch(path, branch_name)
+        GitOperator.new.git_checkout(path, branch_name)
+        GitOperator.new.pull(path)
+      else
+        GitflowOperator.new.start(path, name, type)
+        GitOperator.new.push(path, branch_name)
+      end
+    end
+
     def verify_branch(path, branch_name, type)
       GitOperator.new.git_fetch(path)
 

@@ -52,7 +52,7 @@ module BigKeeper
         p `pod install --project-directory=#{path}`
 
         # Open home workspace
-        p `open #{path}/*.xcworkspace`
+        `open #{path}/*.xcworkspace`
       end
     ensure
     end

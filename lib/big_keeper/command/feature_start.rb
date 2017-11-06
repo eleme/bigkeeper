@@ -38,7 +38,7 @@ module BigKeeper
       end
 
       # Start home feature
-      GitflowOperator.new.start(path, feature_name, GitflowType::FEATURE)
+      GitService.new.start(path, feature_name, GitflowType::FEATURE)
 
       # Modify podfile as path and Start modules feature
       modules.each do |module_name|
@@ -53,7 +53,7 @@ module BigKeeper
       GitOperator.new.push(path, branch_name)
 
       # Open home workspace
-      p `open #{path}/*.xcworkspace`
+      `open #{path}/*.xcworkspace`
     ensure
     end
   end

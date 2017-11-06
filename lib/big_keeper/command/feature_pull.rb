@@ -14,9 +14,8 @@ module BigKeeper
         ModuleService.new.pull(path, user, module_name, branch_name)
       end
 
-      p 'Start pulling home...'
-      GitOperator.new.pull(path, branch_name)
-      p 'Finish pulling home...'
+      p "Pull branch #{branch_name} for home..."
+      GitOperator.new.pull(path)
     ensure
     end
   end
