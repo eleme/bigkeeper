@@ -46,13 +46,12 @@ class PodfileDetector
 
       temp_sentence = sentence.strip
       pod_name = get_lock_podname(temp_sentence)
-
+      p pod_name
       if deal_list.include?(pod_name)
         current_version = $result[pod_name]
         temp_version = get_lock_version(temp_sentence)
         if temp_version != nil
           if current_version != nil
-            # p "cur_version #{current_version} temp_version #{temp_version}"
             $result[pod_name] = chose_version(current_version,temp_version)
           else
             $result[pod_name] = temp_version
@@ -60,7 +59,7 @@ class PodfileDetector
         end
       end
     end
-      return $result
+    return $result
   end
 
   def self.get_pod_model(sentence)
@@ -82,20 +81,19 @@ class PodfileDetector
 
 
   def get_lock_podname(sentence) #获得pod名称
-    # p sentence.delete('- :~>=')
-    match_result = /(\d+.\d+.\d+)|(\d+.\d+)/.match(sentence.delete('- :~>='))
+    p sentence.delete('- :~>=')
+    match_result = /(\d+.){1,2}\d+/.match(sentence.delete('- :~>='))
     pod_name = match_result.pre_match unless match_result == nil
     return pod_name.delete('()') unless pod_name == nil
   end
 
   def get_lock_version(sentence)#获得pod版本号
-     sentence.scan(/\d+.\d+.\d+/) do |version|
-      return version
-     end
-     return nil
+    match_result = /(\d+.){1,2}\d+/.match(sentence)
+    return match_result[0] unless match_result == nil
   end
 
   def chose_version(cur_version,temp_version)
+    # p "cur:#{cur_version},temp:#{temp_version}"
     cur_list = cur_version.split('.')
     temp_list = temp_version.split('.')
     temp_list << 0.to_s if temp_list.size == 2

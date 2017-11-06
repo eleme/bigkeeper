@@ -32,12 +32,9 @@ module BigKeeper
       detector = PodfileDetector.new(path,modular_list)
       # Get unlocked third party pods list
       unlock_pod_list = detector.get_unlock_pod_list
-      p unlock_pod_list
       # Get Version
       dictionary = detector.deal_lock_file(path,unlock_pod_list)
-
       p dictionary
-
       PodfileOperator.new.find_and_lock("#{path}/Podfile",dictionary)
 
   end

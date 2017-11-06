@@ -166,7 +166,7 @@ module BigKeeper
         podfile_detect(path)
       end
 
-      detect.command :lock do |lock|
+      podfile.command :lock do |lock|
         lock.action do |global_options, options, args|
           podfile_lock(path)
         end
