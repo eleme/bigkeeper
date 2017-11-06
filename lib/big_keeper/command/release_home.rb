@@ -1,8 +1,8 @@
 #!/usr/bin/ruby
-require './big_keeper/util/podfile_operator'
-require './big_keeper/util/gitflow_operator'
-require './big_keeper/model/podfile_type'
-require './big_keeper/util/info_plist_operator'
+require 'big_keeper/util/podfile_operator'
+require 'big_keeper/util/gitflow_operator'
+require 'big_keeper/model/podfile_type'
+require 'big_keeper/util/info_plist_operator'
 
 # 1.切换主工程的分支到 release分支
 # 2.替换当前 podfile 中每个 module 为 pod #{module_name}, :git => '#{source.base}', :tag => '#{source.addition}'

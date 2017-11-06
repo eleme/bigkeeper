@@ -124,10 +124,6 @@ module BigKeeper
       home.desc 'Start release home project'
       home.command :start do |start|
         start.action do |global_options, options, args|
-          # path(optional): path of the Bigkeeper file in project
-          # version(optional): if null, will read verson in Bigkeeper file
-          # e.g: ruby big_keeper.rb -p /Users/SFM/Downloads/BigKeeperMain-master
-          # /Bigkeeper  -v 3.0.0 release home start
           help_now!('user name is required') if user and user.empty?
           release_home_start(path, version, user)
         end
@@ -139,14 +135,14 @@ module BigKeeper
           release_home_finish(path, version)
         end
       end
+    end
 
-      home.desc 'Start release module'
-      home.command :module do |finish|
-        finish.action do |global_options, options, args|
-          help_now!('module name is required') if args.length != 1
-          module_name = args[0]
-          start_module_release(path, version, user, module_name)
-        end
+    c.desc 'Start release module'
+    c.command :module do |finish|
+      finish.action do |global_options, options, args|
+        help_now!('module name is required') if args.length != 1
+        module_name = args[0]
+        start_module_release(path, version, user, module_name)
       end
     end
   end
