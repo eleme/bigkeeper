@@ -173,7 +173,6 @@ module BigKeeper
     version.action do |global_options, options, args|
       p "big-keeper (#{VERSION})"
     end
-  end
 end
   exit run(ARGV)
 end

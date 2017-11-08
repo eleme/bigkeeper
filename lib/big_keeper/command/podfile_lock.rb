@@ -4,6 +4,7 @@ require 'big_keeper/util/podfile_operator'
 require 'big_keeper/util/gitflow_operator'
 require 'big_keeper/util/bigkeeper_parser'
 require 'big_keeper/model/podfile_type'
+require 'big_keeper/util/log_util'
 
 module BigKeeper
 
@@ -18,8 +19,9 @@ module BigKeeper
       unlock_pod_list = detector.get_unlock_pod_list
       # Print out unlock pod list
       unlock_pod_list.each do |pod_name|
-        p " #{pod_name} should be locked."
+        BigKeeperLog.default("#{pod_name} should be locked.")
       end
+      BigKeeperLog.separator
 
   end
 
@@ -34,8 +36,15 @@ module BigKeeper
       unlock_pod_list = detector.get_unlock_pod_list
       # Get Version
       dictionary = detector.deal_lock_file(path,unlock_pod_list)
-      p dictionary
-      PodfileOperator.new.find_and_lock("#{path}/Podfile",dictionary)
+      if dictionary.empty?
+        BigKeeperLog.warning("There is nothing to be locked.")
+      else
+        PodfileOperator.new.find_and_lock("#{path}/Podfile",dictionary)
+        BigKeeperLog.highlight("The Podfile has been changed.")
+        BigKeeperLog.separator
+      end
+
+
 
   end
 

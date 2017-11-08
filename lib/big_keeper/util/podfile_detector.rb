@@ -1,5 +1,6 @@
 require 'big_keeper/util/bigkeeper_parser'
 require 'big_keeper/model/podfile_model'
+require 'big_keeper/util/log_util'
 
 module BigKeeper
 
@@ -16,9 +17,9 @@ class PodfileDetector
 
   def get_unlock_pod_list
     podfile_lines = File.readlines("#{@main_path}/Podfile")
-     p 'Analyzing Podfile...' unless podfile_lines.size.zero?
+    BigKeeperLog.highlight("Analyzing Podfile...") unless podfile_lines.size.zero?
       podfile_lines.collect do |sentence|
-      deal_podfile_line(sentence) unless sentence =~(/\'\d+.\d+.\d+'/)
+      deal_podfile_line(sentence) unless sentence =~(/(\d+.){1,2}\d+/)
       end
       return $unlock_pod_list
       # p $unlock_pod_list
@@ -38,7 +39,7 @@ class PodfileDetector
   def deal_lock_file(main_path,deal_list)
       $result = {}
       podfile_lock_lines = File.readlines("#{main_path}/Podfile.lock")
-      p 'Analyzing Podfile.lock...' unless podfile_lock_lines.size.zero?
+      BigKeeperLog.highlight("Analyzing Podfile.lock...") unless podfile_lock_lines.size.zero?
       podfile_lock_lines.select do |sentence|
       if sentence.include?('DEPENDENCIES')  #指定范围解析 Dependencies 之前
         break
@@ -46,7 +47,6 @@ class PodfileDetector
 
       temp_sentence = sentence.strip
       pod_name = get_lock_podname(temp_sentence)
-      p pod_name
       if deal_list.include?(pod_name)
         current_version = $result[pod_name]
         temp_version = get_lock_version(temp_sentence)
@@ -70,18 +70,14 @@ class PodfileDetector
   end
 
   def get_pod_name(sentence)
-    # match_data = /\'\w*\'/.match(sentence)
-    # pod_name = match_data.to_a[0].delete('\'')
     pod_model = deal_podfile_line(sentence)
     pod_name = pod_model.name if pod_model != nil && pod_model.configurations.nil
-    # puts pod_name
     @unlock_pod_list << pod_name unless @modular_list.include pod_name
   end
 
 
 
   def get_lock_podname(sentence) #获得pod名称
-    p sentence.delete('- :~>=')
     match_result = /(\d+.){1,2}\d+/.match(sentence.delete('- :~>='))
     pod_name = match_result.pre_match unless match_result == nil
     return pod_name.delete('()') unless pod_name == nil
@@ -109,6 +105,4 @@ class PodfileDetector
     return temp_version
   end
 end
-# p params
-# p main_path
 end
