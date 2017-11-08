@@ -4,6 +4,7 @@ PATH
     big_keeper (0.4.0)
       big_stash (~> 0.1)
       cocoapods
+      colorize
       gli (~> 2.16)
       plist
 
@@ -54,6 +55,7 @@ GEM
       netrc (= 0.7.8)
     cocoapods-try (1.1.0)
     colored2 (3.1.2)
+    colorize (0.8.1)
     escape (0.0.4)
     fourflusher (2.0.1)
     fuzzy_match (2.0.4)
@@ -101,6 +103,7 @@ DEPENDENCIES
   big_stash (~> 0.1)
   bundler (~> 1.15)
   cocoapods
+  colorize
   gli (~> 2.16)
   plist
   rake (~> 10.0)

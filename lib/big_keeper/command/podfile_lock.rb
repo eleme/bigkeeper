@@ -34,8 +34,13 @@ module BigKeeper
       unlock_pod_list = detector.get_unlock_pod_list
       # Get Version
       dictionary = detector.deal_lock_file(path,unlock_pod_list)
-      p dictionary
-      PodfileOperator.new.find_and_lock("#{path}/Podfile",dictionary)
+      if dictionary.empty?
+        puts "There is nothing to be locked.".colorize(:red)
+      else
+        PodfileOperator.new.find_and_lock("#{path}/Podfile",dictionary)
+      end
+
+
 
   end
 

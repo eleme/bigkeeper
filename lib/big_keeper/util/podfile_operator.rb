@@ -117,7 +117,6 @@ module BigKeeper
     end
 
     def find_and_lock(podfile,dictionary)
-      p "find_and_lock"
       temp_file = Tempfile.new('.Podfile.tmp')
       begin
         File.open(podfile, 'r') do |file|
