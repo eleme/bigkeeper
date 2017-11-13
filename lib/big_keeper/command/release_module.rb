@@ -21,8 +21,8 @@ module BigKeeper
   private
   def self.module_release(path, version, module_name, source, user)
     Dir.chdir(path) do
-      if GitOperator.new.has_changes("#{path}/Example")
-        StashService.new.stash("#{path}/Example", GitOperator.new.current_branch("#{path}/Example"), user, module_name.split())
+      if GitOperator.new.has_changes(path)
+        StashService.new.stash(path, GitOperator.new.current_branch(path), user, module_name.split())
       end
 
       #修改 podspec 文件
@@ -30,18 +30,16 @@ module BigKeeper
 
       p `pod lib lint --allow-warnings --verbose --use-libraries --sources=#{BigkeeperParser::source}`
 
-      Dir.chdir("#{path}/Example") do
-        GitOperator.new.commit(path, "update podspec")
-        GitOperator.new.push(path, GitOperator.new.current_branch(path))
-        if GitOperator.new.current_branch(path) != "master"
-          current_name = GitOperator.new.current_branch(path)
-          p `git checkout master`
-          p `git merge release/#{current_name}`
-          p `git push`
-        end
-        GitOperator.new.tag(path, version)
+      GitOperator.new.commit(path, "update podspec")
+      GitOperator.new.push(path, GitOperator.new.current_branch(path))
+      if GitOperator.new.current_branch(path) != "master"
+        current_name = GitOperator.new.current_branch(path)
+        p `git checkout master`
+        p `git merge release/#{current_name}`
+        p `git push`
       end
-
+      GitOperator.new.tag(path, version)
+      
       p `pod repo push #{module_name} #{module_name}.podspec --allow-warnings --sources=#{BigkeeperParser::source}`
     end
   end
