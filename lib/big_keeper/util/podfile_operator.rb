@@ -85,35 +85,12 @@ module BigKeeper
     end
 
     def replace_all_module_release(podfile, module_names, version, source)
-
       module_names.each do |module_name|
         PodfileOperator.new.find_and_replace(podfile,
                                              module_name,
                                              ModuleType::GIT,
                                              source)
       end
-
-
-
-      # temp_file = Tempfile.new('.Podfile.tmp')
-      # begin
-      #   File.open(podfile, 'r') do |file|
-      #     file.each_line do |line|
-      #       module_names.each do |module_name|
-      #         if line.include?module_name
-      #           temp_file.puts generate_module_config(module_name, ModuleType::GIT, source)
-      #         else
-      #           # temp_file.puts line
-      #         end
-      #       end
-      #     end
-      #   end
-      #   temp_file.close
-      #   FileUtils.mv(temp_file.path, podfile)
-      # ensure
-      #   temp_file.close
-      #   temp_file.unlink
-      # end
     end
 
     def find_and_lock(podfile,dictionary)
@@ -137,6 +114,32 @@ module BigKeeper
         temp_file.unlink
       end
     end
+
+    def podspec_change(podspec_file, version, module_name)
+      temp_file = Tempfile.new(".#{module_name}.podspec")
+      begin
+        File.open(podspec_file, 'r') do |file|
+          file.each_line do |line|
+            if line.include?("s.version")
+              temp_line = line
+              if temp_line.split("=")[0].delete(" ") == "s.version"
+                temp_file.puts "s.version = '#{version}'"
+              else
+                temp_file.puts line
+              end
+            else
+                temp_file.puts line
+            end
+          end
+        end
+        temp_file.close
+        FileUtils.mv(temp_file.path, podspec_file)
+      ensure
+        temp_file.close
+        temp_file.unlink
+      end
+    end
+
     private :generate_module_config,:generate_pod_config
   end
 end

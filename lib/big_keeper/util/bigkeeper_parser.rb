@@ -22,6 +22,10 @@ module BigKeeper
     yield if block_given?
   end
 
+  def self.source(name)
+    BigkeeperParser.parse_source(name)
+  end
+
   # Bigkeeper file parser
   class BigkeeperParser
     @@config = {}
@@ -30,12 +34,12 @@ module BigKeeper
     def self.parse(bigkeeper)
       if @@config.empty?
         content = File.read bigkeeper
-
         content.gsub!(/version\s/, 'BigKeeper::version ')
         content.gsub!(/user\s/, 'BigKeeper::user ')
         content.gsub!(/home\s/, 'BigKeeper::home ')
         content.gsub!(/pod\s/, 'BigKeeper::pod ')
         content.gsub!(/modules\s/, 'BigKeeper::modules ')
+        content.gsub!(/source\s/, 'BigKeeper::source ')
         eval content
         # p @@config
       end
@@ -43,6 +47,13 @@ module BigKeeper
 
     def self.parse_version(name)
       @@config[:version] = name
+    end
+
+    def self.parse_source(name)
+      sources = []
+      sources << @@config[:source]
+      sources << name
+      @@config[:source] = sources
     end
 
     def self.parse_user(name)
@@ -106,6 +117,10 @@ module BigKeeper
       @@config[:home][:pulls]
     end
 
+    def self.source
+      @@config[:source].join(",").reverse.chop.reverse
+    end
+
     def self.module_full_path(home_path, user_name, module_name)
       if @@config[:users] \
         && @@config[:users][user_name] \
@@ -126,7 +141,7 @@ module BigKeeper
         && @@config[:users][user_name][:pods][module_name][:path]
         @@config[:users][user_name][:pods][module_name][:path]
       else
-        "../#{module_name}"
+        "../#{module_name.first}"
       end
     end
 
