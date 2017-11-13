@@ -3,6 +3,7 @@ require 'big_keeper/util/podfile_operator'
 require 'big_keeper/util/gitflow_operator'
 require 'big_keeper/model/podfile_type'
 require 'big_keeper/util/info_plist_operator'
+require 'big_keeper/util/log_util'
 
 module BigKeeper
   def self.release_home_start(path, version, user)
@@ -12,22 +13,22 @@ module BigKeeper
 
   def self.release_home_finish(path, version)
     Dir.chdir(path) do
-      if GitOperator.new.has_branch(project_path, "release/#{version}")
-        if GitOperator.new.current_branch(project_path) != "release/#{version}"
+      if GitOperator.new.has_branch(path, "release/#{version}")
+        if GitOperator.new.current_branch(path) == "release/#{version}"
           GitOperator.new.commit(path, "release: V #{version}")
           GitOperator.new.push(path, "release/#{version}")
           GitflowOperator.new.finish_release(path, version)
-          if GitOperator.new.current_branch(project_path) == "master"
+          if GitOperator.new.current_branch(path) == "master"
             GitOperator.new.tag(path, version)
           else
-            GitOperator.new.git_checkout(project_path, "master")
+            GitOperator.new.git_checkout(path, "master")
             GitOperator.new.tag(path, version)
           end
         else
-          raise "Not in release branch, please check your branches."
+          raise BigKeeperLog.error("Not in release branch, please check your branches.")
         end
       else
-        raise "Not has release branch, use release start first."
+        raise BigKeeperLog.error("Not has release branch, please use release start first.")
       end
     end
   end
