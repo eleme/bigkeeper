@@ -32,9 +32,9 @@ COMMANDS
   同 feature 工作区
 
 ## release home start 流程
-![](../../resources/readme/big-keeper-readme.008.png)
+![](../../resources/readme/big-keeper-readme.008.jpeg)
 ## release home finish 流程
-![](../../resources/readme/big-keeper-readme.009.png)
+![](../../resources/readme/big-keeper-readme.009.jpeg)
 ## release module 流程
-![](../../resources/readme/big-keeper-readme.010.png)
+![](../../resources/readme/big-keeper-readme.010.jpeg)
 
