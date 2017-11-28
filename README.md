@@ -4,6 +4,10 @@
 
 # big-keeper - All in home project
 
+[![Gem Version](https://badge.fury.io/rb/big_keeper.svg)](https://rubygems.org/gems/big_keeper)
+[![Language: Ruby](https://img.shields.io/badge/language-Ruby-da212f.svg)](https://www.ruby-lang.org/)
+[![License](https://img.shields.io/badge/license-MIT-000000.svg)](https://github.com/BigKeeper/big-keeper/blob/master/LICENSE)
+
 big-keeper is an efficiency improvement for iOS modular development, iOSer using this tool can make modular development easier.
 
 ## Installation
@@ -37,5 +41,7 @@ To install this gem onto your local machine, run `bundle exec rake install`. To 
 Bug reports and pull requests are welcome on GitHub at https://github.com/BigKeeper/big-keeper.
 
 ## License
+
+![](https://upload.wikimedia.org/wikipedia/commons/thumb/f/f8/License_icon-mit-88x31-2.svg/128px-License_icon-mit-88x31-2.svg.png)
 
 The gem is available as open source under the terms of the [MIT License](http://opensource.org/licenses/MIT).

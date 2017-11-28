@@ -4,6 +4,10 @@
 
 # big-keeper - 我好像做了一个假的模块化项目
 
+[![Gem Version](https://badge.fury.io/rb/big_keeper.svg)](https://rubygems.org/gems/big_keeper)
+[![Language: Ruby](https://img.shields.io/badge/language-Ruby-da212f.svg)](https://www.ruby-lang.org/)
+[![License](https://img.shields.io/badge/license-MIT-000000.svg)](https://github.com/BigKeeper/big-keeper/blob/master/LICENSE)
+
 big-keeper 是一个**iOS模块化项目过渡阶段**的效率提升工具，使用这个工具后，开发者**在主项目内**就可以完成**包括其他业务模块在内**所有代码的编写和管理。
 
 > 注：目前只支持依赖 CocoaPods 管理的模块化工程。
@@ -74,3 +78,9 @@ big-keeper 的出现就是为了解决这些问题。
 
   - [feature](FEATURE.md)：功能开发流程；
   - [release](RELEASE.md)：版本发布流程。
+
+## 协议
+
+![](https://upload.wikimedia.org/wikipedia/commons/thumb/f/f8/License_icon-mit-88x31-2.svg/128px-License_icon-mit-88x31-2.svg.png)
+
+big-keeper 基于 MIT 协议进行分发和使用，更多信息参见协议文件。
