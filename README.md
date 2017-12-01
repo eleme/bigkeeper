@@ -4,9 +4,12 @@
 
 # big-keeper - All in home project
 
+[![Build Status](https://travis-ci.org/BigKeeper/big-keeper.svg?branch=master)](https://travis-ci.org/BigKeeper/big-keeper)
+[![Maintainability](https://api.codeclimate.com/v1/badges/c6dc4161e84fcec9a890/maintainability)](https://codeclimate.com/github/BigKeeper/big-keeper/maintainability)
 [![Gem Version](https://badge.fury.io/rb/big_keeper.svg)](https://rubygems.org/gems/big_keeper)
 [![Language: Ruby](https://img.shields.io/badge/language-Ruby-da212f.svg)](https://www.ruby-lang.org/)
 [![License](https://img.shields.io/badge/license-MIT-000000.svg)](https://github.com/BigKeeper/big-keeper/blob/master/LICENSE)
+[![Gitter](https://img.shields.io/gitter/room/BigKeeper/BigKeeper.svg)](https://gitter.im/Big-Keeper/Lobby)
 
 big-keeper is an efficiency improvement for iOS modular development, iOSer using this tool can make modular development easier.
 
