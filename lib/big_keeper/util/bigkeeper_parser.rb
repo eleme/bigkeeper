@@ -117,7 +117,7 @@ module BigKeeper
       @@config[:home][:pulls]
     end
 
-    def self.source
+    def self.sourcemodule_path
       @@config[:source].join(",").reverse.chop.reverse
     end
 
@@ -141,7 +141,7 @@ module BigKeeper
         && @@config[:users][user_name][:pods][module_name][:path]
         @@config[:users][user_name][:pods][module_name][:path]
       else
-        "../#{module_name.first}"
+        "../#{module_name}"
       end
     end
 

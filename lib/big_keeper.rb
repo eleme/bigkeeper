@@ -139,7 +139,7 @@ module BigKeeper
       end
     end
 
-    c.desc 'Start release module'
+    c.desc 'release module'
     c.command :module do |finish|
       finish.action do |global_options, options, args|
         help_now!('module name is required') if args.length != 1
