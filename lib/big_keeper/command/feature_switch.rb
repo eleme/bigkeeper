@@ -1,4 +1,5 @@
 #!/usr/bin/ruby
+require 'big_stash/stash_operator'
 
 module BigKeeper
   def self.feature_switch(path, version, user, name)
@@ -22,15 +23,15 @@ module BigKeeper
       GitOperator.new.git_checkout(path, branch_name)
       GitOperator.new.pull(path)
 
+      # Apply home stash
+      BigStash::StashOperator.new(path).pop_stash(branch_name)
+
       modules = PodfileOperator.new.modules_with_type("#{path}/Podfile",
                                 BigkeeperParser.module_names, ModuleType::PATH)
 
       modules.each do |module_name|
         ModuleService.new.switch(path, user, module_name, branch_name)
       end
-
-      # Apply stash
-      StashService.new.apply_stash(path, branch_name, user, modules)
 
       # pod install
       p `pod install --project-directory=#{path}`

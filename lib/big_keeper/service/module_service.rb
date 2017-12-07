@@ -36,6 +36,8 @@ module BigKeeper
         GitOperator.new.git_checkout(module_full_path, branch_name)
         GitOperator.new.pull(module_full_path)
       end
+
+      BigStash::StashOperator.new(module_full_path).pop_stash(branch_name)
     end
 
     def finish(path, user, module_name)
@@ -76,7 +78,7 @@ module BigKeeper
       GitService.new.start(module_full_path, name, type)
 
       # apply stash
-      BigStash::StashOperator.new(module_full_path).apply_stash(branch_name)
+      BigStash::StashOperator.new(module_full_path).pop_stash(branch_name)
 
       module_path = BigkeeperParser.module_path(user, module_name)
       PodfileOperator.new.find_and_replace("#{path}/Podfile",

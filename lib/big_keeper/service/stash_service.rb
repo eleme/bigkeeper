@@ -29,14 +29,14 @@ module BigKeeper
       end
     end
 
-    def apply_stash(path, user, branch_name, modules)
+    def pop_stash(path, user, branch_name, modules)
       # Stash modules
       modules.each do |module_name|
         module_path = BigkeeperParser.module_full_path(path, user, module_name)
-        BigStash::StashOperator.new(module_path).apply_stash(branch_name)
+        BigStash::StashOperator.new(module_path).pop_stash(branch_name)
       end
       # Stash home
-      BigStash::StashOperator.new(path).apply_stash(branch_name)
+      BigStash::StashOperator.new(path).pop_stash(branch_name)
     end
   end
 end
