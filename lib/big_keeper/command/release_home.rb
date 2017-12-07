@@ -8,7 +8,7 @@ require 'big_keeper/util/log_util'
 module BigKeeper
   def self.release_home_start(path, version, user)
     BigkeeperParser.parse("#{path}/Bigkeeper")
-    start_release(path, version, BigkeeperParser::module_names, GitInfo.new(BigkeeperParser::home_git, GitType::TAG, version), user)
+    start_release(path, version, BigkeeperParser::module_names, user)
   end
 
   def self.release_home_finish(path, version)
@@ -34,7 +34,7 @@ module BigKeeper
   end
 
   private
-  def self.start_release(project_path, version, modules, source, user)
+  def self.start_release(project_path, version, modules, user)
     Dir.chdir(project_path) do
       # step 0 Stash current branch
       StashService.new.stash(project_path, GitOperator.new.current_branch(project_path), user, modules)
@@ -52,8 +52,7 @@ module BigKeeper
       # step 2 replace_modules
       PodfileOperator.new.replace_all_module_release(%Q(#{project_path}/Podfile),
                                                       modules,
-                                                      version,
-                                                      source)
+                                                      version)
 
       # step 3 change Info.plist value
       InfoPlistOperator.new.change_version_build(project_path, version)
