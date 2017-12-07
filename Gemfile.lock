@@ -9,7 +9,7 @@ PATH
       plist
 
 GEM
-  remote: https://ruby.taobao.org/
+  remote: https://gems.ruby-china.org/
   specs:
     CFPropertyList (2.3.3)
     activesupport (4.2.7.1)
@@ -106,7 +106,7 @@ DEPENDENCIES
   colorize
   gli (~> 2.16)
   plist
-  rake (~> 10.0)
+  rake
   rubocop (~> 0.50.0)
 
 BUNDLED WITH

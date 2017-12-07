@@ -84,12 +84,12 @@ module BigKeeper
       end
     end
 
-    def replace_all_module_release(podfile, module_names, version, source)
+    def replace_all_module_release(podfile, module_names, version)
       module_names.each do |module_name|
         PodfileOperator.new.find_and_replace(podfile,
                                              module_name,
                                              ModuleType::GIT,
-                                             source)
+                                             GitInfo.new(BigkeeperParser.module_git(module_name), GitType::TAG, version))
       end
     end
 
