@@ -6,7 +6,7 @@ module BigKeeper
   ERROR_LOG = 3
   WARNING_LOG = 4
 
-  class BigKeeperLog
+  class Logger
 
     def self.log_with_type(sentence,type)
       case type

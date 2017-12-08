@@ -1,5 +1,7 @@
 #!/usr/bin/ruby
 require 'big_stash/stash_operator'
+require 'big_keeper/util/logger'
+require 'big_keeper/util/pod_operator'
 
 module BigKeeper
   def self.feature_switch(path, version, user, name)
@@ -13,18 +15,18 @@ module BigKeeper
 
       GitService.new.verify_branch(path, branch_name, OperateType::SWITCH)
 
-      stath_modules = PodfileOperator.new.modules_with_type("#{path}/Podfile",
+      stash_modules = PodfileOperator.new.modules_with_type("#{path}/Podfile",
                                 BigkeeperParser.module_names, ModuleType::PATH)
 
       # Stash current branch
-      StashService.new.stash(path, branch_name, user, stath_modules)
+      StashService.new.stash_all(path, branch_name, user, stash_modules)
 
       # Switch to new feature
       GitOperator.new.git_checkout(path, branch_name)
       GitOperator.new.pull(path)
 
       # Apply home stash
-      BigStash::StashOperator.new(path).pop_stash(branch_name)
+      StashService.new.pop_stash(path, branch_name, 'Home')
 
       modules = PodfileOperator.new.modules_with_type("#{path}/Podfile",
                                 BigkeeperParser.module_names, ModuleType::PATH)
@@ -34,7 +36,7 @@ module BigKeeper
       end
 
       # pod install
-      p `pod install --project-directory=#{path}`
+      PodOperator.pod_install(path)
 
       # Open home workspace
       `open #{path}/*.xcworkspace`

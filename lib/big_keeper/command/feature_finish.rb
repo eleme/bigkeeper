@@ -1,9 +1,12 @@
 #!/usr/bin/ruby
 
 require 'big_keeper/util/podfile_operator'
+require 'big_keeper/util/logger'
+require 'big_keeper/util/pod_operator'
 require 'big_keeper/util/bigkeeper_parser'
 
 require 'big_keeper/model/podfile_type'
+
 
 module BigKeeper
 
@@ -16,7 +19,7 @@ module BigKeeper
                                 BigkeeperParser.module_names, ModuleType::PATH)
 
       branch_name = GitOperator.new.current_branch(path)
-      raise "Not a feature branch, exit." unless branch_name.include? 'feature'
+      Logger.error("Not a feature branch, exit.") unless branch_name.include? 'feature'
 
       # Rebase modules and modify podfile as git
       modules.each do |module_name|
@@ -32,12 +35,13 @@ module BigKeeper
       end
 
       # pod install
-      p `pod install --project-directory=#{path}`
+      PodOperator.pod_install(path)
 
+      Logger.highlight("Finish branch '#{branch_name}' for 'Home'")
       # Push home changes to remote
-      GitOperator.new.commit(path, "finish #{GitflowType.name(GitflowType::FEATURE)} #{branch_name}")
-      GitOperator.new.push(path, branch_name)
+      GitService.new.verify_push(path, "finish #{GitflowType.name(GitflowType::FEATURE)} #{branch_name}", branch_name, 'Home')
 
+      # Rebase Home
       GitService.new.verify_rebase(path, 'develop', 'Home')
 
       `open #{BigkeeperParser.home_pulls()}`

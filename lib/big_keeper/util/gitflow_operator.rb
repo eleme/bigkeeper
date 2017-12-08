@@ -6,7 +6,7 @@ module BigKeeper
     def start(path, name, type)
       Dir.chdir(path) do
         gitflow_type_name = GitflowType.name(type)
-        p `git flow #{gitflow_type_name} start #{name}`
+        `git flow #{gitflow_type_name} start #{name}`
       end
     end
 
