@@ -3,6 +3,8 @@
 require 'big_keeper/util/podfile_operator'
 require 'big_keeper/util/gitflow_operator'
 require 'big_keeper/util/bigkeeper_parser'
+require 'big_keeper/util/logger'
+require 'big_keeper/util/pod_operator'
 
 require 'big_keeper/model/podfile_type'
 
@@ -17,7 +19,7 @@ module BigKeeper
       BigkeeperParser.parse("#{path}/Bigkeeper")
 
       branch_name = GitOperator.new.current_branch(path)
-      raise "Not a feature branch, exit." unless branch_name.include? 'feature'
+      Logger.error("Not a feature branch, exit.") unless branch_name.include? 'feature'
 
       feature_name = branch_name.gsub(/feature\//, '')
 
@@ -33,11 +35,13 @@ module BigKeeper
         modules = BigkeeperParser.module_names
       end
 
+      Logger.highlight("Start to update modules for branch '#{branch_name}'...")
+
       add_modules = modules - current_modules
       del_modules = current_modules - modules
 
       if add_modules.empty? and del_modules.empty?
-        p "There is nothing changed with modules #{modules}."
+        Logger.info("There is nothing changed with modules #{modules}.")
       else
         # Modify podfile as path and Start modules feature
         add_modules.each do |module_name|
@@ -49,7 +53,7 @@ module BigKeeper
         end
 
         # pod install
-        p `pod install --project-directory=#{path}`
+        PodOperator.pod_install(path)
 
         # Open home workspace
         `open #{path}/*.xcworkspace`

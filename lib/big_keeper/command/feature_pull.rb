@@ -1,3 +1,5 @@
+require 'big_keeper/util/logger'
+
 module BigKeeper
   def self.feature_pull(path, user)
     begin
@@ -5,7 +7,7 @@ module BigKeeper
       BigkeeperParser.parse("#{path}/Bigkeeper")
 
       branch_name = GitOperator.new.current_branch(path)
-      raise 'Not a feature branch, exit.' unless branch_name.include? 'feature'
+      Logger.error('Not a feature branch, exit.') unless branch_name.include? 'feature'
 
       modules = PodfileOperator.new.modules_with_type("#{path}/Podfile",
                                                       BigkeeperParser.module_names, ModuleType::PATH)
@@ -14,7 +16,7 @@ module BigKeeper
         ModuleService.new.pull(path, user, module_name, branch_name)
       end
 
-      p "Pull branch #{branch_name} for home..."
+      Logger.highlight("Pull branch '#{branch_name}' for 'Home'...")
       GitOperator.new.pull(path)
     ensure
     end

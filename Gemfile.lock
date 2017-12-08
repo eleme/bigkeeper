@@ -1,7 +1,7 @@
 PATH
   remote: .
   specs:
-    big_keeper (0.5.0)
+    big_keeper (0.6.0)
       big_stash (~> 0.1)
       cocoapods
       colorize
@@ -19,7 +19,7 @@ GEM
       thread_safe (~> 0.3, >= 0.3.4)
       tzinfo (~> 1.1)
     ast (2.3.0)
-    big_stash (0.5.0)
+    big_stash (0.6.0)
       gli (~> 2.16)
     claide (1.0.1)
     cocoapods (1.2.1)

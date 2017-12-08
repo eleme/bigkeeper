@@ -1,3 +1,5 @@
+require 'big_keeper/util/logger'
+
 module BigKeeper
 
   def self.feature_push(path, user, comment)
@@ -6,7 +8,7 @@ module BigKeeper
       BigkeeperParser.parse("#{path}/Bigkeeper")
 
       branch_name = GitOperator.new.current_branch(path)
-      raise "Not a feature branch, exit." unless branch_name.include? 'feature'
+      Logger.error("Not a feature branch, exit.") unless branch_name.include? 'feature'
 
       modules = PodfileOperator.new.modules_with_type("#{path}/Podfile",
                                 BigkeeperParser.module_names, ModuleType::PATH)
@@ -15,22 +17,12 @@ module BigKeeper
         module_full_path = BigkeeperParser.module_full_path(path, user, module_name)
         module_branch_name = GitOperator.new.current_branch(module_full_path)
 
-        if GitOperator.new.has_changes(module_full_path)
-          p "Push branch #{branch_name} for module #{module_name}..."
-          GitOperator.new.commit(module_full_path, comment)
-          GitOperator.new.push(module_full_path, module_branch_name)
-        else
-          p "Nothing to push for #{module_name}."
-        end
+        Logger.highlight("Push branch '#{branch_name}' for module '#{module_name}'...")
+        GitService.new.verify_push(path, comment, module_branch_name, module_name)
       end
 
-      if GitOperator.new.has_changes(path)
-        p "Push branch #{branch_name} for home..."
-        GitOperator.new.commit(path, comment)
-        GitOperator.new.push(path, branch_name)
-      else
-        p "Nothing to push for home."
-      end
+      Logger.highlight("Push branch '#{branch_name}' for 'Home'...")
+      GitService.new.verify_push(path, comment, branch_name, 'Home')
     ensure
     end
   end

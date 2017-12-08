@@ -1,6 +1,6 @@
 require 'big_keeper/util/bigkeeper_parser'
 require 'big_keeper/model/podfile_model'
-require 'big_keeper/util/log_util'
+require 'big_keeper/util/logger'
 
 module BigKeeper
 
@@ -17,7 +17,7 @@ class PodfileDetector
 
   def get_unlock_pod_list
     podfile_lines = File.readlines("#{@main_path}/Podfile")
-    BigKeeperLog.highlight("Analyzing Podfile...") unless podfile_lines.size.zero?
+    Logger.highlight("Analyzing Podfile...") unless podfile_lines.size.zero?
       podfile_lines.collect do |sentence|
       deal_podfile_line(sentence) unless sentence =~(/(\d+.){1,2}\d+/)
       end
@@ -39,7 +39,7 @@ class PodfileDetector
   def deal_lock_file(main_path,deal_list)
       $result = {}
       podfile_lock_lines = File.readlines("#{main_path}/Podfile.lock")
-      BigKeeperLog.highlight("Analyzing Podfile.lock...") unless podfile_lock_lines.size.zero?
+      Logger.highlight("Analyzing Podfile.lock...") unless podfile_lock_lines.size.zero?
       podfile_lock_lines.select do |sentence|
       if sentence.include?('DEPENDENCIES')  #指定范围解析 Dependencies 之前
         break

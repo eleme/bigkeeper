@@ -92,6 +92,7 @@ module BigKeeper
       push.action do |global_options, options, args|
         help_now!('user name is required') if user and user.empty?
         help_now!('comment message is required') if args.length < 1
+        help_now!(%Q(comment message should be wrappered with '' or "")) if args.length > 1
         comment = args[0]
         feature_push(path, user, comment)
       end
@@ -125,7 +126,7 @@ module BigKeeper
       home.command :start do |start|
         start.action do |global_options, options, args|
           help_now!('user name is required') if user and user.empty?
-          raise BigKeeperLog.error("release version is required") if version == nil
+          raise Logger.error("release version is required") if version == nil
           release_home_start(path, version, user)
         end
       end
@@ -133,7 +134,7 @@ module BigKeeper
       home.desc 'Finish release home project'
       home.command :finish do |finish|
         finish.action do |global_options, options, args|
-          raise BigKeeperLog.error("release version is required") if version == nil
+          raise Logger.error("release version is required") if version == nil
           release_home_finish(path, version)
         end
       end
@@ -143,7 +144,7 @@ module BigKeeper
     c.command :module do |finish|
       finish.action do |global_options, options, args|
         help_now!('module name is required') if args.length != 1
-        raise BigKeeperLog.error("release version is required") if version == nil
+        raise Logger.error("release version is required") if version == nil
         module_name = args[0]
         start_module_release(path, version, user, module_name)
       end

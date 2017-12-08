@@ -72,9 +72,15 @@ module BigKeeper
       end
     end
 
-    def push(path, branch_name)
+    def first_push(path, branch_name)
       Dir.chdir(path) do
-        p `git push -u origin #{branch_name}`
+        `git push -u origin #{branch_name}`
+      end
+    end
+
+    def push(path)
+      Dir.chdir(path) do
+        p `git push`
       end
     end
 
