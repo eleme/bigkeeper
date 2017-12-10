@@ -26,6 +26,7 @@ module BigKeeper
       end
 
       # step 1 checkout release
+      Logger.highlight(%Q(Start checkout #{module_name} to Branch release/#{version}))
       if GitOperator.new.current_branch(module_path) != "release/#{version}"
         if GitOperator.new.has_branch(module_path, "release/#{version}")
           GitOperator.new.git_checkout(module_path, "release/#{version}")
@@ -34,10 +35,15 @@ module BigKeeper
           GitOperator.new.first_push(module_path, "release/#{version}")
         end
       end
-      p "path----"
-      puts GitOperator.new.current_branch(module_path)
+
       #修改 podspec 文件
       # TO DO: - advanced to use Regular Expression
+      PodfileOperator.new.podspec_change(%Q(#{module_path}/#{module_name}.podspec), version, module_name)
+      GitOperator.new.commit(module_path, "update podspec")
+      GitOperator.new.first_push(module_path, GitOperator.new.current_branch(module_path))
+
+      # Pod lib lint in release/#{tag} branch
+      Logger.highlight(%Q(Start Pod lib lint #{module_name}))
       has_error = false
       IO.popen("pod lib lint --allow-warnings --verbose --use-libraries --sources=#{BigkeeperParser::sourcemodule_path}") do |io|
         io.each do |line|
@@ -45,26 +51,36 @@ module BigKeeper
         end
       end
       if has_error
-        puts "error"
+        Logger.error("Pod lib error in '#{module_name}'")
         return
       end
 
-      puts "error------"
-      # PodfileOperator.new.podspec_change(%Q(#{module_path}/#{module_name}.podspec), version, module_name)
-      # p `pod lib lint --allow-warnings --verbose --use-libraries --sources=#{BigkeeperParser::sourcemodule_path}`
+      # check out master
+      if GitOperator.new.current_branch(module_path) != "master"
+        current_name = GitOperator.new.current_branch(module_path)
+        GitOperator.new.git_checkout(module_path, "master")
+        Logger.highlight("Push branch '#{branch_name}' for '#{module_name}'...")
+        GitService.new.verify_push(module_path, "finish #{GitflowType.name(GitflowType::RELEASE)} #{branch_name}", "master", "#{module_name}")
+      end
 
-      # GitOperator.new.commit(module_path, "update podspec")
-      # GitOperator.new.first_push(module_path, GitOperator.new.current_branch(module_path))
-      # if GitOperator.new.current_branch(module_path) != "master"
-      #   current_name = GitOperator.new.current_branch(module_path)
-      #   p `git checkout master`
-      #   p `git merge #{current_name}`
-      #   p `git push`
-      # end
-      # GitOperator.new.tag(module_path, version)
+      # to do rebase release to master
+      Logger.highlight(%Q(Rebase develop to master))
+      GitService.new.verify_rebase(module_path, 'develop', "#{module_name}")
 
-      # p `pod repo push #{module_name} #{module_name}.podspec --allow-warnings --sources=#{BigkeeperParser::sourcemodule_path}`
+      Logger.highlight(%Q(Start Pod repo push #{module_name}))
+      IO.popen("pod repo push #{module_name} #{module_name}.podspec --allow-warnings --sources=#{BigkeeperParser::sourcemodule_path}") do |io|
+        io.each do |line|
+          has_error = true if line.include? "ERROR"
+        end
+      end
+      if has_error
+        Logger.error("Pod repo push in '#{module_name}'")
+        return
+      end
 
+      GitOperator.new.tag(module_path, version)
+
+      Logger.highlight(%Q(Success release #{module_name}))
     end
   end
 end
