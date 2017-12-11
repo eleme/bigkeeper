@@ -39,6 +39,7 @@ module BigKeeper
       # step 0 Stash current branch
       StashService.new.stash_all(project_path, GitOperator.new.current_branch(project_path), user, modules)
 
+      Logger.highlight(%Q(Start to checkout Branch release/#{version}))
       # step 1 checkout release
       if GitOperator.new.current_branch(project_path) != "release/#{version}"
         if GitOperator.new.has_branch(project_path, "release/#{version}")
@@ -49,6 +50,7 @@ module BigKeeper
         end
       end
 
+      Logger.highlight(%Q(Start to release/#{version}))
       # step 2 replace_modules
       PodfileOperator.new.replace_all_module_release(%Q(#{project_path}/Podfile),
                                                       modules,
@@ -57,8 +59,8 @@ module BigKeeper
       # step 3 change Info.plist value
       InfoPlistOperator.new.change_version_build(project_path, version)
 
-      p `pod install --project-directory=#{project_path}`
-      p `open #{project_path}/*.xcworkspace`
+      PodOperator.pod_install(project_path)
+      `open #{project_path}/*.xcworkspace`
     end
   end
 end
