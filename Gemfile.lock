@@ -1,7 +1,7 @@
 PATH
   remote: .
   specs:
-    big_keeper (0.6.0)
+    big_keeper (0.7.0)
       big_stash (~> 0.1)
       cocoapods
       colorize

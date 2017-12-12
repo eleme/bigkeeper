@@ -18,7 +18,7 @@ module BigKeeper
         module_branch_name = GitOperator.new.current_branch(module_full_path)
 
         Logger.highlight("Push branch '#{branch_name}' for module '#{module_name}'...")
-        GitService.new.verify_push(path, comment, module_branch_name, module_name)
+        GitService.new.verify_push(module_full_path, comment, module_branch_name, module_name)
       end
 
       Logger.highlight("Push branch '#{branch_name}' for 'Home'...")
