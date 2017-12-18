@@ -46,7 +46,7 @@ module BigKeeper
       StashService.new.pop_stash(module_full_path, branch_name, module_name)
     end
 
-    def finish(path, user, module_name)
+    def finish(path, user, module_name, type)
       module_git = BigkeeperParser.module_git(module_name)
       module_full_path = BigkeeperParser.module_full_path(path, user, module_name)
       branch_name = GitOperator.new.current_branch(module_full_path)
@@ -58,7 +58,7 @@ module BigKeeper
                                            ModuleType::GIT,
                                            GitInfo.new(module_git, GitType::BRANCH, branch_name))
 
-      GitService.new.verify_rebase(module_full_path, 'develop', module_name)
+      GitService.new.verify_rebase(module_full_path, GitflowType.base_branch(type), module_name)
 
       `open #{BigkeeperParser.module_pulls(module_name)}`
     end

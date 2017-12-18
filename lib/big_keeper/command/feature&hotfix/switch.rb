@@ -4,14 +4,14 @@ require 'big_keeper/util/logger'
 require 'big_keeper/util/pod_operator'
 
 module BigKeeper
-  def self.feature_switch(path, version, user, name)
+  def self.switch_to(path, version, user, name, type)
     begin
       # Parse Bigkeeper file
       BigkeeperParser.parse("#{path}/Bigkeeper")
 
       version = BigkeeperParser.version if version == 'Version in Bigkeeper file'
-      feature_name = "#{version}_#{user}_#{name}"
-      branch_name = "#{GitflowType.name(GitflowType::FEATURE)}/#{feature_name}"
+      full_name = "#{version}_#{user}_#{name}"
+      branch_name = "#{GitflowType.name(type)}/#{full_name}"
 
       GitService.new.verify_branch(path, branch_name, OperateType::SWITCH)
 

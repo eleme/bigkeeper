@@ -7,12 +7,12 @@ require 'big_keeper/util/git_operator'
 
 require 'big_keeper/model/gitflow_type'
 
-require 'big_keeper/command/feature&hotfix/feature_start'
-require 'big_keeper/command/feature&hotfix/feature_finish'
-require 'big_keeper/command/feature&hotfix/feature_switch'
-require 'big_keeper/command/feature&hotfix/feature_update'
-require 'big_keeper/command/feature&hotfix/feature_pull'
-require 'big_keeper/command/feature&hotfix/feature_push'
+require 'big_keeper/command/feature&hotfix/start'
+require 'big_keeper/command/feature&hotfix/finish'
+require 'big_keeper/command/feature&hotfix/switch'
+require 'big_keeper/command/feature&hotfix/update'
+require 'big_keeper/command/feature&hotfix/pull'
+require 'big_keeper/command/feature&hotfix/push'
 require 'big_keeper/command/release/release_home'
 require 'big_keeper/command/release/release_module'
 require 'big_keeper/command/pod/podfile_lock'
@@ -56,16 +56,16 @@ module BigKeeper
         help_now!('feature name is required') if args.length < 1
         name = args[0]
         modules = args[(1...args.length)] if args.length > 1
-        feature_start(path, version, user, name, modules)
+        start(path, version, user, name, modules, GitflowType::FEATURE)
       end
     end
 
-    c.desc 'Update moduels for the feature with name'
+    c.desc 'Update modules for the feature with name'
     c.command :update do |update|
       update.action do |global_options, options, args|
         help_now!('user name is required') if user and user.empty?
         modules = args[(0...args.length)] if args.length > 0
-        feature_update(path, user, modules)
+        update(path, user, modules, GitflowType::FEATURE)
       end
     end
 
@@ -75,7 +75,7 @@ module BigKeeper
         help_now!('user name is required') if user and user.empty?
         help_now!('feature name is required') if args.length < 1
         name = args[0]
-        feature_switch(path, version, user, name)
+        switch_to(path, version, user, name, GitflowType::FEATURE)
       end
     end
 
@@ -83,7 +83,7 @@ module BigKeeper
     c.command :pull do |pull|
       pull.action do |global_options, options, args|
         help_now!('user name is required') if user and user.empty?
-        feature_pull(path, user)
+        pull(path, user, GitflowType::FEATURE)
       end
     end
 
@@ -94,7 +94,7 @@ module BigKeeper
         help_now!('comment message is required') if args.length < 1
         help_now!(%Q(comment message should be wrappered with '' or "")) if args.length > 1
         comment = args[0]
-        feature_push(path, user, comment)
+        push(path, user, comment, GitflowType::FEATURE)
       end
     end
 
@@ -102,7 +102,7 @@ module BigKeeper
     c.command :finish do |finish|
       finish.action do |global_options, options, args|
         help_now!('user name is required') if user and user.empty?
-        feature_finish(path, user)
+        finish(path, user, GitflowType::FEATURE)
       end
     end
 
@@ -110,6 +110,77 @@ module BigKeeper
     c.command :list do |list|
       list.action do
         branchs = GitService.new.branchs_with_type(File.expand_path(path), GitflowType::FEATURE)
+        branchs.each do |branch|
+          p branch
+        end
+      end
+    end
+  end
+
+  desc 'Hotfix operations'
+  command :hotfix do |c|
+
+    c.desc 'Start a new hotfix with name for given modules and main project'
+    c.command :start do |start|
+      start.action do |global_options, options, args|
+        help_now!('user name is required') if user and user.empty?
+        help_now!('hotfix name is required') if args.length < 1
+        name = args[0]
+        modules = args[(1...args.length)] if args.length > 1
+        start(path, version, user, name, modules, GitflowType::HOTFIX)
+      end
+    end
+
+    c.desc 'Update modules for the hotfix with name'
+    c.command :update do |update|
+      update.action do |global_options, options, args|
+        help_now!('user name is required') if user and user.empty?
+        modules = args[(0...args.length)] if args.length > 0
+        update(path, user, modules, GitflowType::HOTFIX)
+      end
+    end
+
+    c.desc 'Switch to the hotfix with name'
+    c.command :switch do |switch|
+      switch.action do |global_options, options, args|
+        help_now!('user name is required') if user and user.empty?
+        help_now!('hotfix name is required') if args.length < 1
+        name = args[0]
+        switch_to(path, version, user, name, GitflowType::HOTFIX)
+      end
+    end
+
+    c.desc 'Pull remote changes for current hotfix'
+    c.command :pull do |pull|
+      pull.action do |global_options, options, args|
+        help_now!('user name is required') if user and user.empty?
+        pull(path, user, GitflowType::HOTFIX)
+      end
+    end
+
+    c.desc 'Push local changes to remote for current hotfix'
+    c.command :push do |push|
+      push.action do |global_options, options, args|
+        help_now!('user name is required') if user and user.empty?
+        help_now!('comment message is required') if args.length < 1
+        help_now!(%Q(comment message should be wrappered with '' or "")) if args.length > 1
+        comment = args[0]
+        push(path, user, comment, GitflowType::HOTFIX)
+      end
+    end
+
+    c.desc 'Finish current hotfix'
+    c.command :finish do |finish|
+      finish.action do |global_options, options, args|
+        help_now!('user name is required') if user and user.empty?
+        finish(path, user, GitflowType::HOTFIX)
+      end
+    end
+
+    c.desc 'List all the hotfixes'
+    c.command :list do |list|
+      list.action do
+        branchs = GitService.new.branchs_with_type(File.expand_path(path), GitflowType::HOTFIX)
         branchs.each do |branch|
           p branch
         end

@@ -13,15 +13,15 @@ require 'big_keeper/service/module_service'
 
 
 module BigKeeper
-  def self.feature_update(path, user, modules)
+  def self.update(path, user, modules, type)
     begin
       # Parse Bigkeeper file
       BigkeeperParser.parse("#{path}/Bigkeeper")
-
       branch_name = GitOperator.new.current_branch(path)
-      Logger.error("Not a feature branch, exit.") unless branch_name.include? 'feature'
 
-      feature_name = branch_name.gsub(/feature\//, '')
+      Logger.error("Not a #{GitflowType.name(type)} branch, exit.") unless branch_name.include? GitflowType.name(type)
+
+      full_name = branch_name.gsub(/GitflowType.name(type)\//, '')
 
       current_modules = PodfileOperator.new.modules_with_type("#{path}/Podfile",
                                 BigkeeperParser.module_names, ModuleType::PATH)
@@ -45,11 +45,11 @@ module BigKeeper
       else
         # Modify podfile as path and Start modules feature
         add_modules.each do |module_name|
-          ModuleService.new.add(path, user, module_name, feature_name, GitflowType::FEATURE)
+          ModuleService.new.add(path, user, module_name, full_name, type)
         end
 
         del_modules.each do |module_name|
-          ModuleService.new.del(path, user, module_name, feature_name, GitflowType::FEATURE)
+          ModuleService.new.del(path, user, module_name, full_name, type)
         end
 
         # pod install
