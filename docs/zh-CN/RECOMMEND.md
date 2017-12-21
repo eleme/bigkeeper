@@ -1,3 +1,4 @@
+# 代码管理规范
 ### master分支保证是线上最新包的代码。
 ### develop分支保证是下一个发布包的代码，保证随时发布。
 <h3>开发和测试流程： </h3> feature分支为feature开发和提测分支，提测前需要rebase/merge develop的代码，测试完成后，pr到develop分支，确定下个版本发布才accept pr。
