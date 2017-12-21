@@ -82,6 +82,9 @@ big-keeper 的出现就是为了解决这些问题。
   - [feature](FEATURE.md)：功能开发流程；
   - [release](RELEASE.md)：版本发布流程。
 
+## 推荐代码管理规范
+- [Bigkeeper 推荐代码管理规范](RECOMMEND.md)
+
 ## 协议
 
 ![](https://upload.wikimedia.org/wikipedia/commons/thumb/f/f8/License_icon-mit-88x31-2.svg/128px-License_icon-mit-88x31-2.svg.png)
