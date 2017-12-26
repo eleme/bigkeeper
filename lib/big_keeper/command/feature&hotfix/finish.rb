@@ -23,19 +23,19 @@ module BigKeeper
 
       # Rebase modules and modify podfile as git
       modules.each do |module_name|
-        ModuleService.new.finish(path, user, module_name, type)
+        ModuleService.new.finish(path, user, module_name, branch_name, type)
       end
 
-      BigkeeperParser.module_names.each do |module_name|
+      # pod install
+      PodOperator.pod_install(path)
+
+      modules.each do |module_name|
         module_git = BigkeeperParser.module_git(module_name)
         PodfileOperator.new.find_and_replace("#{path}/Podfile",
                                              module_name,
                                              ModuleType::GIT,
                                              GitInfo.new(module_git, GitType::BRANCH, GitflowType.base_branch(type)))
       end
-
-      # pod install
-      PodOperator.pod_install(path)
 
       Logger.highlight("Finish branch '#{branch_name}' for 'Home'")
       # Push home changes to remote

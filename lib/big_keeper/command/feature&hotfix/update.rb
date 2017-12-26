@@ -21,7 +21,7 @@ module BigKeeper
 
       Logger.error("Not a #{GitflowType.name(type)} branch, exit.") unless branch_name.include? GitflowType.name(type)
 
-      full_name = branch_name.gsub(/GitflowType.name(type)\//, '')
+      full_name = branch_name.gsub(/#{GitflowType.name(type)}\//, '')
 
       current_modules = PodfileOperator.new.modules_with_type("#{path}/Podfile",
                                 BigkeeperParser.module_names, ModuleType::PATH)
@@ -41,7 +41,7 @@ module BigKeeper
       del_modules = current_modules - modules
 
       if add_modules.empty? and del_modules.empty?
-        Logger.info("There is nothing changed with modules #{modules}.")
+        Logger.default("There is nothing changed with modules #{modules}.")
       else
         # Modify podfile as path and Start modules feature
         add_modules.each do |module_name|
