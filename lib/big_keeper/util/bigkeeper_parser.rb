@@ -87,7 +87,7 @@ module BigKeeper
       elsif params[:git]
         parse_modules_pod(name, params)
       else
-        raise %(There should be ':path =>' or ':git =>' for pod #{name})
+        Logger.error(%(There should be ':path =>' or ':git =>' for pod #{name}))
       end
     end
 
@@ -171,7 +171,7 @@ module BigKeeper
 
     def self.verify_modules(modules)
       modules.each do |item|
-        raise "Can not find module #{item} in Bigkeeper file" unless @@config[:modules][item]
+        Logger.error("Can not find module #{item} in Bigkeeper file") unless @@config[:modules][item]
       end
     end
 
