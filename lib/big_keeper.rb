@@ -13,8 +13,8 @@ require 'big_keeper/command/feature&hotfix/switch'
 require 'big_keeper/command/feature&hotfix/update'
 require 'big_keeper/command/feature&hotfix/pull'
 require 'big_keeper/command/feature&hotfix/push'
-require 'big_keeper/command/release/release_home'
-require 'big_keeper/command/release/release_module'
+require 'big_keeper/command/release/home'
+require 'big_keeper/command/release/module'
 require 'big_keeper/command/pod/podfile_lock'
 
 require 'big_keeper/service/git_service'
@@ -212,14 +212,28 @@ module BigKeeper
     end
 
     c.desc 'release module'
-    c.command :module do |finish|
-      finish.action do |global_options, options, args|
-        help_now!('module name is required') if args.length != 1
-        raise Logger.error("release version is required") if version == nil
-        module_name = args[0]
-        start_module_release(path, version, user, module_name)
+    c.command :module do |m|
+      m.desc 'Start release module project'
+      m.command :start do |start|
+        start.action do |global_options, options, args|
+          help_now!('module name is required') if args.length != 1
+          raise Logger.error("release version is required") if version == nil
+          module_name = args[0]
+          release_module_start(path, version, user, module_name)
+        end
+      end
+
+      m.desc 'finish release module project'
+      m.command :finish do |finish|
+        finish.action do |global_options, options, args|
+          help_now!('module name is required') if args.length != 1
+          raise Logger.error("release version is required") if version == nil
+          module_name = args[0]
+          release_module_finish(path, version, user, module_name)
+        end
       end
     end
+
   end
 
   desc 'Podfile operation'
