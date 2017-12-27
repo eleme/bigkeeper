@@ -7,70 +7,69 @@ module BigKeeper
   # Operator for got
   class GitService
     def start(path, name, type)
-      if GitOperator.new.has_remote_branch(path, 'master')
-        if GitOperator.new.has_local_branch(path, 'master')
-          if GitOperator.new.has_commits(path, 'master')
-            Logger.error(%Q('master' has unpushed commits, you should fix it))
-          else
-            GitOperator.new.git_checkout(path, 'master')
-            GitOperator.new.pull(path)
-          end
-        else
-          GitOperator.new.git_checkout(path, 'master')
-        end
-      end
-
-      if GitOperator.new.has_remote_branch(path, 'develop')
-        if GitOperator.new.has_local_branch(path, 'develop')
-          if GitOperator.new.has_commits(path, 'develop')
-            Logger.error(%Q('develop' has unpushed commits, you should fix it))
-          else
-            GitOperator.new.git_checkout(path, 'develop')
-            GitOperator.new.pull(path)
-          end
-        else
-          GitOperator.new.git_checkout(path, 'develop')
-        end
-      end
-
-      if !GitflowOperator.new.verify_git_flow(path)
-        GitOperator.new.first_push(path, 'develop') if !GitOperator.new.has_remote_branch(path, 'develop')
-        GitOperator.new.first_push(path, 'master') if !GitOperator.new.has_remote_branch(path, 'master')
-      end
-
+      git = GitOperator.new
       branch_name = "#{GitflowType.name(type)}/#{name}"
-      if GitOperator.new.has_branch(path, branch_name)
-        GitOperator.new.git_checkout(path, branch_name)
-        GitOperator.new.pull(path)
-      else
+      if !git.has_remote_branch(path, branch_name) && !git.has_local_branch(path, branch_name)
+        verify_special_branch(path, 'master')
+        verify_special_branch(path, 'develop')
+
+        if !GitflowOperator.new.verify_git_flow(path)
+          git.push_to_remote(path, 'develop') if !git.has_remote_branch(path, 'develop')
+          git.push_to_remote(path, 'master') if !git.has_remote_branch(path, 'master')
+        end
+        
         GitflowOperator.new.start(path, name, type)
-        GitOperator.new.first_push(path, branch_name)
+        git.push_to_remote(path, branch_name)
+      else
+        git.checkout(path, branch_name)
+
+        if !git.has_remote_branch(path, branch_name)
+          git.push_to_remote(path, branch_name)
+        end
       end
     end
 
-    def verify_branch(path, branch_name, type)
+    def verify_special_branch(path, name)
+      git = GitOperator.new
+
+      if git.has_remote_branch(path, name)
+        if git.has_local_branch(path, name)
+          if git.has_commits(path, name)
+            Logger.error(%Q('#{name}' has unpushed commits, you should fix it manually...))
+          else
+            pull(path, name)
+          end
+        else
+          git.checkout(path, name)
+        end
+      end
+    end
+
+    def verify_home_branch(path, branch_name, type)
       Logger.highlight('Sync local branchs from remote, waiting...')
-      GitOperator.new.git_fetch(path)
+      git = GitOperator.new
+
+      git.fetch(path)
 
       if OperateType::START == type
-        if GitOperator.new.current_branch(path) == branch_name
+        if git.current_branch(path) == branch_name
           Logger.error(%(Current branch is '#{branch_name}' already. Use 'update' please))
         end
-        if GitOperator.new.has_branch(path, branch_name)
+        if git.has_branch(path, branch_name)
           Logger.error(%(Branch '#{branch_name}' already exists. Use 'switch' please))
         end
       elsif OperateType::SWITCH == type
-        if !GitOperator.new.has_branch(path, branch_name)
+        if !git.has_branch(path, branch_name)
           Logger.error(%(Can't find a branch named '#{branch_name}'. Use 'start' please))
         end
-        if GitOperator.new.current_branch(path) == branch_name
+        if git.current_branch(path) == branch_name
           Logger.error(%(Current branch is '#{branch_name}' already. Use 'update' please))
         end
       elsif OperateType::UPDATE == type
-        if !GitOperator.new.has_branch(path, branch_name)
+        if !git.has_branch(path, branch_name)
           Logger.error(%(Can't find a branch named '#{branch_name}'. Use 'start' please))
         end
-        if GitOperator.new.current_branch(path) != branch_name
+        if git.current_branch(path) != branch_name
           Logger.error(%(Current branch is not '#{branch_name}'. Use 'switch' please))
         end
       else
@@ -90,14 +89,27 @@ module BigKeeper
       branchs
     end
 
+    def pull(path, branch_name)
+      git = GitOperator.new
+      if git.current_branch(path) == branch_name
+        git.pull(path)
+      else
+        Dir.chdir(path) do
+          `git pull origin #{branch_name}:#{branch_name}`
+        end
+      end
+    end
+
     def verify_push(path, comment, branch_name, name)
       git = GitOperator.new
       if git.has_changes(path)
         git.commit(path, comment)
         if git.has_remote_branch(path, branch_name)
-          git.push(path)
+          Dir.chdir(path) do
+            `git push`
+          end
         else
-          git.first_push(path, branch_name)
+          git.push_to_remote(path, branch_name)
         end
       else
         Logger.default("Nothing to push for '#{name}'.")
@@ -126,7 +138,7 @@ module BigKeeper
           end
         end
         `git push -f origin #{branch_name}`
-        GitOperator.new.git_checkout(path, 'develop')
+        GitOperator.new.checkout(path, 'develop')
       end
     end
   end

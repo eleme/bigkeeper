@@ -29,10 +29,10 @@ module BigKeeper
       Logger.highlight(%Q(Start checkout #{module_name} to Branch release/#{version}))
       if GitOperator.new.current_branch(module_path) != "release/#{version}"
         if GitOperator.new.has_branch(module_path, "release/#{version}")
-          GitOperator.new.git_checkout(module_path, "release/#{version}")
+          GitOperator.new.checkout(module_path, "release/#{version}")
         else
           GitflowOperator.new.start(module_path, version, GitflowType::RELEASE)
-          GitOperator.new.first_push(module_path, "release/#{version}")
+          GitOperator.new.push_to_remote(module_path, "release/#{version}")
         end
       end
 
@@ -40,7 +40,7 @@ module BigKeeper
       # TO DO: - advanced to use Regular Expression
       PodfileOperator.new.podspec_change(%Q(#{module_path}/#{module_name}.podspec), version, module_name)
       GitOperator.new.commit(module_path, "update podspec")
-      GitOperator.new.first_push(module_path, GitOperator.new.current_branch(module_path))
+      GitOperator.new.push_to_remote(module_path, GitOperator.new.current_branch(module_path))
 
       # Pod lib lint in release/#{tag} branch
       Logger.highlight(%Q(Start Pod lib lint #{module_name}))
@@ -58,7 +58,7 @@ module BigKeeper
       # check out master
       if GitOperator.new.current_branch(module_path) != "master"
         current_name = GitOperator.new.current_branch(module_path)
-        GitOperator.new.git_checkout(module_path, "master")
+        GitOperator.new.checkout(module_path, "master")
         Logger.highlight("Push branch '#{branch_name}' for '#{module_name}'...")
         GitService.new.verify_push(module_path, "finish #{GitflowType.name(GitflowType::RELEASE)} #{branch_name}", "master", "#{module_name}")
       end

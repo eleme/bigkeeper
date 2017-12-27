@@ -22,7 +22,7 @@ module BigKeeper
       full_name = "#{version}_#{user}_#{name}"
       branch_name = "#{GitflowType.name(type)}/#{full_name}"
 
-      GitService.new.verify_branch(path, branch_name, OperateType::START)
+      GitService.new.verify_home_branch(path, branch_name, OperateType::START)
 
       stash_modules = PodfileOperator.new.modules_with_type("#{path}/Podfile",
                                 BigkeeperParser.module_names, ModuleType::PATH)
