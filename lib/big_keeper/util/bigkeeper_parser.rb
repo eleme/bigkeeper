@@ -130,7 +130,11 @@ module BigKeeper
     end
 
     def self.sourcemodule_path
-      @@config[:source].join(",").reverse.chop.reverse
+      if @@config[:source] == nil
+        return ""
+      else
+        @@config[:source].join(",").reverse.chop.reverse
+      end
     end
 
     def self.module_full_path(home_path, user_name, module_name)
