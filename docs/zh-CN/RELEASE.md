@@ -27,14 +27,17 @@ COMMANDS
     - start: 开始发布主工程的某个版本
     - finish: 完成发布版本
 - module: 发布模块命令
+    - start: 开始发布模块的某个版本
+    - finish: 完成发布版本
 
 ## release 的工作区
   同 feature 工作区
 
 ## release home start 流程
-![](../../resources/readme/big-keeper-readme.008.jpeg)
+![](../../resources/readme/big-keeper-readme.008.png)
 ## release home finish 流程
-![](../../resources/readme/big-keeper-readme.009.jpeg)
-## release module 流程
-![](../../resources/readme/big-keeper-readme.010.jpeg)
-
+![](../../resources/readme/big-keeper-readme.009.png)
+## release module  start 流程
+![](../../resources/readme/big-keeper-readme.010.png)
+## release module  finish 流程
+![](../../resources/readme/big-keeper-readme.011.png)
