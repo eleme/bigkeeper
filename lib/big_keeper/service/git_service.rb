@@ -10,14 +10,10 @@ module BigKeeper
       git = GitOperator.new
       branch_name = "#{GitflowType.name(type)}/#{name}"
       if !git.has_remote_branch(path, branch_name) && !git.has_local_branch(path, branch_name)
+
         verify_special_branch(path, 'master')
         verify_special_branch(path, 'develop')
 
-        if !GitflowOperator.new.verify_git_flow(path)
-          git.push_to_remote(path, 'develop') if !git.has_remote_branch(path, 'develop')
-          git.push_to_remote(path, 'master') if !git.has_remote_branch(path, 'master')
-        end
-        
         GitflowOperator.new.start(path, name, type)
         git.push_to_remote(path, branch_name)
       else
@@ -29,19 +25,21 @@ module BigKeeper
       end
     end
 
-    def verify_special_branch(path, name)
+    def verify_special_branch(path)
       git = GitOperator.new
 
       if git.has_remote_branch(path, name)
         if git.has_local_branch(path, name)
           if git.has_commits(path, name)
             Logger.error(%Q('#{name}' has unpushed commits, you should fix it manually...))
-          else
-            pull(path, name)
           end
+          pull(path, name)
         else
           git.checkout(path, name)
         end
+      else
+        git.checkout(path, name)
+        git.push_to_remote(path, name)
       end
     end
 
