@@ -91,7 +91,7 @@ module BigKeeper
 
       StashService.new.stash(module_full_path, home_branch_name, module_name)
 
-      GitOperator.new.checkout(module_full_path, 'develop')
+      GitOperator.new.checkout(module_full_path, GitflowType.base_branch(type))
       GitOperator.new.del(module_full_path, home_branch_name)
 
       module_git = BigkeeperParser.module_git(module_name)
@@ -99,7 +99,7 @@ module BigKeeper
       PodfileOperator.new.find_and_replace("#{path}/Podfile",
                                            module_name,
                                            ModuleType::GIT,
-                                           GitInfo.new(module_git, GitType::BRANCH, 'develop'))
+                                           GitInfo.new(module_git, GitType::BRANCH, GitflowType.base_branch(type)))
     end
   end
 end
