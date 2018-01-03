@@ -2,20 +2,20 @@
 
 ---
 
-# big-keeper - 我好像做了一个假的模块化项目
+# bigkeeper
 
-[![Build Status](https://travis-ci.org/BigKeeper/big-keeper.svg?branch=master)](https://travis-ci.org/BigKeeper/big-keeper)
+[![Build Status](https://travis-ci.org/BigKeeper/bigkeeper.svg?branch=master)](https://travis-ci.org/BigKeeper/bigkeeper)
 [![Maintainability](https://api.codeclimate.com/v1/badges/c6dc4161e84fcec9a890/maintainability)](https://codeclimate.com/github/BigKeeper/big-keeper/maintainability)
 [![Gem Version](https://badge.fury.io/rb/big_keeper.svg)](https://rubygems.org/gems/big_keeper)
 [![Language: Ruby](https://img.shields.io/badge/language-Ruby-da212f.svg)](https://www.ruby-lang.org/)
 [![License](https://img.shields.io/badge/license-MIT-000000.svg)](https://github.com/BigKeeper/big-keeper/blob/master/LICENSE)
 [![Gitter](https://img.shields.io/gitter/room/BigKeeper/BigKeeper.svg)](https://gitter.im/Big-Keeper/Lobby)
 
-big-keeper 是一个**iOS模块化项目过渡阶段**的效率提升工具，使用这个工具后，开发者**在主项目内**就可以完成**包括其他业务模块在内**所有代码的编写和管理。
+bigkeeper 是一个** iOS&Android 模块化项目**效率提升工具，使用这个工具后，开发者**在主项目内**即可完成**包括其他业务模块在内**所有代码的编写和管理。
 
 > 注：目前只支持依赖 CocoaPods 管理的模块化工程。
 
-我们仿照 CocoaPods 的做法，开发团队只需要在主项目中加入一个 Bigkeeper 文件，然后利用我们提供的 `big-keeper` 工具，即可更便捷的实现**代码分支**和**业务模块**的管理；另外，通过我们提供的工具，也能帮助开发者养成更规范的日常开发习惯，减轻项目管理者的负担。
+我们借鉴 CocoaPods 的做法，开发团队只需要在主项目中加入一个 Bigkeeper 文件，然后利用我们提供的 `bigkeeper` 工具，即可更便捷的实现**代码分支**和**业务模块**的管理；另外，通过我们提供的工具，也能帮助开发者养成更规范的日常开发习惯，减轻项目管理者的负担。
 
 ## 应用场景
 
@@ -26,9 +26,9 @@ big-keeper 是一个**iOS模块化项目过渡阶段**的效率提升工具，�
 - 开发过程中如果碰到突发情况需要开新分支处理问题时对当前工作区的保存操作会很繁琐（PS：因为涉及到多个项目）；
 - 日常开发过程中类似 commit、pull、push 等操作比较繁琐（PS：因为涉及到多个项目）。
 
-big-keeper 的出现就是为了解决这些问题。
+bigkeeper 的出现就是为了解决这些问题。
 
-> 注：也有很多人认为直接做一个完整的组件化项目更合理，而不需要采用这样曲折的方案，但是很多时候我们并没有这么多的精力直接去做这些事情，big-keeper 存在的价值也是为了帮助开发团队在**iOS模块化项目过渡阶段**能更轻松的往前走。
+> 注：也有很多人认为直接做一个完整的组件化项目更合理，而不需要采用这样曲折的方案，但是很多时候我们并没有这么多的精力直接去做这些事情，bigkeeper 存在的价值也是为了帮助开发团队在** iOS&Android 模块化项目过渡阶段**能更轻松的往前走。
 
 ## 安装
 
@@ -49,44 +49,60 @@ big-keeper 的出现就是为了解决这些问题。
 
 ## 使用方法
 
-- [Bigkeeper 文件配置](BIGKEEPER_FILE.md)
-- `big-keeper` 工具使用：
+> 注：每个流程我们都提供详细的流程图来让你了解我们都做了些什么，为了方便你更好的了解我们的流程，我们提供了一个流程参考图，如下：
+>
+> ![](../../resources/keynote/big-keeper-readme-feature/big-keeper-readme-feature.001.jpeg)
 
-  直接在命令行执行 `big-keeper` 可以查看其提供的所有功能：
+- [Bigkeeper 文件配置](BIGKEEPER_FILE.md)
+- `bigkeeper` 工具使用：
+
+  直接在命令行执行 `bigkeeper` 可以查看其提供的所有功能：
 
   ```
   NAME
-      big-keeper - Efficiency improvement for iOS modular development, iOSer using this tool can make modular development easier.
+      bigkeeper - Efficiency improvement for iOS&Android modular development, iOSer&Android using this tool can make modular development easier.
 
   SYNOPSIS
-      big-keeper [global options] command [command options] [arguments...]
+      bigkeeper [global options] command [command options] [arguments...]
 
   GLOBAL OPTIONS
       --help         - Show this message
       -p, --path=arg - (default: ./)
+      -u, --user=arg - (default: mmoaay)
+
       -v, --ver=arg  - (default: Version in Bigkeeper file)
 
   COMMANDS
       feature - Feature operations
       help    - Shows a list of commands or help for one command
+      hotfix  - Hotfix operations
+      podfile - Podfile operation
       release - Release operations
+      version - Version
   ```
 
   全局参数如下：
 
-  - -p, --path：主项目所在的目录，默认是执行 big-keeper 命令的当前目录；
+  - -p, --path：主项目所在的目录，默认是执行 bigkeeper 命令的当前目录；
   - -v, --ver：版本号，如果没有指定的话，会以主项目 [Bigkeeper 文件](BIGKEEPER_FILE.md)中指定的版本为准。
+  - -u, --user：用户名，默认是 git global config 的 user.name，会显示在命令提示信息中，比如上述提示信息中的默认用户名是 mmoaay
 
   功能列表如下：
 
-  - [feature](FEATURE.md)：功能开发流程；
-  - [release](RELEASE.md)：版本发布流程。
+  - [feature](FEATURE&HOTFIX.md)：功能开发流程；
+  - [hotfix](FEATURE&HOTFIX.md)：线上修复流程；
+  - [release](RELEASE.md)：发布流程；
+  - [podfile](PODFILE.md)：Podfile 操作流程；
+  - version：查看 bigkeeper 当前版本号；
+  - help：查看 bigkeeper 帮助文档。
 
-## 推荐代码管理规范
-- [Bigkeeper 推荐代码管理规范](RECOMMEND.md)
+
+## 其他
+
+- [一些建议](RECOMMEND.md)
 
 ## 协议
 
 ![](https://upload.wikimedia.org/wikipedia/commons/thumb/f/f8/License_icon-mit-88x31-2.svg/128px-License_icon-mit-88x31-2.svg.png)
 
-big-keeper 基于 MIT 协议进行分发和使用，更多信息参见协议文件。
+bigkeeper 基于 MIT 协议进行分发和使用，更多信息参见协议文件。

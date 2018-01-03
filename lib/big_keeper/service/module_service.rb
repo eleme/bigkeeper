@@ -92,7 +92,7 @@ module BigKeeper
       StashService.new.stash(module_full_path, home_branch_name, module_name)
 
       GitOperator.new.checkout(module_full_path, GitflowType.base_branch(type))
-      GitOperator.new.del(module_full_path, home_branch_name)
+      # GitOperator.new.del(module_full_path, home_branch_name)
 
       module_git = BigkeeperParser.module_git(module_name)
 
