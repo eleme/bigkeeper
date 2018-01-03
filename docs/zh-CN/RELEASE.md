@@ -40,4 +40,4 @@ COMMANDS
 ## release module  start 流程
 ![](../../resources/readme/big-keeper-readme.010.png)
 ## release module  finish 流程
-![](../../resources/readme/big-keeper-readme.011.png)
+![](../../resources/readme/big-keeper-readme.012.png)
