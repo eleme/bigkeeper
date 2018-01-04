@@ -47,6 +47,16 @@ COMMANDS
 - delete：根据 featue 名删除主项目和业务模块所有相关分支；（PS：慎用，因为会删除本地和远程所有相关分支）
 - list：显示当前的 feature 列表。
 
+## 各个流程的使用场景
+
+- 如果需要开发新的功能，使用 bigkeeper feature start；
+- 开发功能过程中如果发现某个模块其实不用改动，使用 bigkeeper feature update 来把这个模块从这个 feature 移除；
+- 使用 bigkeeper feature pull 来同步主项目和相关业务模块远端变更；
+- 使用 bigkeeper feature push 来推送主项目和相关业务模块变更到远端；
+- 使用 bigkeeper feature switch 来切换 feature，比如：两个功能并行开发的时候，就可以用这个命令互相切换了；
+- 功能开发完成，需要提交 PR 时，使用 bigkeeper feature finish 结束开发；
+- 如果开发过程中突然有新的功能需要紧急开发，直接使用 bigkeeper feature start 进行新功能开发，就功能未提交的内容我们会保存在 stash 中。
+
 ## feature 的工作区
 
 ![](../../resources/keynote/big-keeper-readme-feature/big-keeper-readme-feature.002.jpeg)

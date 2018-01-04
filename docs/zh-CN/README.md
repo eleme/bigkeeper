@@ -96,7 +96,6 @@ bigkeeper 的出现就是为了解决这些问题。
   - version：查看 bigkeeper 当前版本号；
   - help：查看 bigkeeper 帮助文档。
 
-
 ## 其他
 
 - [一些建议](RECOMMEND.md)
