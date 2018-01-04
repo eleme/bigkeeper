@@ -17,14 +17,16 @@ module BigKeeper
     begin
       # Parse Bigkeeper file
       BigkeeperParser.parse("#{path}/Bigkeeper")
-      branch_name = GitOperator.new.current_branch(path)
+      branch_name = "#{GitflowType.name(type)}/#{name}"
 
-      Logger.error("Not a #{GitflowType.name(type)} branch, exit.") unless branch_name.include? GitflowType.name(type)
+      modules = BigkeeperParser.module_names
 
-      full_name = branch_name.gsub(/#{GitflowType.name(type)}\//, '')
+      modules.each do |module_name|
+        module_full_path = BigkeeperParser.module_full_path(path, user, module_name)
+        GitService.new.verify_del(module_full_path, branch_name, module_name, type)
+      end
 
-      modules = PodfileOperator.new.modules_with_type("#{path}/Podfile",
-                                BigkeeperParser.module_names, ModuleType::PATH)
+      GitService.new.verify_del(path, branch_name, 'Home', type)
     ensure
     end
   end

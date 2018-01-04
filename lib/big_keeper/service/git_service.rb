@@ -98,6 +98,24 @@ module BigKeeper
       end
     end
 
+    def verify_del(path, branch_name, name, type)
+      git = GitOperator.new
+
+      if git.has_local_branch(path, branch_name)
+        Logger.highlight("Delete local branch '#{branch_name}' for '#{name}'...")
+
+        if git.current_branch(path) == branch_name
+          GitOperator.new.checkout(path, GitflowType.base_branch(type))
+        end
+        git.del_local(path, branch_name)
+      end
+
+      if git.has_remote_branch(path, branch_name)
+        Logger.highlight("Delete remote branch '#{branch_name}' for '#{name}'...")
+        git.del_remote(path, branch_name)
+      end
+    end
+
     def verify_push(path, comment, branch_name, name)
       git = GitOperator.new
       if git.has_changes(path)

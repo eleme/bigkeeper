@@ -105,9 +105,14 @@ module BigKeeper
       has_changes
     end
 
-    def del(path, branch_name)
+    def del_local(path, branch_name)
       Dir.chdir(path) do
         p `git branch -D #{branch_name}`
+      end
+    end
+
+    def del_remote(path, branch_name)
+      Dir.chdir(path) do
         p `git push origin --delete #{branch_name}`
       end
     end

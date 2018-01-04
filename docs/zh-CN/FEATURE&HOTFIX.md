@@ -8,23 +8,26 @@
 NAME
     feature - Feature operations
 
+
 SYNOPSIS
-    bigkeeper [global options] feature [command options] finish
-    bigkeeper [global options] feature [command options] list
-    bigkeeper [global options] feature [command options] pull
-    bigkeeper [global options] feature [command options] push
-    bigkeeper [global options] feature [command options] start
-    bigkeeper [global options] feature [command options] switch
-    bigkeeper [global options] feature [command options] update
+    bigkeeper [global options] feature delete
+    bigkeeper [global options] feature finish
+    bigkeeper [global options] feature list
+    bigkeeper [global options] feature pull
+    bigkeeper [global options] feature push
+    bigkeeper [global options] feature start
+    bigkeeper [global options] feature switch
+    bigkeeper [global options] feature update
 
 COMMANDS
+    delete - Delete feature with name
     finish - Finish current feature
     list   - List all the features
     pull   - Pull remote changes for current feature
     push   - Push local changes to remote for current feature
     start  - Start a new feature with name for given modules and main project
     switch - Switch to the feature with name
-    update - Update moduels for the feature with name
+    update - Update modules for the feature with name
 ```
 
 功能列表如下：
@@ -41,6 +44,7 @@ COMMANDS
   - 开发该 feature 需要改动的业务模块名。可以多个，用空格隔开；如果不指定，取 **Bigkeeper 文件中所有的业务模块名**。
 - pull：拉取当前 feature 主项目和业务模块的远程 git 仓库更新；
 - push：提交并推送当前 feature 主项目和业务模块的本地变更到远程 git 仓库，输入参数为提交信息；
+- delete：根据 featue 名删除主项目和业务模块所有相关分支；（PS：慎用，因为会删除本地和远程所有相关分支）
 - list：显示当前的 feature 列表。
 
 ## feature 的工作区
@@ -84,24 +88,24 @@ feature 的工作区主要由两部分组成：
 
 ## feature start 流程
 
-![](../../resources/keynote/big-keeper-readme-feature/big-keeper-readme-feature.009.jpeg)
+![start](../../resources/keynote/big-keeper-readme-feature/big-keeper-readme-feature.009.jpeg)
 
 ## feature finish 流程
 
-![](../../resources/keynote/big-keeper-readme-feature/big-keeper-readme-feature.010.jpeg)
+![finish](../../resources/keynote/big-keeper-readme-feature/big-keeper-readme-feature.010.jpeg)
 
 ## feature switch 流程
 
-![](../../resources/keynote/big-keeper-readme-feature/big-keeper-readme-feature.011.jpeg)
+![switch](../../resources/keynote/big-keeper-readme-feature/big-keeper-readme-feature.011.jpeg)
 
 ## feature update 流程
 
-![](../../resources/keynote/big-keeper-readme-feature/big-keeper-readme-feature.012.jpeg)
+![update](../../resources/keynote/big-keeper-readme-feature/big-keeper-readme-feature.012.jpeg)
 
 ## feature pull 流程
 
-![](../../resources/keynote/big-keeper-readme-feature/big-keeper-readme-feature.013.jpeg)
+![pull](../../resources/keynote/big-keeper-readme-feature/big-keeper-readme-feature.013.jpeg)
 
 ## feature push 流程
 
-![](../../resources/keynote/big-keeper-readme-feature/big-keeper-readme-feature.014.jpeg)
+![push](../../resources/keynote/big-keeper-readme-feature/big-keeper-readme-feature.014.jpeg)

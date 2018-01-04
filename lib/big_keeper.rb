@@ -109,9 +109,10 @@ module BigKeeper
 
     c.desc 'Delete feature with name'
     c.command :delete do |delete|
-      finish.action do |global_options, options, args|
+      delete.action do |global_options, options, args|
         help_now!('user name is required') if user and user.empty?
         help_now!('feature name is required') if args.length < 1
+        name = args[0]
         delete(path, user, name, GitflowType::FEATURE)
       end
     end
@@ -189,9 +190,10 @@ module BigKeeper
 
     c.desc 'Delete hotfix with name'
     c.command :delete do |delete|
-      finish.action do |global_options, options, args|
+      delete.action do |global_options, options, args|
         help_now!('user name is required') if user and user.empty?
         help_now!('feature name is required') if args.length < 1
+        name = args[0]
         delete(path, user, name, GitflowType::HOTFIX)
       end
     end
