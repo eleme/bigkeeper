@@ -8,23 +8,34 @@ module BigKeeper
   class GitService
     def start(path, name, type)
       git = GitOperator.new
+
       branch_name = "#{GitflowType.name(type)}/#{name}"
       if !git.has_remote_branch(path, branch_name) && !git.has_local_branch(path, branch_name)
+
         verify_special_branch(path, 'master')
         verify_special_branch(path, 'develop')
 
-        if !GitflowOperator.new.verify_git_flow(path)
-          git.push_to_remote(path, 'develop') if !git.has_remote_branch(path, 'develop')
-          git.push_to_remote(path, 'master') if !git.has_remote_branch(path, 'master')
-        end
-        
         GitflowOperator.new.start(path, name, type)
         git.push_to_remote(path, branch_name)
       else
-        git.checkout(path, branch_name)
+        verify_checkout(path, branch_name)
 
         if !git.has_remote_branch(path, branch_name)
           git.push_to_remote(path, branch_name)
+        end
+      end
+    end
+
+    def verify_checkout(path, branch_name)
+      Dir.chdir(path) do
+        cmd = "git checkout -b #{branch_name}"
+        if GitOperator.new.has_branch(path, branch_name)
+          cmd = "git checkout #{branch_name}"
+        end
+        IO.popen(cmd) do |io|
+          io.each do |line|
+            Logger.error("Checkout #{branch_name} failed.") if line.include? 'error'
+          end
         end
       end
     end
@@ -36,12 +47,14 @@ module BigKeeper
         if git.has_local_branch(path, name)
           if git.has_commits(path, name)
             Logger.error(%Q('#{name}' has unpushed commits, you should fix it manually...))
-          else
-            pull(path, name)
           end
+          pull(path, name)
         else
           git.checkout(path, name)
         end
+      else
+        verify_checkout(path, name)
+        git.push_to_remote(path, name)
       end
     end
 
@@ -97,6 +110,25 @@ module BigKeeper
         Dir.chdir(path) do
           `git pull origin #{branch_name}:#{branch_name}`
         end
+      end
+    end
+
+    def verify_del(path, branch_name, name, type)
+      git = GitOperator.new
+
+      if git.has_local_branch(path, branch_name)
+        Logger.highlight("Delete local branch '#{branch_name}' for '#{name}'...")
+
+        if git.current_branch(path) == branch_name
+          git.dicard(path)
+          git.checkout(path, GitflowType.base_branch(type))
+        end
+        git.del_local(path, branch_name)
+      end
+
+      if git.has_remote_branch(path, branch_name)
+        Logger.highlight("Delete remote branch '#{branch_name}' for '#{name}'...")
+        git.del_remote(path, branch_name)
       end
     end
 

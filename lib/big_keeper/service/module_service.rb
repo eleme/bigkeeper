@@ -63,6 +63,9 @@ module BigKeeper
                                            GitInfo.new(module_git, GitType::BRANCH, home_branch_name))
 
       module_full_path = BigkeeperParser.module_full_path(path, user, module_name)
+
+      GitService.new.verify_push(module_full_path, "finish branch #{home_branch_name}", home_branch_name, module_name)
+
       GitService.new.verify_rebase(module_full_path, GitflowType.base_branch(type), module_name)
 
       `open #{BigkeeperParser.module_pulls(module_name)}`
@@ -91,15 +94,15 @@ module BigKeeper
 
       StashService.new.stash(module_full_path, home_branch_name, module_name)
 
-      GitOperator.new.checkout(module_full_path, 'develop')
-      GitOperator.new.del(module_full_path, home_branch_name)
+      GitOperator.new.checkout(module_full_path, GitflowType.base_branch(type))
+      # GitOperator.new.del(module_full_path, home_branch_name)
 
       module_git = BigkeeperParser.module_git(module_name)
 
       PodfileOperator.new.find_and_replace("#{path}/Podfile",
                                            module_name,
                                            ModuleType::GIT,
-                                           GitInfo.new(module_git, GitType::BRANCH, 'develop'))
+                                           GitInfo.new(module_git, GitType::BRANCH, GitflowType.base_branch(type)))
     end
   end
 end

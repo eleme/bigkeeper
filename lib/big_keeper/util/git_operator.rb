@@ -1,3 +1,5 @@
+require 'big_keeper/util/logger'
+
 module BigKeeper
   # Operator for got
   class GitOperator
@@ -41,7 +43,7 @@ module BigKeeper
       Dir.chdir(path) do
         IO.popen("git checkout #{branch_name}") do |io|
           io.each do |line|
-            raise "Checkout #{branch_name} failed." if line.include? 'error'
+            Logger.error("Checkout #{branch_name} failed.") if line.include? 'error'
           end
         end
       end
@@ -105,9 +107,20 @@ module BigKeeper
       has_changes
     end
 
-    def del(path, branch_name)
+    def dicard(path)
+      Dir.chdir(path) do
+        `git checkout . && git clean -xdf`
+      end
+    end
+
+    def del_local(path, branch_name)
       Dir.chdir(path) do
         p `git branch -D #{branch_name}`
+      end
+    end
+
+    def del_remote(path, branch_name)
+      Dir.chdir(path) do
         p `git push origin --delete #{branch_name}`
       end
     end
