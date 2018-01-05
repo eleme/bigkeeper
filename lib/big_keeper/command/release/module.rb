@@ -32,19 +32,7 @@ module BigKeeper
     return
 
     Dir.chdir(module_path) do
-<<<<<<< HEAD
       # rebase develop to master
-=======
-      # check out master
-      if GitOperator.new.current_branch(module_path) != "master"
-        current_name = GitOperator.new.current_branch(module_path)
-        GitOperator.new.checkout(module_path, "master")
-        Logger.highlight("Push branch '#{current_name}' for '#{module_name}'...")
-        GitService.new.verify_push(module_path, "finish #{GitflowType.name(GitflowType::RELEASE)} #{current_name}", "master", "#{module_name}")
-      end
-      return
-      # rebase release to master
->>>>>>> develop
       Logger.highlight(%Q(Rebase develop to master))
 
       #修改 podspec 文件
@@ -76,7 +64,6 @@ module BigKeeper
       StashService.new.stash_all(module_path, GitOperator.new.current_branch(module_path), user, module_name.split())
     end
 
-<<<<<<< HEAD
     # step 1 checkout to develop branch
     Logger.highlight(%Q(Start checkout #{module_name} to Branch develop))
     if GitOperator.new.current_branch(module_path) != "develop"
@@ -84,16 +71,6 @@ module BigKeeper
         GitOperator.new.checkout(module_path, "develop")
       else
         Logger.error("Cann't find develop branch, please check.")
-=======
-      # step 1 checkout release
-      Logger.highlight(%Q(Start checkout #{module_name} to Branch develop))
-      if GitOperator.new.current_branch(module_path) != "develop"
-        if GitOperator.new.has_branch(module_path, "develop")
-          GitOperator.new.checkout(module_path, "develop")
-        else
-          Logger.error("Cann't find develop branch, please check.")
-        end
->>>>>>> develop
       end
     end
 
@@ -113,7 +90,7 @@ module BigKeeper
     end
 
     GitOperator.new.commit(module_path, "update podspec")
-    # GitOperator.new.first_push(module_path, GitOperator.new.current_branch(module_path))
+    GitOperator.new.first_push(module_path, GitOperator.new.current_branch(module_path))
     Logger.highlight(%Q(Pod lib lint success))
   end
 
