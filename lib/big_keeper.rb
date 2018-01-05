@@ -13,6 +13,7 @@ require 'big_keeper/command/feature&hotfix/switch'
 require 'big_keeper/command/feature&hotfix/update'
 require 'big_keeper/command/feature&hotfix/pull'
 require 'big_keeper/command/feature&hotfix/push'
+require 'big_keeper/command/feature&hotfix/delete'
 require 'big_keeper/command/release/home'
 require 'big_keeper/command/release/module'
 require 'big_keeper/command/pod/podfile_lock'
@@ -25,7 +26,7 @@ include GLI::App
 
 module BigKeeper
   # Your code goes here...
-  program_desc 'Efficiency improvement for iOS modular development, iOSer using this tool can make modular development easier.'
+  program_desc 'Efficiency improvement for iOS&Android modular development, iOSer&Android using this tool can make modular development easier.'
 
   flag %i[p path], default_value: './'
   flag %i[v ver], default_value: 'Version in Bigkeeper file'
@@ -106,6 +107,16 @@ module BigKeeper
       end
     end
 
+    c.desc 'Delete feature with name'
+    c.command :delete do |delete|
+      delete.action do |global_options, options, args|
+        help_now!('user name is required') if user and user.empty?
+        help_now!('feature name is required') if args.length < 1
+        name = args[0]
+        delete(path, user, name, GitflowType::FEATURE)
+      end
+    end
+
     c.desc 'List all the features'
     c.command :list do |list|
       list.action do
@@ -174,6 +185,16 @@ module BigKeeper
       finish.action do |global_options, options, args|
         help_now!('user name is required') if user and user.empty?
         finish(path, user, GitflowType::HOTFIX)
+      end
+    end
+
+    c.desc 'Delete hotfix with name'
+    c.command :delete do |delete|
+      delete.action do |global_options, options, args|
+        help_now!('user name is required') if user and user.empty?
+        help_now!('feature name is required') if args.length < 1
+        name = args[0]
+        delete(path, user, name, GitflowType::HOTFIX)
       end
     end
 

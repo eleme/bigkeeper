@@ -1,13 +1,13 @@
-# release - 功能开发流程
+# release - 发布流程
 
-直接在命令行执行 `big-keeper release --help` 可以查看其提供的所有功能：
+直接在命令行执行 `bigkeeper release --help` 可以查看其提供的所有功能：
 ```
 NAME
     release - Release operations
 
 SYNOPSIS
-    big-keeper [global options] release home
-    big-keeper [global options] release module
+    bigkeeper [global options] release home
+    bigkeeper [global options] release module
 
 COMMANDS
     home   - Release home project operations
@@ -37,4 +37,3 @@ COMMANDS
 ![](../../resources/readme/big-keeper-readme.009.jpeg)
 ## release module 流程
 ![](../../resources/readme/big-keeper-readme.010.jpeg)
-
