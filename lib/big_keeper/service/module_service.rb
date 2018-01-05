@@ -63,6 +63,9 @@ module BigKeeper
                                            GitInfo.new(module_git, GitType::BRANCH, home_branch_name))
 
       module_full_path = BigkeeperParser.module_full_path(path, user, module_name)
+
+      GitService.new.verify_push(module_full_path, "finish branch #{home_branch_name}", home_branch_name, module_name)
+
       GitService.new.verify_rebase(module_full_path, GitflowType.base_branch(type), module_name)
 
       `open #{BigkeeperParser.module_pulls(module_name)}`

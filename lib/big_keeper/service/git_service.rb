@@ -8,6 +8,7 @@ module BigKeeper
   class GitService
     def start(path, name, type)
       git = GitOperator.new
+
       branch_name = "#{GitflowType.name(type)}/#{name}"
       if !git.has_remote_branch(path, branch_name) && !git.has_local_branch(path, branch_name)
 
@@ -17,7 +18,7 @@ module BigKeeper
         GitflowOperator.new.start(path, name, type)
         git.push_to_remote(path, branch_name)
       else
-        git.checkout(path, branch_name)
+        verify_checkout(path, branch_name)
 
         if !git.has_remote_branch(path, branch_name)
           git.push_to_remote(path, branch_name)
@@ -25,7 +26,21 @@ module BigKeeper
       end
     end
 
-    def verify_special_branch(path)
+    def verify_checkout(path, branch_name)
+      Dir.chdir(path) do
+        cmd = "git checkout -b #{branch_name}"
+        if GitOperator.new.has_branch(path, branch_name)
+          cmd = "git checkout #{branch_name}"
+        end
+        IO.popen(cmd) do |io|
+          io.each do |line|
+            Logger.error("Checkout #{branch_name} failed.") if line.include? 'error'
+          end
+        end
+      end
+    end
+
+    def verify_special_branch(path, name)
       git = GitOperator.new
 
       if git.has_remote_branch(path, name)
@@ -38,7 +53,7 @@ module BigKeeper
           git.checkout(path, name)
         end
       else
-        git.checkout(path, name)
+        verify_checkout(path, name)
         git.push_to_remote(path, name)
       end
     end
@@ -105,7 +120,8 @@ module BigKeeper
         Logger.highlight("Delete local branch '#{branch_name}' for '#{name}'...")
 
         if git.current_branch(path) == branch_name
-          GitOperator.new.checkout(path, GitflowType.base_branch(type))
+          git.dicard(path)
+          git.checkout(path, GitflowType.base_branch(type))
         end
         git.del_local(path, branch_name)
       end
