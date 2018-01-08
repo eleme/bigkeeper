@@ -47,7 +47,7 @@ module BigKeeper
     exit
   end
 
-  desc 'Feature operations'
+  desc 'Gitflow feature operations'
   command :feature do |c|
 
     c.desc 'Start a new feature with name for given modules and main project'
@@ -128,7 +128,7 @@ module BigKeeper
     end
   end
 
-  desc 'Hotfix operations'
+  desc 'Gitflow hotfix operations'
   command :hotfix do |c|
 
     c.desc 'Start a new hotfix with name for given modules and main project'
@@ -209,7 +209,7 @@ module BigKeeper
     end
   end
 
-  desc 'Release operations'
+  desc 'Gitflow release operations'
   command :release do |c|
 
     c.desc 'Release home project operations'
@@ -278,7 +278,7 @@ module BigKeeper
     end
   end
 
-  desc 'Version'
+  desc 'Show version of bigkeeper'
   command :version do |version|
     version.action do |global_options, options, args|
       p "big-keeper (#{VERSION})"
