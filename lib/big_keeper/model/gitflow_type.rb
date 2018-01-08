@@ -12,7 +12,19 @@ module BigKeeper
       elsif RELEASE == type
         "release"
       else
-        name
+        "feature"
+      end
+    end
+
+    def self.base_branch(type)
+      if FEATURE == type
+        "develop"
+      elsif HOTFIX == type
+        "master"
+      elsif RELEASE == type
+        "develop"
+      else
+        "master"
       end
     end
   end

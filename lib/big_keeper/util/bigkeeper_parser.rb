@@ -1,3 +1,5 @@
+require 'big_keeper/util/logger'
+
 # Bigkeeper module
 module BigKeeper
   def self.version(name)
@@ -33,6 +35,9 @@ module BigKeeper
 
     def self.parse(bigkeeper)
       if @@config.empty?
+
+        Logger.error("Can't find a Bigkeeper file in current directory.") if !BigkeeperParser.definitely_exists?(bigkeeper)
+
         content = File.read bigkeeper
         content.gsub!(/version\s/, 'BigKeeper::version ')
         content.gsub!(/user\s/, 'BigKeeper::user ')
@@ -43,6 +48,13 @@ module BigKeeper
         eval content
         # p @@config
       end
+    end
+
+    def self.definitely_exists? path
+      folder = File.dirname path
+      filename = File.basename path
+      # Unlike Ruby IO, ls, and find -f, this technique will fail to locate the file if the case is wrong:
+      not %x( find "#{folder}" -name "#{filename}" ).empty?
     end
 
     def self.parse_version(name)
@@ -75,7 +87,7 @@ module BigKeeper
       elsif params[:git]
         parse_modules_pod(name, params)
       else
-        raise %(There should be ':path =>' or ':git =>' for pod #{name})
+        Logger.error(%(There should be ':path =>' or ':git =>' for pod #{name}))
       end
     end
 
@@ -118,7 +130,11 @@ module BigKeeper
     end
 
     def self.sourcemodule_path
-      @@config[:source].join(",").reverse.chop.reverse
+      if @@config[:source] == nil
+        return ""
+      else
+        @@config[:source].join(",").reverse.chop.reverse
+      end
     end
 
     def self.module_full_path(home_path, user_name, module_name)
@@ -155,7 +171,7 @@ module BigKeeper
 
     def self.verify_modules(modules)
       modules.each do |item|
-        raise "Can not find module #{item} in Bigkeeper file" unless @@config[:modules][item]
+        Logger.error("Can not find module #{item} in Bigkeeper file") unless @@config[:modules][item]
       end
     end
 

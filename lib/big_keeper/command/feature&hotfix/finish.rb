@@ -10,39 +10,40 @@ require 'big_keeper/model/podfile_type'
 
 module BigKeeper
 
-  def self.feature_finish(path, user)
+  def self.finish(path, user, type)
     begin
       # Parse Bigkeeper file
       BigkeeperParser.parse("#{path}/Bigkeeper")
 
       modules = PodfileOperator.new.modules_with_type("#{path}/Podfile",
                                 BigkeeperParser.module_names, ModuleType::PATH)
-
       branch_name = GitOperator.new.current_branch(path)
-      Logger.error("Not a feature branch, exit.") unless branch_name.include? 'feature'
+
+      Logger.error("Not a #{GitflowType.name(type)} branch, exit.") unless branch_name.include? GitflowType.name(type)
 
       # Rebase modules and modify podfile as git
       modules.each do |module_name|
-        ModuleService.new.finish(path, user, module_name)
+        ModuleService.new.finish(path, user, module_name, branch_name, type)
       end
 
-      BigkeeperParser.module_names.each do |module_name|
-        module_git = BigkeeperParser.module_git(module_name)
-        PodfileOperator.new.find_and_replace("#{path}/Podfile",
-                                             module_name,
-                                             ModuleType::GIT,
-                                             GitInfo.new(module_git, GitType::BRANCH, 'develop'))
-      end
+      Logger.highlight("Finish branch '#{branch_name}' for 'Home'")
 
       # pod install
       PodOperator.pod_install(path)
 
-      Logger.highlight("Finish branch '#{branch_name}' for 'Home'")
+      modules.each do |module_name|
+        module_git = BigkeeperParser.module_git(module_name)
+        PodfileOperator.new.find_and_replace("#{path}/Podfile",
+                                             module_name,
+                                             ModuleType::GIT,
+                                             GitInfo.new(module_git, GitType::BRANCH, GitflowType.base_branch(type)))
+      end
+
       # Push home changes to remote
-      GitService.new.verify_push(path, "finish #{GitflowType.name(GitflowType::FEATURE)} #{branch_name}", branch_name, 'Home')
+      GitService.new.verify_push(path, "finish branch #{branch_name}", branch_name, 'Home')
 
       # Rebase Home
-      GitService.new.verify_rebase(path, 'develop', 'Home')
+      GitService.new.verify_rebase(path, GitflowType.base_branch(type), 'Home')
 
       `open #{BigkeeperParser.home_pulls()}`
     ensure
