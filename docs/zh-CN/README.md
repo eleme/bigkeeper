@@ -11,7 +11,7 @@
 [![License](https://img.shields.io/badge/license-MIT-000000.svg)](https://github.com/BigKeeper/big-keeper/blob/master/LICENSE)
 [![Gitter](https://img.shields.io/gitter/room/BigKeeper/BigKeeper.svg)](https://gitter.im/Big-Keeper/Lobby)
 
-bigkeeper 是一个** iOS&Android 模块化项目**效率提升工具，使用这个工具后，开发者**在主项目内**即可完成**包括其他业务模块在内**所有代码的编写和管理。
+bigkeeper 是一个 **iOS&Android 模块化项目**效率提升工具，使用这个工具后，开发者**在主项目内**即可完成**包括其他业务模块在内**所有代码的编写和管理。
 
 > 注：目前只支持依赖 CocoaPods 管理的模块化工程。
 
