@@ -16,12 +16,12 @@ module BigKeeper
       if GitOperator.new.has_branch(path, "release/#{version}")
         if GitOperator.new.current_branch(path) == "release/#{version}"
           GitOperator.new.commit(path, "release: V #{version}")
-          GitOperator.new.first_push(path, "release/#{version}")
+          GitOperator.new.push_to_remote(path, "release/#{version}")
           GitflowOperator.new.finish_release(path, version)
           if GitOperator.new.current_branch(path) == "master"
             GitOperator.new.tag(path, version)
           else
-            GitOperator.new.git_checkout(path, "master")
+            GitOperator.new.checkout(path, "master")
             GitOperator.new.tag(path, version)
           end
         else
@@ -43,10 +43,10 @@ module BigKeeper
       # step 1 checkout release
       if GitOperator.new.current_branch(project_path) != "release/#{version}"
         if GitOperator.new.has_branch(project_path, "release/#{version}")
-          GitOperator.new.git_checkout(project_path, "release/#{version}")
+          GitOperator.new.checkout(project_path, "release/#{version}")
         else
           GitflowOperator.new.start(project_path, version, GitflowType::RELEASE)
-          GitOperator.new.first_push(project_path, "release/#{version}")
+          GitOperator.new.push_to_remote(project_path, "release/#{version}")
         end
       end
 
