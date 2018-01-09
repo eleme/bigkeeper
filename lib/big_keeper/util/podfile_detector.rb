@@ -21,7 +21,7 @@ class PodfileDetector
       podfile_lines.collect do |sentence|
       deal_podfile_line(sentence) unless sentence =~(/(\d+.){1,2}\d+/)
       end
-      return $unlock_pod_list
+      $unlock_pod_list
       # p $unlock_pod_list
   end
 
@@ -31,7 +31,7 @@ class PodfileDetector
       if !pod_model.name.empty? && pod_model.configurations != '[\'Debug\']' && pod_model.path == nil && pod_model.tag == nil
             $unlock_pod_list << pod_model.name unless @modular_list.include?(pod_model.name)
       end
-      return pod_model
+      pod_model
     end
   end
 

@@ -15,7 +15,7 @@ require 'big_keeper/command/feature&hotfix/pull'
 require 'big_keeper/command/feature&hotfix/push'
 require 'big_keeper/command/release/release_home'
 require 'big_keeper/command/release/release_module'
-require 'big_keeper/command/pod/podfile_lock'
+require 'big_keeper/command/pod/podfile'
 
 require 'big_keeper/service/git_service'
 
@@ -239,6 +239,13 @@ module BigKeeper
     podfile.command :lock do |lock|
       lock.action do |global_options, options, args|
         podfile_lock(path)
+      end
+    end
+
+    podfile.desc 'Update modules should be upgrade.'
+    podfile.command :update do |lock|
+      lock.action do |global_options, options, args|
+        podfile_modules_update(path)
       end
     end
   end
