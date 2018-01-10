@@ -5,11 +5,11 @@ require 'big_keeper/util/logger'
 
 module BigKeeper
 
-class PodfileModularDetector
-  @modular_list = []
+class PodfileModuleDetector
+  @module_list = []
 
   def initialize(main_path)
-    @modular_list = BigkeeperParser.module_names
+    @module_list = BigkeeperParser.module_names
     @main_path = main_path
     @update_modules = {}
     # check_version_list
@@ -17,13 +17,13 @@ class PodfileModularDetector
 
   #检查需要更新业务库列表
   def check_version_list
-    if @modular_list.empty?
+    if @module_list.empty?
       Logger.highlight('There is not any module should to be check.')
       return
     else
       Logger.highlight('Checking..')
-      @modular_list.each do |modular_name|
-        get_pod_search_result(modular_name)
+      @module_list.each do |module_name|
+        get_pod_search_result(module_name)
       end
 
       #获得pod信息后

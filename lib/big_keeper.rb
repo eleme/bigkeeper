@@ -26,7 +26,7 @@ include GLI::App
 
 module BigKeeper
   # Your code goes here...
-  program_desc 'Efficiency improvement for iOS&Android modular development, iOSer&Android using this tool can make modular development easier.'
+  program_desc 'Efficiency improvement for iOS&Android module development, iOSer&Android using this tool can make module development easier.'
 
   flag %i[p path], default_value: './'
   flag %i[v ver], default_value: 'Version in Bigkeeper file'

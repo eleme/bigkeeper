@@ -6,12 +6,12 @@ module BigKeeper
 
 class PodfileDetector
 
-  attr_accessor :modular_list, :main_path
+  attr_accessor :module_list, :main_path
   $unlock_pod_list = []
   $modify_pod_list = {}
 
-  def initialize(main_path,modular_list)
-    @modular_list = modular_list
+  def initialize(main_path,module_list)
+    @module_list = module_list
     @main_path = main_path
   end
 
@@ -29,7 +29,7 @@ class PodfileDetector
     if sentence.include?('pod ')
       pod_model = Podfile_Modle.new(sentence)
       if !pod_model.name.empty? && pod_model.configurations != '[\'Debug\']' && pod_model.path == nil && pod_model.tag == nil
-            $unlock_pod_list << pod_model.name unless @modular_list.include?(pod_model.name)
+            $unlock_pod_list << pod_model.name unless @module_list.include?(pod_model.name)
       end
       pod_model
     end
@@ -72,7 +72,7 @@ class PodfileDetector
   def get_pod_name(sentence)
     pod_model = deal_podfile_line(sentence)
     pod_name = pod_model.name if pod_model != nil && pod_model.configurations.nil
-    @unlock_pod_list << pod_name unless @modular_list.include pod_name
+    @unlock_pod_list << pod_name unless @module_list.include pod_name
   end
 
 
