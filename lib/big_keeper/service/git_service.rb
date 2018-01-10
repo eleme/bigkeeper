@@ -104,12 +104,13 @@ module BigKeeper
 
     def pull(path, branch_name)
       git = GitOperator.new
-      if git.current_branch(path) == branch_name
+      current_branch_name = git.current_branch(path)
+      if current_branch_name == branch_name
         git.pull(path)
       else
-        Dir.chdir(path) do
-          `git pull origin #{branch_name}:#{branch_name}`
-        end
+        git.checkout(path, branch_name)
+        git.pull(path)
+        git.checkout(path, current_branch_name)
       end
     end
 
@@ -149,6 +150,10 @@ module BigKeeper
     end
 
     def verify_rebase(path, branch_name, name)
+
+      # pull rebased branch
+      pull(path, branch_name)
+
       Dir.chdir(path) do
         IO.popen("git rebase #{branch_name} --ignore-whitespace") do |io|
           unless io.gets
@@ -169,8 +174,10 @@ module BigKeeper
                   5.Run 'finish' again.")
           end
         end
-        `git push -f origin #{branch_name}`
-        GitOperator.new.checkout(path, 'develop')
+        if GitOperator.new.current_branch(path) != 'develop' && GitOperator.new.current_branch(path) != 'master'
+          `git push -f`
+          GitOperator.new.checkout(path, branch_name)
+        end
       end
     end
   end

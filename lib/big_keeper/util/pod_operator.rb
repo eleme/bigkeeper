@@ -6,6 +6,7 @@ module BigKeeper
       Logger.highlight('Start pod install, waiting...')
 
       # pod install
+      `pod repo update`
       `pod install --project-directory=#{path}`
 
       Logger.highlight('Finish pod install.')
