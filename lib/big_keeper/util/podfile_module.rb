@@ -32,24 +32,6 @@ class PodfileModularDetector
   end
 
 
-  # #找到本地repo
-  # def find_source_repo(path)
-  #   cocoapods_repo_path = File.expand_path('~')+'/.cocoapods/repos/'
-  #   pn = Pathname.new(cocoapods_repo_path)
-  #   pn.children.each do |pn|
-  #     source_name = BigkeeperParser.source
-  #     p pn.basename.to_s if pn.directory?
-  #     Dir.entries(pn.dirname).select do |tag_dir|
-  #       p tag_dir.to_s
-  #     end
-  #   end
-  #   # Dir.entries(File.expand_path('~')+'/.cocoapods/repos/').select { |pn|
-  #   #   p pn
-  #   #  repo_name = File.basename(path)
-  #   # }
-  #
-  # end
-
   def get_pod_search_result(pod_name)
     #输入pod Search 结果
     `pod search #{pod_name} --ios --simple >> #{@main_path}/bigKeeperPodInfo.tmp`
