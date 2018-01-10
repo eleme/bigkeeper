@@ -13,7 +13,7 @@ module BigKeeper
                                                       BigkeeperParser.module_names, ModuleType::PATH)
 
       modules.each do |module_name|
-        ModuleService.new.pull(path, user, module_name, branch_name)
+        ModuleService.new.pull(path, user, module_name, branch_name, type)
       end
 
       Logger.highlight("Pull branch '#{branch_name}' for 'Home'...")
