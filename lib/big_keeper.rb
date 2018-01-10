@@ -13,10 +13,10 @@ require 'big_keeper/command/feature&hotfix/switch'
 require 'big_keeper/command/feature&hotfix/update'
 require 'big_keeper/command/feature&hotfix/pull'
 require 'big_keeper/command/feature&hotfix/push'
+require 'big_keeper/command/pod/podfile'
 require 'big_keeper/command/feature&hotfix/delete'
 require 'big_keeper/command/release/home'
 require 'big_keeper/command/release/module'
-require 'big_keeper/command/pod/podfile_lock'
 
 require 'big_keeper/service/git_service'
 
@@ -26,7 +26,7 @@ include GLI::App
 
 module BigKeeper
   # Your code goes here...
-  program_desc 'Efficiency improvement for iOS&Android modular development, iOSer&Android using this tool can make modular development easier.'
+  program_desc 'Efficiency improvement for iOS&Android module development, iOSer&Android using this tool can make module development easier.'
 
   flag %i[p path], default_value: './'
   flag %i[v ver], default_value: 'Version in Bigkeeper file'
@@ -274,6 +274,13 @@ module BigKeeper
     podfile.command :lock do |lock|
       lock.action do |global_options, options, args|
         podfile_lock(path)
+      end
+    end
+
+    podfile.desc 'Update modules should be upgrade.'
+    podfile.command :update do |lock|
+      lock.action do |global_options, options, args|
+        podfile_modules_update(path)
       end
     end
   end

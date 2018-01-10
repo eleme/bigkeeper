@@ -115,6 +115,27 @@ module BigKeeper
       end
     end
 
+    def find_and_upgrade(podfile,dictionary)
+      temp_file = Tempfile.new('.Podfile.tmp')
+      begin
+        File.open(podfile, 'r') do |file|
+          file.each_line do |line|
+            pod_model = PodfileDetector.get_pod_model(line)
+            if pod_model != nil && pod_model.name != nil && dictionary[pod_model.name] != nil
+                temp_file.puts generate_pod_config(pod_model.name,dictionary[pod_model.name],pod_model.comment)
+            else
+                temp_file.puts line
+            end
+          end
+        end
+        temp_file.close
+        FileUtils.mv(temp_file.path, podfile)
+      ensure
+        temp_file.close
+        temp_file.unlink
+      end
+    end
+
     def podspec_change(podspec_file, version, module_name)
       temp_file = Tempfile.new(".#{module_name}.podspec")
       begin
