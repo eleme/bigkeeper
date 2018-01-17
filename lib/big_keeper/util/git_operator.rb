@@ -82,7 +82,7 @@ module BigKeeper
 
     def pull(path)
       Dir.chdir(path) do
-        p `git pull`
+        `git pull`
       end
     end
 
@@ -115,13 +115,13 @@ module BigKeeper
 
     def del_local(path, branch_name)
       Dir.chdir(path) do
-        p `git branch -D #{branch_name}`
+        `git branch -D #{branch_name}`
       end
     end
 
     def del_remote(path, branch_name)
       Dir.chdir(path) do
-        p `git push origin --delete #{branch_name}`
+        `git push origin --delete #{branch_name}`
       end
     end
 
@@ -131,8 +131,8 @@ module BigKeeper
 
     def tag(path, version)
       Dir.chdir(path) do
-        p `git tag -a #{version} -m "release: V #{version}" master`
-        p `git push --tags`
+        `git tag -a #{version} -m "release: V #{version}" master`
+        `git push --tags`
       end
     end
   end
