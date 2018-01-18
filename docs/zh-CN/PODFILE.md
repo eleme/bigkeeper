@@ -1,15 +1,15 @@
 # podfile - podfile版本控制流程
 
-直接在命令行执行  `bigkeeper podfile --help` 可以查看其提供的所有功能
+直接在命令行执行  `big podfile --help` 可以查看其提供的所有功能
 
 ```
 NAME
     podfile - Podfile operation
 
 SYNOPSIS
-    bigkeeper [global options] podfile [command options] detect
-    bigkeeper [global options] podfile [command options] lock
-    bigkeeper [global options] podfile [command options] upgrade
+    big [global options] podfile [command options] detect
+    big [global options] podfile [command options] lock
+    big [global options] podfile [command options] upgrade
 
 COMMAND OPTIONS
     --pod, --podfile=arg - (default: none)

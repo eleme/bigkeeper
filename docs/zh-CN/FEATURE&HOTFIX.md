@@ -2,7 +2,7 @@
 
 > 注：hotfix 除了基础分支是 **master**，其他操作和 feature 一致，所以我们这里以 feature 为例说明。
 
-直接在命令行执行 `bigkeeper feature --help` 可以查看其提供的所有功能：
+直接在命令行执行 `big feature --help` 可以查看其提供的所有功能：
 
 ```
 NAME
@@ -10,14 +10,14 @@ NAME
 
 
 SYNOPSIS
-    bigkeeper [global options] feature delete
-    bigkeeper [global options] feature finish
-    bigkeeper [global options] feature list
-    bigkeeper [global options] feature pull
-    bigkeeper [global options] feature push
-    bigkeeper [global options] feature start
-    bigkeeper [global options] feature switch
-    bigkeeper [global options] feature update
+    big [global options] feature delete
+    big [global options] feature finish
+    big [global options] feature list
+    big [global options] feature pull
+    big [global options] feature push
+    big [global options] feature start
+    big [global options] feature switch
+    big [global options] feature update
 
 COMMANDS
     delete - Delete feature with name
@@ -69,7 +69,7 @@ feature 的工作区主要由两部分组成：
 主项目和每个相关业务模块又有各自的工作区，由三个部分组成：
 
 - 当前代码区改动；
-- stash 缓存区，当用户需要切换新的 feature 时，对于用户来不及提交的改动，我们会缓存到各个项目的 stash 中，（PS：所以代码突然不见了不要担心，都在 git 的 stash 里面），而当用户切换回某个 feature 时，我们会把和该 feature 分支同名的 stash 恢复回来，从而使用户可以继续开发之前未完成的部分，因为需要通过 feature 的分支名来匹配 stash，而 git stash 又没有提供给 stash 命名的功能，所以我们实现了 [big-stash](https://github.com/BigKeeper/big-stash) 来完成这个功能；
+- stash 缓存区，当用户需要切换新的 feature 时，对于用户来不及提交的改动，我们会缓存到各个项目的 stash 中，（PS：所以代码突然不见了不要担心，都在 git 的 stash 里面），而当用户切换回某个 feature 时，我们会把和该 feature 分支同名的 stash 恢复回来，从而使用户可以继续开发之前未完成的部分，因为需要通过 feature 的分支名来匹配 stash，而 git stash 又没有提供给 stash 命名的功能，所以我们实现了 [bigstash](https://github.com/BigKeeper/bigstash) 来完成这个功能；
 - git。
 
 ## 工作区缓存流程

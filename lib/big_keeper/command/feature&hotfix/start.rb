@@ -5,6 +5,7 @@ require 'big_keeper/util/gitflow_operator'
 require 'big_keeper/util/bigkeeper_parser'
 require 'big_keeper/util/logger'
 require 'big_keeper/util/pod_operator'
+require 'big_keeper/util/xcode_operator'
 
 require 'big_keeper/model/podfile_type'
 
@@ -30,14 +31,18 @@ module BigKeeper
       # Stash current branch
       StashService.new.stash_all(path, branch_name, user, stash_modules)
 
-      # Handle modules
-      if modules
-        # Verify input modules
-        BigkeeperParser.verify_modules(modules)
-      else
-        # Get all modules if not specified
-        modules = BigkeeperParser.module_names
-      end
+      # Verify input modules
+      modules = [] unless modules
+      BigkeeperParser.verify_modules(modules)
+
+      # # Handle modules
+      # if modules
+      #   # Verify input modules
+      #   BigkeeperParser.verify_modules(modules)
+      # else
+      #   # Get all modules if not specified
+      #   modules = BigkeeperParser.module_names
+      # end
 
       Logger.highlight("Add branch '#{branch_name}' for 'Home'...")
       # Start home feature
@@ -49,13 +54,13 @@ module BigKeeper
       end
 
       # pod install
-      PodOperator.pod_install(path)
+      PodOperator.pod_install(path, true) unless modules.empty?
+
+      # Open home workspace
+      XcodeOperator.open_workspace(path)
 
       # Push home changes to remote
       GitService.new.verify_push(path, "init #{GitflowType.name(type)} #{full_name}", branch_name, 'Home')
-
-      # Open home workspace
-      `open #{path}/*.xcworkspace`
     ensure
     end
   end

@@ -2,8 +2,8 @@
 
 Thanks for considering to open an issue. Before you submit your issue, please confirm these boxes are checked.
 
-- [ ] I have read the [README.md](https://github.com/BigKeeper/big-keeper/blob/master/README.md), but there is no information I need.
-- [ ] I have searched in [existing issues](https://github.com/BigKeeper/big-keeper/issues?utf8=%E2%9C%93&q=is%3Aissue), but did find a same one.
+- [ ] I have read the [README.md](https://github.com/BigKeeper/bigkeeper/blob/master/README.md), but there is no information I need.
+- [ ] I have searched in [existing issues](https://github.com/BigKeeper/bigkeeper/issues?utf8=%E2%9C%93&q=is%3Aissue), but did find a same one.
 
 ### Issue Description
 

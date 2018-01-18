@@ -4,7 +4,7 @@ $LOAD_PATH.unshift(lib) unless $LOAD_PATH.include?(lib)
 require "big_keeper/version"
 
 Gem::Specification.new do |spec|
-  spec.name          = "big_keeper"
+  spec.name          = "bigkeeper"
   spec.version       = BigKeeper::VERSION
   spec.authors       = ["mmoaay"]
   spec.email         = ["mmoaay@sina.com"]

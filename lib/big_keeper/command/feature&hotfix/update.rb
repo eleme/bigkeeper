@@ -5,6 +5,7 @@ require 'big_keeper/util/gitflow_operator'
 require 'big_keeper/util/bigkeeper_parser'
 require 'big_keeper/util/logger'
 require 'big_keeper/util/pod_operator'
+require 'big_keeper/util/xcode_operator'
 
 require 'big_keeper/model/podfile_type'
 
@@ -26,14 +27,18 @@ module BigKeeper
       current_modules = PodfileOperator.new.modules_with_type("#{path}/Podfile",
                                 BigkeeperParser.module_names, ModuleType::PATH)
 
-      # Handle modules
-      if modules
-        # Verify input modules
-        BigkeeperParser.verify_modules(modules)
-      else
-        # Get all modules if not specified
-        modules = BigkeeperParser.module_names
-      end
+      # Verify input modules
+      modules = [] unless modules
+      BigkeeperParser.verify_modules(modules)
+
+      # # Handle modules
+      # if modules
+      #   # Verify input modules
+      #   BigkeeperParser.verify_modules(modules)
+      # else
+      #   # Get all modules if not specified
+      #   modules = BigkeeperParser.module_names
+      # end
 
       Logger.highlight("Start to update modules for branch '#{branch_name}'...")
 
@@ -53,10 +58,10 @@ module BigKeeper
         end
 
         # pod install
-        PodOperator.pod_install(path)
+        PodOperator.pod_install(path, false)
 
         # Open home workspace
-        `open #{path}/*.xcworkspace`
+        XcodeOperator.open_workspace(path)
       end
     ensure
     end
