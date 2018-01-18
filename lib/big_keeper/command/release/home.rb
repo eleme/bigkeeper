@@ -59,7 +59,7 @@ module BigKeeper
       # step 3 change Info.plist value
       InfoPlistOperator.new.change_version_build(project_path, version)
 
-      PodOperator.pod_install(project_path)
+      PodOperator.pod_install(project_path, true)
       `open #{project_path}/*.xcworkspace`
     end
   end

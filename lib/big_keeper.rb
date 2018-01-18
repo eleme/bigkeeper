@@ -288,7 +288,7 @@ module BigKeeper
   desc 'Show version of bigkeeper'
   command :version do |version|
     version.action do |global_options, options, args|
-      p "big-keeper (#{VERSION})"
+      p "bigkeeper (#{VERSION})"
     end
 end
   exit run(ARGV)
