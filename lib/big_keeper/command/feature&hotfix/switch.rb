@@ -2,6 +2,7 @@
 require 'big_stash/stash_operator'
 require 'big_keeper/util/logger'
 require 'big_keeper/util/pod_operator'
+require 'big_keeper/util/xcode_operator'
 
 module BigKeeper
   def self.switch_to(path, version, user, name, type)
@@ -36,10 +37,10 @@ module BigKeeper
       end
 
       # pod install
-      PodOperator.pod_install(path)
+      PodOperator.pod_install(path, false)
 
       # Open home workspace
-      `open #{path}/*.xcworkspace`
+      XcodeOperator.open_workspace(path)
     ensure
     end
   end

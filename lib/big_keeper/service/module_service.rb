@@ -36,6 +36,22 @@ module BigKeeper
       GitService.new.verify_push(module_full_path, comment, home_branch_name, module_name)
     end
 
+    def rebase(path, user, module_name, home_branch_name, type)
+      Logger.highlight("Rebase '#{GitflowType.base_branch(type)}'\
+                        to branch '#{home_branch_name}' for module \
+                        '#{module_name}'...")
+
+      verify_module(path, user, module_name, home_branch_name, type)
+
+      module_full_path = BigkeeperParser.module_full_path(path, user, module_name)
+
+      Logger.error("You have some changes in branch \
+        '#{home_branch_name}' for module '#{module_name}'. \
+        Use 'push' first please") if GitOperator.new.has_changes(module_full_path)
+
+      GitService.new.verify_rebase(module_full_path, GitflowType.base_branch(type), module_name)
+    end
+
     def pull(path, user, module_name, home_branch_name, type)
       Logger.highlight("Pull branch '#{home_branch_name}' for module '#{module_name}'...")
 

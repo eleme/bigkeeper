@@ -1,13 +1,13 @@
 # release - 功能开发流程
 
-直接在命令行执行 `big-keeper release --help` 可以查看其提供的所有功能：
+直接在命令行执行 `big release --help` 可以查看其提供的所有功能：
 ```
 NAME
     release - Release operations
 
 SYNOPSIS
-    big-keeper [global options] release home
-    big-keeper [global options] release module
+    big [global options] release home
+    big [global options] release module
 
 COMMANDS
     home   - Release home project operations

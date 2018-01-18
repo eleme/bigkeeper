@@ -1,7 +1,7 @@
 PATH
   remote: .
   specs:
-    big_keeper (0.7.1)
+    bigkeeper (0.7.3)
       big_stash (~> 0.1)
       cocoapods
       colorize
@@ -100,8 +100,8 @@ PLATFORMS
   ruby
 
 DEPENDENCIES
-  big_keeper!
   big_stash (~> 0.1)
+  bigkeeper!
   bundler (~> 1.15)
   cocoapods
   colorize
