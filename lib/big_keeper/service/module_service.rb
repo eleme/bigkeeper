@@ -73,7 +73,7 @@ module BigKeeper
       verify_module(path, user, module_name, home_branch_name, type)
 
       module_git = BigkeeperParser.module_git(module_name)
-      PodfileOperator.new.find_and_replace("#{path}/Podfile",
+      DepService.dep_operator(path).find_and_replace(
                                            module_name,
                                            ModuleType::GIT,
                                            GitInfo.new(module_git, GitType::BRANCH, home_branch_name))
@@ -95,7 +95,7 @@ module BigKeeper
       verify_module(path, user, module_name, home_branch_name, type)
 
       module_path = BigkeeperParser.module_path(user, module_name)
-      PodfileOperator.new.find_and_replace("#{path}/Podfile",
+      DepService.dep_operator(path).find_and_replace(
                                            module_name,
                                            ModuleType::PATH,
                                            module_path)
@@ -115,7 +115,7 @@ module BigKeeper
 
       module_git = BigkeeperParser.module_git(module_name)
 
-      PodfileOperator.new.find_and_replace("#{path}/Podfile",
+      DepService.dep_operator(path).find_and_replace(
                                            module_name,
                                            ModuleType::GIT,
                                            GitInfo.new(module_git, GitType::BRANCH, GitflowType.base_branch(type)))

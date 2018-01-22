@@ -25,7 +25,7 @@ module BigKeeper
 
       GitService.new.verify_home_branch(path, branch_name, OperateType::START)
 
-      stash_modules = PodfileOperator.new.modules_with_type("#{path}/Podfile",
+      stash_modules = DepService.dep_operator(path).modules_with_type(
                                 BigkeeperParser.module_names, ModuleType::PATH)
 
       # Stash current branch
@@ -54,10 +54,10 @@ module BigKeeper
       end
 
       # pod install
-      PodOperator.pod_install(path, true) unless modules.empty?
+      DepService.dep_operator(path).install(, true) unless modules.empty?
 
       # Open home workspace
-      XcodeOperator.open_workspace(path)
+      DepService.dep_operator(path).open
 
       # Push home changes to remote
       GitService.new.verify_push(path, "init #{GitflowType.name(type)} #{full_name}", branch_name, 'Home')

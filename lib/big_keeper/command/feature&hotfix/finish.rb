@@ -16,8 +16,8 @@ module BigKeeper
       # Parse Bigkeeper file
       BigkeeperParser.parse("#{path}/Bigkeeper")
 
-      modules = PodfileOperator.new.modules_with_type("#{path}/Podfile",
-                                BigkeeperParser.module_names, ModuleType::PATH)
+      modules = DepService.dep_operator(path).modules_with_type(BigkeeperParser.module_names,
+        ModuleType::PATH)
       branch_name = GitOperator.new.current_branch(path)
 
       Logger.error("Not a #{GitflowType.name(type)} branch, exit.") unless branch_name.include? GitflowType.name(type)
@@ -30,18 +30,18 @@ module BigKeeper
       Logger.highlight("Finish branch '#{branch_name}' for 'Home'")
 
       # pod install
-      PodOperator.pod_install(path, false)
+      DepService.dep_operator(path).install(, false)
 
       modules.each do |module_name|
         module_git = BigkeeperParser.module_git(module_name)
-        PodfileOperator.new.find_and_replace("#{path}/Podfile",
+        DepService.dep_operator(path).find_and_replace(
                                              module_name,
                                              ModuleType::GIT,
                                              GitInfo.new(module_git, GitType::BRANCH, GitflowType.base_branch(type)))
       end
 
       # Open home workspace
-      XcodeOperator.open_workspace(path)
+      DepService.dep_operator(path).open
 
       # Push home changes to remote
       GitService.new.verify_push(path, "finish branch #{branch_name}", branch_name, 'Home')
