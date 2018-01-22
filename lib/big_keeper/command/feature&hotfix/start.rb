@@ -7,6 +7,8 @@ require 'big_keeper/util/logger'
 require 'big_keeper/util/pod_operator'
 require 'big_keeper/util/xcode_operator'
 
+require 'big_keeper/dependency/dep_service'
+
 require 'big_keeper/model/podfile_type'
 
 require 'big_keeper/service/stash_service'
@@ -54,7 +56,7 @@ module BigKeeper
       end
 
       # pod install
-      DepService.dep_operator(path).install(, true) unless modules.empty?
+      DepService.dep_operator(path).install(true) unless modules.empty?
 
       # Open home workspace
       DepService.dep_operator(path).open

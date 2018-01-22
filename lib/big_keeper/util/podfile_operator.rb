@@ -103,6 +103,6 @@ module BigKeeper
       end
     end
 
-    private :generate_module_config,:generate_pod_config
+    private :generate_pod_config
   end
 end

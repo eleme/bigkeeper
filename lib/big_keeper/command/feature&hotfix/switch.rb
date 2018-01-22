@@ -4,6 +4,8 @@ require 'big_keeper/util/logger'
 require 'big_keeper/util/pod_operator'
 require 'big_keeper/util/xcode_operator'
 
+require 'big_keeper/dependency/dep_service'
+
 module BigKeeper
   def self.switch_to(path, version, user, name, type)
     begin
@@ -37,7 +39,7 @@ module BigKeeper
       end
 
       # pod install
-      DepService.dep_operator(path).install(, false)
+      DepService.dep_operator(path).install(false)
 
       # Open home workspace
       DepService.dep_operator(path).open

@@ -49,7 +49,7 @@ module BigKeeper
     end
 
     def open
-      PodOperator.open_workspace(@path)
+      XcodeOperator.open_workspace(@path)
     end
 
     def generate_module_config(module_name, module_type, source)
@@ -75,4 +75,5 @@ module BigKeeper
     end
 
     private :generate_module_config
+  end
 end

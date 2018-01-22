@@ -10,23 +10,23 @@ module BigKeeper
     GRADLE = 2
 
     def self.type(path)
-      if !FileOperator.definitely_exists?("#{path}/Podfile")
-        p 'cocoapods'
+      if FileOperator.definitely_exists?("#{path}/Podfile")
         COCOAPODS
-      elsif !FileOperator.definitely_exists?("#{path}/build.gradle")
+      elsif FileOperator.definitely_exists?("#{path}/build.gradle")
         GRADLE
       else
         NONE
       end
     end
 
-    def self.operator(type)
-      if COCOAPODS == type
-        DepPodOperator.new
-      elsif GRADLE == type
-        DepGradleOperator.new
+    def self.operator(path)
+      operator_type = type(path)
+      if COCOAPODS == operator_type
+        DepPodOperator.new(path)
+      elsif GRADLE == operator_type
+        DepGradleOperator.new(path)
       else
-        DepOperator.new
+        DepOperator.new(path)
       end
     end
   end

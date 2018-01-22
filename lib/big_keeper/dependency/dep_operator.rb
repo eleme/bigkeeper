@@ -22,4 +22,5 @@ module BigKeeper
     def open
       raise "You should override this method in subclass."
     end
+  end
 end

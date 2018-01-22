@@ -1,5 +1,7 @@
 require 'big_keeper/util/logger'
 
+require 'big_keeper/dependency/dep_service'
+
 module BigKeeper
   def self.reabse(path, user, type)
     begin
