@@ -121,7 +121,7 @@ module BigKeeper
         Logger.highlight("Delete local branch '#{branch_name}' for '#{name}'...")
 
         if git.current_branch(path) == branch_name
-          git.dicard(path)
+          git.discard(path)
           git.checkout(path, GitflowType.base_branch(type))
         end
         git.del_local(path, branch_name)
