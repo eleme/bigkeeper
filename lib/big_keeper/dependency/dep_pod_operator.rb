@@ -18,11 +18,35 @@ module BigKeeper
     end
 
     def modules_with_branch(modules, branch)
-      modules_with_regex(modules, /pod\s*'#{module_name}',\s*:git\s*=>\s*,\s*:branch\s*=>\s*'#{branch}'\s*/)
+      file = "#{@path}/Podfile"
+      matched_modules = []
+      File.open(file, 'r') do |file|
+        file.each_line do |line|
+          modules.each do |module_name|
+            if line =~ /pod\s*'#{module_name}',\s*:git\s*=>\s*,\s*:branch\s*=>\s*'#{branch}'\s*/
+              matched_modules << module_name
+              break
+            end
+          end
+        end
+      end
+      matched_modules
     end
 
     def modules_with_type(modules, type)
-      modules_with_regex(modules, /pod\s*'#{module_name}',#{ModuleType.regex(type)}/)
+      file = "#{@path}/Podfile"
+      matched_modules = []
+      File.open(file, 'r') do |file|
+        file.each_line do |line|
+          modules.each do |module_name|
+            if line =~ /pod\s*'#{module_name}',#{ModuleType.regex(type)}/
+              matched_modules << module_name
+              break
+            end
+          end
+        end
+      end
+      matched_modules
     end
 
     def find_and_replace(module_name, module_type, source)
@@ -55,22 +79,6 @@ module BigKeeper
       XcodeOperator.open_workspace(@path)
     end
 
-    def modules_with_regex(modules, regex)
-      file = "#{@path}/Podfile"
-      matched_modules = []
-      File.open(file, 'r') do |file|
-        file.each_line do |line|
-          modules.each do |module_name|
-            if line =~ regex
-              matched_modules << module_name
-              break
-            end
-          end
-        end
-      end
-      matched_modules
-    end
-
     def generate_module_config(module_name, module_type, source)
       module_config = ''
       if ModuleType::PATH == module_type
@@ -93,6 +101,6 @@ module BigKeeper
       module_config
     end
 
-    private :generate_module_config,:modules_with_regex
+    private :generate_module_config
   end
 end
