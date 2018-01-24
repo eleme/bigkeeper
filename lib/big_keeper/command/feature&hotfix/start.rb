@@ -50,6 +50,9 @@ module BigKeeper
       # Start home feature
       GitService.new.start(path, full_name, type)
 
+      # Backup podfile
+      DepService.dep_operator(path).backup
+
       # Modify podfile as path and Start modules feature
       modules.each do |module_name|
         ModuleService.new.add(path, user, module_name, full_name, type)

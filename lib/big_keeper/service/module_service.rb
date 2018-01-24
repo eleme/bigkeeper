@@ -67,24 +67,31 @@ module BigKeeper
       verify_module(path, user, module_name, home_branch_name, type)
     end
 
+    def publish(path, user, module_name, home_branch_name, type)
+      Logger.highlight("Publish branch '#{home_branch_name}' for module '#{module_name}'...")
+
+      verify_module(path, user, module_name, home_branch_name, type)
+
+      GitService.new.verify_push(module_full_path, "publish branch #{home_branch_name}", home_branch_name, module_name)
+
+      module_full_path = BigkeeperParser.module_full_path(path, user, module_name)
+      GitService.new.verify_rebase(module_full_path, GitflowType.base_branch(type), module_name)
+
+      `open #{BigkeeperParser.module_pulls(module_name)}`
+    end
+
     def finish(path, user, module_name, home_branch_name, type)
       Logger.highlight("Finish branch '#{home_branch_name}' for module '#{module_name}'...")
 
       verify_module(path, user, module_name, home_branch_name, type)
+
+      GitService.new.verify_push(module_full_path, "finish branch #{home_branch_name}", home_branch_name, module_name)
 
       module_git = BigkeeperParser.module_git(module_name)
       DepService.dep_operator(path).find_and_replace(
                                            module_name,
                                            ModuleType::GIT,
                                            GitInfo.new(module_git, GitType::BRANCH, home_branch_name))
-
-      module_full_path = BigkeeperParser.module_full_path(path, user, module_name)
-
-      GitService.new.verify_push(module_full_path, "finish branch #{home_branch_name}", home_branch_name, module_name)
-
-      GitService.new.verify_rebase(module_full_path, GitflowType.base_branch(type), module_name)
-
-      `open #{BigkeeperParser.module_pulls(module_name)}`
     end
 
     def add(path, user, module_name, name, type)

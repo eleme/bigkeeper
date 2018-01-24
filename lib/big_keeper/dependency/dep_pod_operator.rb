@@ -2,24 +2,27 @@ require 'big_keeper/dependency/dep_operator'
 
 require 'big_keeper/util/pod_operator'
 require 'big_keeper/util/xcode_operator'
+require 'big_keeper/util/cache_operator'
 
 module BigKeeper
   # Operator for podfile
   class DepPodOperator < DepOperator
+    def backup
+      CacheOperator.new(@path).save('Podfile')
+    end
+
+    def recover
+      cache_operator = CacheOperator.new(@path)
+      cache_operator.load('Podfile')
+      cache_operator.clean
+    end
+
+    def modules_with_branch(modules, branch)
+      modules_with_regex(modules, /pod\s*'#{module_name}',\s*:git\s*=>\s*,\s*:branch\s*=>\s*'#{branch}'\s*/)
+    end
+
     def modules_with_type(modules, type)
-      file = "#{@path}/Podfile"
-      matched_modules = []
-      File.open(file, 'r') do |file|
-        file.each_line do |line|
-          modules.each do |module_name|
-            if line =~ /pod\s*'#{module_name}',#{ModuleType.regex(type)}/
-              matched_modules << module_name
-              break
-            end
-          end
-        end
-      end
-      matched_modules
+      modules_with_regex(modules, /pod\s*'#{module_name}',#{ModuleType.regex(type)}/)
     end
 
     def find_and_replace(module_name, module_type, source)
@@ -52,6 +55,22 @@ module BigKeeper
       XcodeOperator.open_workspace(@path)
     end
 
+    def modules_with_regex(modules, regex)
+      file = "#{@path}/Podfile"
+      matched_modules = []
+      File.open(file, 'r') do |file|
+        file.each_line do |line|
+          modules.each do |module_name|
+            if line =~ regex
+              matched_modules << module_name
+              break
+            end
+          end
+        end
+      end
+      matched_modules
+    end
+
     def generate_module_config(module_name, module_type, source)
       module_config = ''
       if ModuleType::PATH == module_type
@@ -74,6 +93,6 @@ module BigKeeper
       module_config
     end
 
-    private :generate_module_config
+    private :generate_module_config,:modules_with_regex
   end
 end

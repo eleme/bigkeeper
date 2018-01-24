@@ -7,6 +7,18 @@ module BigKeeper
       @path = path
     end
 
+    def backup
+      raise "You should override this method in subclass."
+    end
+
+    def recover
+      raise "You should override this method in subclass."
+    end
+
+    def modules_with_branch(modules, branch)
+      raise "You should override this method in subclass."
+    end
+
     def modules_with_type(modules, type)
       raise "You should override this method in subclass."
     end
