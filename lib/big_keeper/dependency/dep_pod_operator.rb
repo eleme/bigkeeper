@@ -17,13 +17,13 @@ module BigKeeper
       cache_operator.clean
     end
 
-    def modules_with_branch(modules, branch)
+    def modules_with_branch(modules, branch_name)
       file = "#{@path}/Podfile"
       matched_modules = []
       File.open(file, 'r') do |file|
         file.each_line do |line|
           modules.each do |module_name|
-            if line =~ /pod\s*'#{module_name}',\s*:git\s*=>\s*,\s*:branch\s*=>\s*'#{branch}'\s*/
+            if line =~ /pod\s*'#{module_name}'\s*,\s*:git\s*=>\s*\S*\s*,\s*:branch\s*=>\s*'#{branch_name}'\s*/
               matched_modules << module_name
               break
             end
@@ -39,7 +39,7 @@ module BigKeeper
       File.open(file, 'r') do |file|
         file.each_line do |line|
           modules.each do |module_name|
-            if line =~ /pod\s*'#{module_name}',#{ModuleType.regex(type)}/
+            if line =~ /pod\s*'#{module_name}'\s*,#{regex(type)}/
               matched_modules << module_name
               break
             end
@@ -47,6 +47,18 @@ module BigKeeper
         end
       end
       matched_modules
+    end
+
+    def regex(type)
+      if ModuleType::PATH == type
+        "\s*:path\s*=>\s*"
+      elsif ModuleType::GIT == type
+        "\s*:git\s*=>\s*"
+      elsif ModuleType::SPEC == type
+        "\s*'"
+      else
+        ""
+      end
     end
 
     def find_and_replace(module_name, module_type, source)
@@ -101,6 +113,6 @@ module BigKeeper
       module_config
     end
 
-    private :generate_module_config
+    private :generate_module_config, :regex
   end
 end

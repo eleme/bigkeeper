@@ -8,7 +8,7 @@ require 'big_keeper/util/bigkeeper_parser'
 
 require 'big_keeper/dependency/dep_service'
 
-require 'big_keeper/model/podfile_type'
+require 'big_keeper/dependency/dep_type'
 
 
 module BigKeeper

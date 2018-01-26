@@ -1,6 +1,6 @@
 require 'tempfile'
 require 'fileutils'
-require 'big_keeper/model/podfile_type'
+require 'big_keeper/dependency/dep_type'
 require 'big_keeper/util/podfile_detector'
 
 module BigKeeper

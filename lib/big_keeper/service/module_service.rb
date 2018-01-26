@@ -13,7 +13,7 @@ module BigKeeper
       if !File.exist? module_full_path
         Logger.default("No local repository for module '#{module_name}', clone it...")
         module_git = BigkeeperParser.module_git(module_name)
-        git.new.clone(File.expand_path("#{module_full_path}/../"), module_git)
+        git.clone(File.expand_path("#{module_full_path}/../"), module_git)
       end
 
       current_branch_name = git.current_branch(module_full_path)

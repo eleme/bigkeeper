@@ -1,7 +1,7 @@
 #!/usr/bin/ruby
 require 'big_keeper/util/podfile_operator'
 require 'big_keeper/util/gitflow_operator'
-require 'big_keeper/model/podfile_type'
+require 'big_keeper/dependency/dep_type'
 require 'big_keeper/util/info_plist_operator'
 require 'big_keeper/util/git_operator'
 require 'big_keeper/util/logger'

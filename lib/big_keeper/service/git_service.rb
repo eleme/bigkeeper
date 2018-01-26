@@ -1,4 +1,5 @@
 require 'big_keeper/util/git_operator'
+require 'big_keeper/util/gitflow_operator'
 require 'big_keeper/model/gitflow_type'
 require 'big_keeper/model/operate_type'
 require 'big_keeper/util/logger'
@@ -11,6 +12,8 @@ module BigKeeper
 
       branch_name = "#{GitflowType.name(type)}/#{name}"
       if !git.has_remote_branch(path, branch_name) && !git.has_local_branch(path, branch_name)
+
+        GitflowOperator.new.verify_git_flow(path)
 
         verify_special_branch(path, 'master')
         verify_special_branch(path, 'develop')

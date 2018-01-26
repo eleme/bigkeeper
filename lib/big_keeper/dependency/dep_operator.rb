@@ -15,7 +15,7 @@ module BigKeeper
       raise "You should override this method in subclass."
     end
 
-    def modules_with_branch(modules, branch)
+    def modules_with_branch(modules, branch_name)
       raise "You should override this method in subclass."
     end
 

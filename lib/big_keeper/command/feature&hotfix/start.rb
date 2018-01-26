@@ -9,7 +9,7 @@ require 'big_keeper/util/xcode_operator'
 
 require 'big_keeper/dependency/dep_service'
 
-require 'big_keeper/model/podfile_type'
+require 'big_keeper/dependency/dep_type'
 
 require 'big_keeper/service/stash_service'
 require 'big_keeper/service/module_service'
@@ -30,6 +30,7 @@ module BigKeeper
       stash_modules = DepService.dep_operator(path).modules_with_type(
                                 BigkeeperParser.module_names, ModuleType::PATH)
 
+      p stash_modules
       # Stash current branch
       StashService.new.stash_all(path, branch_name, user, stash_modules)
 

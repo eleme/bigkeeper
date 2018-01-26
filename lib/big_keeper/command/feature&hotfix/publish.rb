@@ -8,7 +8,7 @@ require 'big_keeper/util/bigkeeper_parser'
 
 require 'big_keeper/dependency/dep_service'
 
-require 'big_keeper/model/podfile_type'
+require 'big_keeper/dependency/dep_type'
 
 
 module BigKeeper
@@ -27,6 +27,7 @@ module BigKeeper
 
       modules = DepService.dep_operator(path).modules_with_branch(BigkeeperParser.module_names,
         branch_name)
+
       # Rebase modules and modify podfile as git
       modules.each do |module_name|
         ModuleService.new.publish(path, user, module_name, branch_name, type)

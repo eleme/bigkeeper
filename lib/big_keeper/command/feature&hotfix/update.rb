@@ -9,7 +9,7 @@ require 'big_keeper/util/xcode_operator'
 
 require 'big_keeper/dependency/dep_service'
 
-require 'big_keeper/model/podfile_type'
+require 'big_keeper/dependency/dep_type'
 
 require 'big_keeper/service/stash_service'
 require 'big_keeper/service/module_service'

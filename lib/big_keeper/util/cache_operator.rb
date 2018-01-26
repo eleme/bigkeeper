@@ -9,7 +9,8 @@ module BigKeeper
     end
 
     def save(file)
-      FileUtils.mkdir_p(@cache_path) unless File.exist?(@cache_path)
+      dest_path = File.dirname("#{@cache_path}/#{file}")
+      FileUtils.mkdir_p(dest_path) unless File.exist?(dest_path)
       FileUtils.cp("#{@path}/#{file}", "#{@cache_path}/#{file}");
     end
 
