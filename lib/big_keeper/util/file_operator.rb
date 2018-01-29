@@ -7,5 +7,9 @@ module BigKeeper
       # Unlike Ruby IO, ls, and find -f, this technique will fail to locate the file if the case is wrong:
       not %x( find "#{folder}" -name "#{filename}" ).empty?
     end
+
+    def find_all(path, name)
+      Dir.glob("#{path}/*/#{name}")
+    end
   end
 end

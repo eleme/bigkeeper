@@ -182,6 +182,8 @@ module BigKeeper
         if GitOperator.new.current_branch(path) != 'develop' && GitOperator.new.current_branch(path) != 'master'
           `git push -f`
           GitOperator.new.checkout(path, branch_name)
+        else
+          Logger.error("You should not push 'master' or 'develop'")
         end
       end
     end

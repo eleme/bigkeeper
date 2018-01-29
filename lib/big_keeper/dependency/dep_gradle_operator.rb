@@ -5,21 +5,30 @@ module BigKeeper
   class DepGradleOperator < DepOperator
 
     def backup
-      CacheOperator.new(@path).save('lib/setting.gradle')
-      CacheOperator.new(@path).save('build.gradle')
+      cache_operator = CacheOperator.new(@path)
+      cache_operator.save('setting.gradle')
+      Dir.glob("#{@path}/*/build.gradle").each do |build_gradle_file_path|
+        build_gradle_file = build_gradle_file_path.gsub!(/#{@path}/, '')
+        cache_operator.save(build_gradle_file)
+      end
     end
 
     def recover
       cache_operator = CacheOperator.new(@path)
-      cache_operator.load('lib/setting.gradle')
-      cache_operator.load('build.gradle')
+
+      cache_operator.load('setting.gradle')
+      Dir.glob("#{@path}/*/build.gradle").each do |build_gradle_file_path|
+        build_gradle_file = build_gradle_file_path.gsub!(/#{@path}/, '')
+        cache_operator.load(build_gradle_file)
+      end
+
       cache_operator.clean
     end
 
     def modules_with_branch(modules, branch_name)
       snapshot_name = "#{branch_name}_SNAPSHOT"
+      file = "#{@path}/app/build.gradle"
 
-      file = "#{@path}/build.gradle"
       matched_modules = []
       File.open(file, 'r') do |file|
         file.each_line do |line|
@@ -35,7 +44,8 @@ module BigKeeper
     end
 
     def modules_with_type(modules, type)
-      file = "#{@path}/build.gradle"
+      file = "#{@path}/app/build.gradle"
+
       matched_modules = []
       File.open(file, 'r') do |file|
         file.each_line do |line|
@@ -63,13 +73,33 @@ module BigKeeper
     end
 
     def find_and_replace(module_name, module_type, source)
-      file = "#{@path}/build.gradle"
-      temp_file = Tempfile.new('.build.gradle.tmp')
+      Dir.glob("#{@path}/*/build.gradle").each do |file|
+        temp_file = Tempfile.new('.build.gradle.tmp')
+        begin
+          File.open(file, 'r') do |file|
+            file.each_line do |line|
+              temp_file.puts generate_build_config(line, module_name, module_type, source)
+            end
+          end
+          temp_file.close
+          FileUtils.mv(temp_file.path, file)
+        ensure
+          temp_file.close
+          temp_file.unlink
+        end
+      end
+
+      file = "#{@path}/setting.gradle"
+      temp_file = Tempfile.new('.setting.gradle.tmp')
 
       begin
         File.open(file, 'r') do |file|
           file.each_line do |line|
-            temp_file.puts generate_build_config(line, module_name, module_type, source)
+            if line.include?module_name
+              temp_file.puts generate_setting_config(module_name, module_type, source)
+            else
+              temp_file.puts line
+            end
           end
         end
         temp_file.close
@@ -104,6 +134,7 @@ module BigKeeper
     end
 
     def generate_setting_config(module_name, module_type, source)
+
     end
 
     private :generate_build_config, :generate_setting_config, :regex
