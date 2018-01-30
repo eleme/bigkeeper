@@ -6,7 +6,7 @@ module BigKeeper
 
     def backup
       cache_operator = CacheOperator.new(@path)
-      cache_operator.save('setting.gradle')
+      cache_operator.save('settings.gradle')
       Dir.glob("#{@path}/*/build.gradle").each do |build_gradle_file_path|
         build_gradle_file = build_gradle_file_path.gsub!(/#{@path}/, '')
         cache_operator.save(build_gradle_file)
@@ -16,7 +16,7 @@ module BigKeeper
     def recover
       cache_operator = CacheOperator.new(@path)
 
-      cache_operator.load('setting.gradle')
+      cache_operator.load('settings.gradle')
       Dir.glob("#{@path}/*/build.gradle").each do |build_gradle_file_path|
         build_gradle_file = build_gradle_file_path.gsub!(/#{@path}/, '')
         cache_operator.load(build_gradle_file)
@@ -93,10 +93,10 @@ module BigKeeper
     def install(addition)
       modules = modules_with_type(BigkeeperParser.module_names, ModuleType::PATH)
 
-      CacheOperator.new(@path).load('setting.gradle')
+      CacheOperator.new(@path).load('settings.gradle')
 
       begin
-        File.open("#{@path}/setting.gradle", 'a') do |file|
+        File.open("#{@path}/settings.gradle", 'a') do |file|
           modules.each do |module_name|
             module_path = BigkeeperParser.module_path(user, module_name)
             file.puts "include '#{prefix_of_module(module_name)}#{module_name.downcase}'\r\n"
