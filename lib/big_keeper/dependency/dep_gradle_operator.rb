@@ -88,29 +88,39 @@ module BigKeeper
           temp_file.unlink
         end
       end
-
-      file = "#{@path}/setting.gradle"
-      temp_file = Tempfile.new('.setting.gradle.tmp')
-
-      begin
-        File.open(file, 'r') do |file|
-          file.each_line do |line|
-            if line.include?module_name
-              temp_file.puts generate_setting_config(module_name, module_type, source)
-            else
-              temp_file.puts line
-            end
-          end
-        end
-        temp_file.close
-        FileUtils.mv(temp_file.path, file)
-      ensure
-        temp_file.close
-        temp_file.unlink
-      end
     end
 
     def install(addition)
+      modules = modules_with_type(BigkeeperParser.module_names, ModuleType::PATH)
+
+      CacheOperator.new(@path).load('setting.gradle')
+
+      begin
+        File.open("#{@path}/setting.gradle", 'a') do |file|
+          modules.each do |module_name|
+            file.puts "include '#{prefix_of_module(module_name)}#{module_name.downcase}'\r\n"
+            file.puts "project('#{prefix_of_module(module_name)}#{module_name.downcase}').projectDir = new File(rootProject.projectDir, '../#{module_name}/#{module_name.downcase}-lib')\r\n"
+          end
+        end
+      ensure
+      end
+    end
+
+    def prefix_of_module(module_name)
+      file = "#{@path}/app/build.gradle"
+      prefix = ''
+
+      File.open(file, 'r') do |file|
+        file.each_line do |line|
+          if line =~ /(\s*)([\s\S]*)'(\S*)#{module_name.downcase}(\S*)'(\S*)/
+            prefix = line.sub(/(\s*)([\s\S]*)'(\S*)#{module_name.downcase}(\S*)'(\S*)/){
+              $3
+            }
+          end
+        end
+      end
+
+      prefix.chop
     end
 
     def open
@@ -122,9 +132,19 @@ module BigKeeper
           "#{$1}compile project('#{$3}#{module_name.downcase}')"
         }
       elsif ModuleType::GIT == module_type
-        if 'develop' == source.addition
+        branch_name = GitOperator.new.current_branch(@path)
+        snapshot_name = "SNAPSHOT"
+
+        # Get version part of source.addition
+        if 'develop' == source.addition || 'master' == source.addition
+          snapshot_name = branch_name.sub(/([\s\S]*)\/(\d+.\d+.\d+)_([\s\S]*)/){
+            "#{$2}_SNAPSHOT"
+          }
+        else
+          snapshot_name = branch_name.sub(/([\s\S]*)\/([\s\S]*)/){
+            "#{$2}_SNAPSHOT"
+          }
         end
-        snapshot_name = "#{source.addition}_SNAPSHOT"
         line.sub(/(\s*)([\s\S]*)'(\S*)#{module_name.downcase}(\S*)'(\S*)/){
           "#{$1}compile '#{$3}#{module_name.downcase}:#{snapshot_name}'"
         }

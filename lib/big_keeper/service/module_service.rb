@@ -85,6 +85,7 @@ module BigKeeper
 
       verify_module(path, user, module_name, home_branch_name, type)
 
+      module_full_path = BigkeeperParser.module_full_path(path, user, module_name)
       GitService.new.verify_push(module_full_path, "finish branch #{home_branch_name}", home_branch_name, module_name)
 
       module_git = BigkeeperParser.module_git(module_name)
