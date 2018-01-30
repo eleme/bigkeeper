@@ -13,6 +13,8 @@ require 'big_keeper/command/feature&hotfix/switch'
 require 'big_keeper/command/feature&hotfix/update'
 require 'big_keeper/command/feature&hotfix/pull'
 require 'big_keeper/command/feature&hotfix/push'
+require 'big_keeper/command/feature&hotfix/rebase'
+require 'big_keeper/command/feature&hotfix/publish'
 require 'big_keeper/command/pod/podfile'
 require 'big_keeper/command/feature&hotfix/delete'
 require 'big_keeper/command/release/home'
@@ -99,11 +101,27 @@ module BigKeeper
       end
     end
 
+    c.desc "Rebase 'develop' to current feature"
+    c.command :rebase do |rebase|
+      rebase.action do |global_options, options, args|
+        help_now!('user name is required') if user and user.empty?
+        rebase(path, user, GitflowType::FEATURE)
+      end
+    end
+
     c.desc 'Finish current feature'
     c.command :finish do |finish|
       finish.action do |global_options, options, args|
         help_now!('user name is required') if user and user.empty?
         finish(path, user, GitflowType::FEATURE)
+      end
+    end
+
+    c.desc 'Publish current feature'
+    c.command :publish do |publish|
+      publish.action do |global_options, options, args|
+        help_now!('user name is required') if user and user.empty?
+        publish(path, user, GitflowType::FEATURE)
       end
     end
 
@@ -180,11 +198,27 @@ module BigKeeper
       end
     end
 
+    c.desc "Rebase 'master' to current feature"
+    c.command :rebase do |rebase|
+      rebase.action do |global_options, options, args|
+        help_now!('user name is required') if user and user.empty?
+        rebase(path, user, GitflowType::HOTFIX)
+      end
+    end
+
     c.desc 'Finish current hotfix'
     c.command :finish do |finish|
       finish.action do |global_options, options, args|
         help_now!('user name is required') if user and user.empty?
         finish(path, user, GitflowType::HOTFIX)
+      end
+    end
+
+    c.desc 'Publish current feature'
+    c.command :publish do |publish|
+      publish.action do |global_options, options, args|
+        help_now!('user name is required') if user and user.empty?
+        publish(path, user, GitflowType::HOTFIX)
       end
     end
 

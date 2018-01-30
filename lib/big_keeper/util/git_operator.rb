@@ -107,7 +107,7 @@ module BigKeeper
       has_changes
     end
 
-    def dicard(path)
+    def discard(path)
       Dir.chdir(path) do
         `git checkout . && git clean -xdf`
       end

@@ -3,7 +3,7 @@ require 'big_keeper/util/podfile_operator'
 require 'big_keeper/util/podfile_module'
 require 'big_keeper/util/gitflow_operator'
 require 'big_keeper/util/bigkeeper_parser'
-require 'big_keeper/model/podfile_type'
+require 'big_keeper/dependency/dep_type'
 require 'big_keeper/util/logger'
 
 module BigKeeper

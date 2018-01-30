@@ -1,5 +1,7 @@
 require 'big_keeper/util/logger'
 
+require 'big_keeper/dependency/dep_service'
+
 module BigKeeper
   def self.reabse(path, user, type)
     begin
@@ -9,7 +11,7 @@ module BigKeeper
 
       Logger.error("Not a #{GitflowType.name(type)} branch, exit.") unless branch_name.include? GitflowType.name(type)
 
-      modules = PodfileOperator.new.modules_with_type("#{path}/Podfile",
+      modules = DepService.dep_operator(path).modules_with_type(
                                                       BigkeeperParser.module_names, ModuleType::PATH)
 
       modules.each do |module_name|

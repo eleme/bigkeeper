@@ -1,4 +1,5 @@
 require 'big_keeper/util/git_operator'
+require 'big_keeper/util/gitflow_operator'
 require 'big_keeper/model/gitflow_type'
 require 'big_keeper/model/operate_type'
 require 'big_keeper/util/logger'
@@ -11,6 +12,8 @@ module BigKeeper
 
       branch_name = "#{GitflowType.name(type)}/#{name}"
       if !git.has_remote_branch(path, branch_name) && !git.has_local_branch(path, branch_name)
+
+        GitflowOperator.new.verify_git_flow(path)
 
         verify_special_branch(path, 'master')
         verify_special_branch(path, 'develop')
@@ -121,7 +124,7 @@ module BigKeeper
         Logger.highlight("Delete local branch '#{branch_name}' for '#{name}'...")
 
         if git.current_branch(path) == branch_name
-          git.dicard(path)
+          git.discard(path)
           git.checkout(path, GitflowType.base_branch(type))
         end
         git.del_local(path, branch_name)
@@ -179,6 +182,8 @@ module BigKeeper
         if GitOperator.new.current_branch(path) != 'develop' && GitOperator.new.current_branch(path) != 'master'
           `git push -f`
           GitOperator.new.checkout(path, branch_name)
+        else
+          Logger.error("You should not push 'master' or 'develop'")
         end
       end
     end

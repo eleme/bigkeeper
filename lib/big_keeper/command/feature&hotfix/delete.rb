@@ -6,7 +6,9 @@ require 'big_keeper/util/bigkeeper_parser'
 require 'big_keeper/util/logger'
 require 'big_keeper/util/pod_operator'
 
-require 'big_keeper/model/podfile_type'
+require 'big_keeper/dependency/dep_service'
+
+require 'big_keeper/dependency/dep_type'
 
 require 'big_keeper/service/stash_service'
 require 'big_keeper/service/module_service'

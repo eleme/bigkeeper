@@ -7,7 +7,9 @@ require 'big_keeper/util/logger'
 require 'big_keeper/util/pod_operator'
 require 'big_keeper/util/xcode_operator'
 
-require 'big_keeper/model/podfile_type'
+require 'big_keeper/dependency/dep_service'
+
+require 'big_keeper/dependency/dep_type'
 
 require 'big_keeper/service/stash_service'
 require 'big_keeper/service/module_service'
@@ -24,7 +26,7 @@ module BigKeeper
 
       full_name = branch_name.gsub(/#{GitflowType.name(type)}\//, '')
 
-      current_modules = PodfileOperator.new.modules_with_type("#{path}/Podfile",
+      current_modules = DepService.dep_operator(path).modules_with_type(
                                 BigkeeperParser.module_names, ModuleType::PATH)
 
       # Verify input modules
@@ -58,10 +60,10 @@ module BigKeeper
         end
 
         # pod install
-        PodOperator.pod_install(path, false)
+        DepService.dep_operator(path).install(false)
 
         # Open home workspace
-        XcodeOperator.open_workspace(path)
+        DepService.dep_operator(path).open
       end
     ensure
     end

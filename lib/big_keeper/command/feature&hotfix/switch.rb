@@ -4,6 +4,8 @@ require 'big_keeper/util/logger'
 require 'big_keeper/util/pod_operator'
 require 'big_keeper/util/xcode_operator'
 
+require 'big_keeper/dependency/dep_service'
+
 module BigKeeper
   def self.switch_to(path, version, user, name, type)
     begin
@@ -16,7 +18,7 @@ module BigKeeper
 
       GitService.new.verify_home_branch(path, branch_name, OperateType::SWITCH)
 
-      stash_modules = PodfileOperator.new.modules_with_type("#{path}/Podfile",
+      stash_modules = DepService.dep_operator(path).modules_with_type(
                                 BigkeeperParser.module_names, ModuleType::PATH)
 
       # Stash current branch
@@ -29,7 +31,7 @@ module BigKeeper
       # Apply home stash
       StashService.new.pop_stash(path, branch_name, 'Home')
 
-      modules = PodfileOperator.new.modules_with_type("#{path}/Podfile",
+      modules = DepService.dep_operator(path).modules_with_type(
                                 BigkeeperParser.module_names, ModuleType::PATH)
 
       modules.each do |module_name|
@@ -37,10 +39,10 @@ module BigKeeper
       end
 
       # pod install
-      PodOperator.pod_install(path, false)
+      DepService.dep_operator(path).install(false)
 
       # Open home workspace
-      XcodeOperator.open_workspace(path)
+      DepService.dep_operator(path).open
     ensure
     end
   end
