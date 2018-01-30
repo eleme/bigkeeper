@@ -66,7 +66,7 @@ module BigKeeper
       elsif ModuleType::GIT == type
         /compile\s*'\S*#{module_name.downcase}\S*'\S*/
       elsif ModuleType::SPEC == type
-        //
+        /compile\s*'\S*#{module_name.downcase}\S*'\S*/
       else
         //
       end
@@ -98,6 +98,7 @@ module BigKeeper
       begin
         File.open("#{@path}/setting.gradle", 'a') do |file|
           modules.each do |module_name|
+            module_path = BigkeeperParser.module_path(user, module_name)
             file.puts "include '#{prefix_of_module(module_name)}#{module_name.downcase}'\r\n"
             file.puts "project('#{prefix_of_module(module_name)}#{module_name.downcase}').projectDir = new File(rootProject.projectDir, '../#{module_name}/#{module_name.downcase}-lib')\r\n"
           end
@@ -148,15 +149,15 @@ module BigKeeper
         line.sub(/(\s*)([\s\S]*)'(\S*)#{module_name.downcase}(\S*)'(\S*)/){
           "#{$1}compile '#{$3}#{module_name.downcase}:#{snapshot_name}'"
         }
+      elsif ModuleType::SPEC == module_type
+        line.sub(/(\s*)([\s\S]*)'(\S*)#{module_name.downcase}(\S*)'(\S*)/){
+          "#{$1}compile '#{$3}#{module_name.downcase}:#{source}'"
+        }
       else
         line
       end
     end
 
-    def generate_setting_config(module_name, module_type, source)
-
-    end
-
-    private :generate_build_config, :generate_setting_config, :regex
+    private :generate_build_config, :regex
   end
 end

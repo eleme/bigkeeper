@@ -68,11 +68,7 @@ module BigKeeper
       begin
         File.open(file, 'r') do |file|
           file.each_line do |line|
-            if line.include?module_name
-              temp_file.puts generate_module_config(module_name, module_type, source)
-            else
-              temp_file.puts line
-            end
+            temp_file.puts generate_module_config(line, module_name, module_type, source)
           end
         end
         temp_file.close
@@ -91,26 +87,28 @@ module BigKeeper
       XcodeOperator.open_workspace(@path)
     end
 
-    def generate_module_config(module_name, module_type, source)
-      module_config = ''
-      if ModuleType::PATH == module_type
-        module_config = %Q(    pod '#{module_name}', :path => '#{source}')
-      elsif ModuleType::GIT == module_type
-        # puts source.base
-        # puts source.addition
-        if GitType::BRANCH == source.type
-          module_config = %Q(    pod '#{module_name}', :git => '#{source.base}', :branch => '#{source.addition}')
-        elsif GitType::TAG == source.type
-          module_config = %Q(    pod '#{module_name}', :git => '#{source.base}', :tag => '#{source.addition}')
-        elsif GitType::COMMIT == source.type
-          module_config = %Q(    pod '#{module_name}', :git => '#{source.base}', :commit => '#{source.addition}')
+    def generate_module_config(line, module_name, module_type, source)
+      line.sub(/(\s*)pod(\s*)'(\S*)#{module_name}(\S*)'([\s\S]*)#([\s\S]*)/){
+        if ModuleType::PATH == module_type
+          "#{$1}pod '#{module_name}', :path => '#{source}' ##{$6}"
+        elsif ModuleType::GIT == module_type
+          # puts source.base
+          # puts source.addition
+          if GitType::BRANCH == source.type
+            "#{$1}pod '#{module_name}', :git => '#{source.base}', :branch => '#{source.addition}' ##{$6}"
+          elsif GitType::TAG == source.type
+            "#{$1}pod '#{module_name}', :git => '#{source.base}', :tag => '#{source.addition}' ##{$6}"
+          elsif GitType::COMMIT == source.type
+            "#{$1}pod '#{module_name}', :git => '#{source.base}', :commit => '#{source.addition}' ##{$6}"
+          else
+            "#{$1}pod '#{module_name}', :git => '#{source.base}' ##{$6}"
+          end
+        elsif ModuleType::SPEC == module_type
+          "#{$1}pod '#{module_name}', '#{source}' ##{$6}"
         else
-          module_config = %Q(    pod '#{module_name}', :git => '#{source.base}')
+          line
         end
-      else
-        module_config = %Q(    pod '#{module_name}', '#{source}')
-      end
-      module_config
+      }
     end
 
     private :generate_module_config, :regex
