@@ -98,7 +98,6 @@ module BigKeeper
       begin
         File.open("#{@path}/settings.gradle", 'a') do |file|
           modules.each do |module_name|
-            module_path = BigkeeperParser.module_path(user, module_name)
             file.puts "include '#{prefix_of_module(module_name)}#{module_name.downcase}'\r\n"
             file.puts "project('#{prefix_of_module(module_name)}#{module_name.downcase}').projectDir = new File(rootProject.projectDir, '../#{module_name}/#{module_name.downcase}-lib')\r\n"
           end
@@ -129,8 +128,8 @@ module BigKeeper
 
     def generate_build_config(line, module_name, module_type, source)
       if ModuleType::PATH == module_type
-        line.sub(/(\s*)compile(\s*)'(\S*)#{module_name.downcase}(\S*)'(\S*)/){
-          "#{$1}compile project('#{$3}#{module_name.downcase}')"
+        line.sub(/(\s*)([\s\S]*)'(\S*)#{module_name.downcase}(\S*)'(\S*)/){
+          "#{$1}compile project(':#{module_name.downcase}')"
         }
       elsif ModuleType::GIT == module_type
         branch_name = GitOperator.new.current_branch(@path)
@@ -147,17 +146,17 @@ module BigKeeper
           }
         end
         line.sub(/(\s*)([\s\S]*)'(\S*)#{module_name.downcase}(\S*)'(\S*)/){
-          "#{$1}compile '#{$3}#{module_name.downcase}:#{snapshot_name}'"
+          "#{$1}compile '#{prefix_of_module(module_name)}#{module_name.downcase}:#{snapshot_name}'"
         }
       elsif ModuleType::SPEC == module_type
         line.sub(/(\s*)([\s\S]*)'(\S*)#{module_name.downcase}(\S*)'(\S*)/){
-          "#{$1}compile '#{$3}#{module_name.downcase}:#{source}'"
+          "#{$1}compile '#{prefix_of_module(module_name)}#{module_name.downcase}:#{source}'"
         }
       else
         line
       end
     end
 
-    private :generate_build_config, :regex
+    private :generate_build_config, :regex, :prefix_of_module
   end
 end
