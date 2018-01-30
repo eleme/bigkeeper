@@ -7,7 +7,9 @@ require 'big_keeper/util/logger'
 require 'big_keeper/util/pod_operator'
 require 'big_keeper/util/xcode_operator'
 
-require 'big_keeper/model/podfile_type'
+require 'big_keeper/dependency/dep_service'
+
+require 'big_keeper/dependency/dep_type'
 
 require 'big_keeper/service/stash_service'
 require 'big_keeper/service/module_service'
@@ -25,9 +27,10 @@ module BigKeeper
 
       GitService.new.verify_home_branch(path, branch_name, OperateType::START)
 
-      stash_modules = PodfileOperator.new.modules_with_type("#{path}/Podfile",
+      stash_modules = DepService.dep_operator(path).modules_with_type(
                                 BigkeeperParser.module_names, ModuleType::PATH)
 
+      p stash_modules
       # Stash current branch
       StashService.new.stash_all(path, branch_name, user, stash_modules)
 
@@ -48,16 +51,19 @@ module BigKeeper
       # Start home feature
       GitService.new.start(path, full_name, type)
 
+      # Backup podfile
+      DepService.dep_operator(path).backup
+
       # Modify podfile as path and Start modules feature
       modules.each do |module_name|
         ModuleService.new.add(path, user, module_name, full_name, type)
       end
 
       # pod install
-      PodOperator.pod_install(path, true) unless modules.empty?
+      DepService.dep_operator(path).install(true) unless modules.empty?
 
       # Open home workspace
-      XcodeOperator.open_workspace(path)
+      DepService.dep_operator(path).open
 
       # Push home changes to remote
       GitService.new.verify_push(path, "init #{GitflowType.name(type)} #{full_name}", branch_name, 'Home')

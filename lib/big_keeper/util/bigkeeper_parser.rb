@@ -1,4 +1,5 @@
 require 'big_keeper/util/logger'
+require 'big_keeper/util/file_operator'
 
 # Bigkeeper module
 module BigKeeper
@@ -36,7 +37,7 @@ module BigKeeper
     def self.parse(bigkeeper)
       if @@config.empty?
 
-        Logger.error("Can't find a Bigkeeper file in current directory.") if !BigkeeperParser.definitely_exists?(bigkeeper)
+        Logger.error("Can't find a Bigkeeper file in current directory.") if !FileOperator.definitely_exists?(bigkeeper)
 
         content = File.read bigkeeper
         content.gsub!(/version\s/, 'BigKeeper::version ')
@@ -48,13 +49,6 @@ module BigKeeper
         eval content
         # p @@config
       end
-    end
-
-    def self.definitely_exists? path
-      folder = File.dirname path
-      filename = File.basename path
-      # Unlike Ruby IO, ls, and find -f, this technique will fail to locate the file if the case is wrong:
-      not %x( find "#{folder}" -name "#{filename}" ).empty?
     end
 
     def self.parse_version(name)

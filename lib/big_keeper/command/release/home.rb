@@ -1,7 +1,7 @@
 #!/usr/bin/ruby
 require 'big_keeper/util/podfile_operator'
 require 'big_keeper/util/gitflow_operator'
-require 'big_keeper/model/podfile_type'
+require 'big_keeper/dependency/dep_type'
 require 'big_keeper/util/info_plist_operator'
 require 'big_keeper/util/logger'
 
@@ -52,14 +52,14 @@ module BigKeeper
 
       Logger.highlight(%Q(Start to release/#{version}))
       # step 2 replace_modules
-      PodfileOperator.new.replace_all_module_release(%Q(#{project_path}/Podfile),
-                                                      modules,
-                                                      version)
+      PodfileOperator.new.replace_all_module_release(project_path,
+                                                     modules,
+                                                     version)
 
       # step 3 change Info.plist value
       InfoPlistOperator.new.change_version_build(project_path, version)
 
-      PodOperator.pod_install(project_path, true)
+      DepService.dep_operator(project_path).install(true)
       `open #{project_path}/*.xcworkspace`
     end
   end
