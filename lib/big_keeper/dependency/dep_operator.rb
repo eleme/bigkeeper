@@ -19,15 +19,15 @@ module BigKeeper
       raise "You should override this method in subclass."
     end
 
-    def modules_with_type(modules, type)
+    def modules_with_type(modules, module_type)
       raise "You should override this method in subclass."
     end
 
-    def find_and_replace(module_name, module_type, source)
+    def update_module_config(module_name, module_type, source)
       raise "You should override this method in subclass."
     end
 
-    def install(addition)
+    def install(should_update, user)
       raise "You should override this method in subclass."
     end
 

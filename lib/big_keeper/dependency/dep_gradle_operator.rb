@@ -26,14 +26,14 @@ module BigKeeper
     end
 
     def modules_with_branch(modules, branch_name)
-      snapshot_name = "#{branch_name}_SNAPSHOT"
+      full_name = branch_name.sub(/([\s\S]*)\/([\s\S]*)/){ $2 }
       file = "#{@path}/app/build.gradle"
 
       matched_modules = []
       File.open(file, 'r') do |file|
         file.each_line do |line|
           modules.each do |module_name|
-            if line =~ /compile\s*'\S*#{module_name.downcase}:#{snapshot_name}'\S*/
+            if line =~ /compile\s*'\S*#{module_name.downcase}:#{full_name}'\S*/
               matched_modules << module_name
               break
             end
@@ -43,14 +43,14 @@ module BigKeeper
       matched_modules
     end
 
-    def modules_with_type(modules, type)
+    def modules_with_type(modules, module_type)
       file = "#{@path}/app/build.gradle"
 
       matched_modules = []
       File.open(file, 'r') do |file|
         file.each_line do |line|
           modules.each do |module_name|
-            if line =~ regex(type, module_name)
+            if line =~ regex(module_type, module_name)
               matched_modules << module_name
               break
             end
@@ -60,19 +60,19 @@ module BigKeeper
       matched_modules
     end
 
-    def regex(type, module_name)
-      if ModuleType::PATH == type
+    def regex(module_type, module_name)
+      if ModuleType::PATH == module_type
         /compile\s*project\('\S*#{module_name.downcase}'\)\S*/
-      elsif ModuleType::GIT == type
+      elsif ModuleType::GIT == module_type
         /compile\s*'\S*#{module_name.downcase}\S*'\S*/
-      elsif ModuleType::SPEC == type
+      elsif ModuleType::SPEC == module_type
         /compile\s*'\S*#{module_name.downcase}\S*'\S*/
       else
         //
       end
     end
 
-    def find_and_replace(module_name, module_type, source)
+    def update_module_config(module_name, module_type, source)
       Dir.glob("#{@path}/*/build.gradle").each do |file|
         temp_file = Tempfile.new('.build.gradle.tmp')
         begin
@@ -90,7 +90,7 @@ module BigKeeper
       end
     end
 
-    def install(addition)
+    def install(should_update, user)
       modules = modules_with_type(BigkeeperParser.module_names, ModuleType::PATH)
 
       CacheOperator.new(@path).load('settings.gradle')
@@ -98,8 +98,10 @@ module BigKeeper
       begin
         File.open("#{@path}/settings.gradle", 'a') do |file|
           modules.each do |module_name|
-            file.puts "include '#{prefix_of_module(module_name)}#{module_name.downcase}'\r\n"
-            file.puts "project('#{prefix_of_module(module_name)}#{module_name.downcase}').projectDir = new File(rootProject.projectDir, '../#{module_name}/#{module_name.downcase}-lib')\r\n"
+            file.puts "include ':#{module_name.downcase}'\r\n"
+            file.puts "project(':#{module_name.downcase}')." \
+              "projectDir = new File(rootProject.projectDir," \
+              "'#{BigkeeperParser.module_path(user, module_name)}/#{module_name.downcase}-lib')\r\n"
           end
         end
       ensure
@@ -107,7 +109,7 @@ module BigKeeper
     end
 
     def prefix_of_module(module_name)
-      file = "#{@path}/app/build.gradle"
+      file = "#{@path}/.bigkeeper/app/build.gradle"
       prefix = ''
 
       File.open(file, 'r') do |file|
@@ -133,20 +135,16 @@ module BigKeeper
         }
       elsif ModuleType::GIT == module_type
         branch_name = GitOperator.new.current_branch(@path)
-        snapshot_name = "SNAPSHOT"
+        full_name = ''
 
         # Get version part of source.addition
         if 'develop' == source.addition || 'master' == source.addition
-          snapshot_name = branch_name.sub(/([\s\S]*)\/(\d+.\d+.\d+)_([\s\S]*)/){
-            "#{$2}_SNAPSHOT"
-          }
+          full_name = branch_name.sub(/([\s\S]*)\/(\d+.\d+.\d+)_([\s\S]*)/){ $2 }
         else
-          snapshot_name = branch_name.sub(/([\s\S]*)\/([\s\S]*)/){
-            "#{$2}_SNAPSHOT"
-          }
+          full_name = branch_name.sub(/([\s\S]*)\/([\s\S]*)/){ $2 }
         end
         line.sub(/(\s*)([\s\S]*)'(\S*)#{module_name.downcase}(\S*)'(\S*)/){
-          "#{$1}compile '#{prefix_of_module(module_name)}#{module_name.downcase}:#{snapshot_name}'"
+          "#{$1}compile '#{prefix_of_module(module_name)}#{module_name.downcase}:#{full_name}'"
         }
       elsif ModuleType::SPEC == module_type
         line.sub(/(\s*)([\s\S]*)'(\S*)#{module_name.downcase}(\S*)'(\S*)/){

@@ -16,8 +16,8 @@ module BigKeeper
     BigkeeperParser.parse_home(name, params)
   end
 
-  def self.pod(name, params)
-    BigkeeperParser.parse_pod(name, params)
+  def self.mod(name, params)
+    BigkeeperParser.parse_mod(name, params)
   end
 
   def self.modules
@@ -43,7 +43,7 @@ module BigKeeper
         content.gsub!(/version\s/, 'BigKeeper::version ')
         content.gsub!(/user\s/, 'BigKeeper::user ')
         content.gsub!(/home\s/, 'BigKeeper::home ')
-        content.gsub!(/pod\s/, 'BigKeeper::pod ')
+        content.gsub!(/mod\s/, 'BigKeeper::mod ')
         content.gsub!(/modules\s/, 'BigKeeper::modules ')
         content.gsub!(/source\s/, 'BigKeeper::source ')
         eval content
@@ -75,27 +75,27 @@ module BigKeeper
       @@config[:name] = name
     end
 
-    def self.parse_pod(name, params)
+    def self.parse_mod(name, params)
       if params[:path]
-        parse_user_pod(name, params)
+        parse_user_mod(name, params)
       elsif params[:git]
-        parse_modules_pod(name, params)
+        parse_modules_mod(name, params)
       else
-        Logger.error(%(There should be ':path =>' or ':git =>' for pod #{name}))
+        Logger.error(%(There should be ':path =>' or ':git =>' for mod #{name}))
       end
     end
 
-    def self.parse_user_pod(name, params)
+    def self.parse_user_mod(name, params)
       users = @@config[:users]
       user = users[@@current_user]
-      pods = user[:pods]
-      pods = {} if pods.nil?
-      pods[name] = params
-      user[:pods] = pods
+      mods = user[:mods]
+      mods = {} if mods.nil?
+      mods[name] = params
+      user[:mods] = mods
       @@config[:users] = users
     end
 
-    def self.parse_modules_pod(name, params)
+    def self.parse_modules_mod(name, params)
       modules = @@config[:modules]
       modules[name] = params
       @@config[:modules] = modules
@@ -134,10 +134,10 @@ module BigKeeper
     def self.module_full_path(home_path, user_name, module_name)
       if @@config[:users] \
         && @@config[:users][user_name] \
-        && @@config[:users][user_name][:pods] \
-        && @@config[:users][user_name][:pods][module_name] \
-        && @@config[:users][user_name][:pods][module_name][:path]
-        @@config[:users][user_name][:pods][module_name][:path]
+        && @@config[:users][user_name][:mods] \
+        && @@config[:users][user_name][:mods][module_name] \
+        && @@config[:users][user_name][:mods][module_name][:path]
+        @@config[:users][user_name][:mods][module_name][:path]
       else
         File.expand_path("#{home_path}/../#{module_name}")
       end
@@ -146,10 +146,10 @@ module BigKeeper
     def self.module_path(user_name, module_name)
       if @@config[:users] \
         && @@config[:users][user_name] \
-        && @@config[:users][user_name][:pods] \
-        && @@config[:users][user_name][:pods][module_name] \
-        && @@config[:users][user_name][:pods][module_name][:path]
-        @@config[:users][user_name][:pods][module_name][:path]
+        && @@config[:users][user_name][:mods] \
+        && @@config[:users][user_name][:mods][module_name] \
+        && @@config[:users][user_name][:mods][module_name][:path]
+        @@config[:users][user_name][:mods][module_name][:path]
       else
         "../#{module_name}"
       end

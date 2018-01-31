@@ -59,7 +59,7 @@ module BigKeeper
       # step 3 change Info.plist value
       InfoPlistOperator.new.change_version_build(project_path, version)
 
-      DepService.dep_operator(project_path).install(true)
+      DepService.dep_operator(project_path).install(true, user)
       `open #{project_path}/*.xcworkspace`
     end
   end

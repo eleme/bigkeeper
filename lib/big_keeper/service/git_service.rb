@@ -162,26 +162,25 @@ module BigKeeper
       Dir.chdir(path) do
         IO.popen("git rebase #{branch_name} --ignore-whitespace") do |io|
           unless io.gets
-            Logger.error("#{name} is already in a rebase-apply, Please:\n\
-                          1.Resolve it;\n\
-                          2.Commit the changes;\n\
-                          3.Push to remote;\n\
-                          4.Create a MR;\n\
-                          5.Run 'finish' again.")
+            Logger.error("#{name} is already in a rebase-apply, Please:\n"\
+                         "  1.Resolve it;\n"\
+                         "  2.Commit the changes;\n"\
+                         "  3.Push to remote;\n"\
+                         "  4.Create a MR;\n"\
+                         "  5.Run 'finish' again.")
           end
           io.each do |line|
             next unless line.include? 'Merge conflict'
-            Logger.error("Merge conflict in #{name}, Please:\n\
-                          1.Resolve it;\n\
-                          2.Commit the changes;\n\
-                          3.Push to remote;\n\
-                          4.Create a MR;\n\
-                          5.Run 'finish' again.")
+            Logger.error("Merge conflict in #{name}, Please:\n"\
+                         "  1.Resolve it;\n"\
+                         "  2.Commit the changes;\n"\
+                         "  3.Push to remote;\n"\
+                         "  4.Create a MR;\n"\
+                         "  5.Run 'finish' again.")
           end
         end
         if GitOperator.new.current_branch(path) != 'develop' && GitOperator.new.current_branch(path) != 'master'
           `git push -f`
-          GitOperator.new.checkout(path, branch_name)
         else
           Logger.error("You should not push 'master' or 'develop'")
         end

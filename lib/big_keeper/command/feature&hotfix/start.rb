@@ -60,13 +60,16 @@ module BigKeeper
       end
 
       # pod install
-      DepService.dep_operator(path).install(true) unless modules.empty?
+      DepService.dep_operator(path).install(true, user)
 
       # Open home workspace
       DepService.dep_operator(path).open
 
       # Push home changes to remote
-      GitService.new.verify_push(path, "init #{GitflowType.name(type)} #{full_name}", branch_name, 'Home')
+      GitService.new.verify_push(path,
+        "init #{GitflowType.name(type)} #{full_name}",
+        branch_name,
+        'Home')
     ensure
     end
   end

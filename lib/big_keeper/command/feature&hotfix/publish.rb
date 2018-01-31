@@ -36,7 +36,7 @@ module BigKeeper
       Logger.highlight("Publish branch '#{branch_name}' for 'Home'")
 
       # pod install
-      DepService.dep_operator(path).install(false)
+      DepService.dep_operator(path).install(false, user)
 
       # Recover podfile
       DepService.dep_operator(path).recover

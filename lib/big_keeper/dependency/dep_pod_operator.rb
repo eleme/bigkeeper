@@ -33,13 +33,13 @@ module BigKeeper
       matched_modules
     end
 
-    def modules_with_type(modules, type)
+    def modules_with_type(modules, module_type)
       file = "#{@path}/Podfile"
       matched_modules = []
       File.open(file, 'r') do |file|
         file.each_line do |line|
           modules.each do |module_name|
-            if line =~ /pod\s*'#{module_name}'\s*,#{regex(type)}/
+            if line =~ /pod\s*'#{module_name}'\s*,#{regex(module_type)}/
               matched_modules << module_name
               break
             end
@@ -49,19 +49,19 @@ module BigKeeper
       matched_modules
     end
 
-    def regex(type)
-      if ModuleType::PATH == type
+    def regex(module_type)
+      if ModuleType::PATH == module_type
         "\s*:path\s*=>\s*"
-      elsif ModuleType::GIT == type
+      elsif ModuleType::GIT == module_type
         "\s*:git\s*=>\s*"
-      elsif ModuleType::SPEC == type
+      elsif ModuleType::SPEC == module_type
         "\s*'"
       else
         ""
       end
     end
 
-    def find_and_replace(module_name, module_type, source)
+    def update_module_config(module_name, module_type, source)
       file = "#{@path}/Podfile"
       temp_file = Tempfile.new('.Podfile.tmp')
 
@@ -79,8 +79,8 @@ module BigKeeper
       end
     end
 
-    def install(addition)
-      PodOperator.pod_install(@path, addition)
+    def install(should_update, user)
+      PodOperator.pod_install(@path, should_update)
     end
 
     def open

@@ -28,7 +28,7 @@ module BigKeeper
 
     def replace_all_module_release(path, module_names, version)
       module_names.each do |module_name|
-        DepService.dep_operator(path).find_and_replace(
+        DepService.dep_operator(path).update_module_config(
                                              module_name,
                                              ModuleType::GIT,
                                              GitInfo.new(BigkeeperParser.module_git(module_name), GitType::TAG, version))

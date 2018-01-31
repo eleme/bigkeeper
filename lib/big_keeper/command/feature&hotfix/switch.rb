@@ -39,7 +39,7 @@ module BigKeeper
       end
 
       # pod install
-      DepService.dep_operator(path).install(false)
+      DepService.dep_operator(path).install(false, user)
 
       # Open home workspace
       DepService.dep_operator(path).open
