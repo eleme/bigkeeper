@@ -5,13 +5,13 @@
 # bigkeeper - All in home project
 
 [![Build Status](https://travis-ci.org/BigKeeper/bigkeeper.svg?branch=master)](https://travis-ci.org/BigKeeper/bigkeeper)
-[![Maintainability](https://api.codeclimate.com/v1/badges/c6dc4161e84fcec9a890/maintainability)](https://codeclimate.com/github/BigKeeper/big-keeper/maintainability)
+[![Maintainability](https://api.codeclimate.com/v1/badges/c6dc4161e84fcec9a890/maintainability)](https://codeclimate.com/github/BigKeeper/bigkeeper/maintainability)
 [![Gem Version](https://badge.fury.io/rb/bigkeeper.svg)](https://rubygems.org/gems/bigkeeper)
 [![Language: Ruby](https://img.shields.io/badge/language-Ruby-da212f.svg)](https://www.ruby-lang.org/)
 [![License](https://img.shields.io/badge/license-MIT-000000.svg)](https://github.com/BigKeeper/big-keeper/blob/master/LICENSE)
 [![Gitter](https://img.shields.io/gitter/room/BigKeeper/BigKeeper.svg)](https://gitter.im/Big-Keeper/Lobby)
 
-bigkeeper is an efficiency improvement for iOS&Android modular development, iOSer&Android using this tool can make modular development easier.
+bigkeeper is an efficiency improvement for iOS&Android modular development, iOSer&Androider using this tool can make modular development easier.
 
 ## Installation
 

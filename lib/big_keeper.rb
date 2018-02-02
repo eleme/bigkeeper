@@ -7,18 +7,9 @@ require 'big_keeper/util/git_operator'
 
 require 'big_keeper/model/gitflow_type'
 
-require 'big_keeper/command/feature&hotfix/start'
-require 'big_keeper/command/feature&hotfix/finish'
-require 'big_keeper/command/feature&hotfix/switch'
-require 'big_keeper/command/feature&hotfix/update'
-require 'big_keeper/command/feature&hotfix/pull'
-require 'big_keeper/command/feature&hotfix/push'
-require 'big_keeper/command/feature&hotfix/rebase'
-require 'big_keeper/command/feature&hotfix/publish'
-require 'big_keeper/command/pod/podfile'
-require 'big_keeper/command/feature&hotfix/delete'
-require 'big_keeper/command/release/home'
-require 'big_keeper/command/release/module'
+require 'big_keeper/command/feature&hotfix'
+require 'big_keeper/command/release'
+require 'big_keeper/command/pod'
 
 require 'big_keeper/service/git_service'
 
@@ -49,281 +40,20 @@ module BigKeeper
     exit
   end
 
-  desc 'Gitflow feature operations'
-  command :feature do |c|
+  feature_and_hotfix_command(:feature)
 
-    c.desc 'Start a new feature with name for given modules and main project'
-    c.command :start do |start|
-      start.action do |global_options, options, args|
-        help_now!('user name is required') if user and user.empty?
-        help_now!('feature name is required') if args.length < 1
-        name = args[0]
-        modules = args[(1...args.length)] if args.length > 1
-        start(path, version, user, name, modules, GitflowType::FEATURE)
-      end
-    end
+  feature_and_hotfix_command(:hotfix)
 
-    c.desc 'Update modules for the feature with name'
-    c.command :update do |update|
-      update.action do |global_options, options, args|
-        help_now!('user name is required') if user and user.empty?
-        modules = args[(0...args.length)] if args.length > 0
-        update(path, user, modules, GitflowType::FEATURE)
-      end
-    end
+  release_command
 
-    c.desc 'Switch to the feature with name'
-    c.command :switch do |switch|
-      switch.action do |global_options, options, args|
-        help_now!('user name is required') if user and user.empty?
-        help_now!('feature name is required') if args.length < 1
-        name = args[0]
-        switch_to(path, version, user, name, GitflowType::FEATURE)
-      end
-    end
-
-    c.desc 'Pull remote changes for current feature'
-    c.command :pull do |pull|
-      pull.action do |global_options, options, args|
-        help_now!('user name is required') if user and user.empty?
-        pull(path, user, GitflowType::FEATURE)
-      end
-    end
-
-    c.desc 'Push local changes to remote for current feature'
-    c.command :push do |push|
-      push.action do |global_options, options, args|
-        help_now!('user name is required') if user and user.empty?
-        help_now!('comment message is required') if args.length < 1
-        help_now!(%Q(comment message should be wrappered with '' or "")) if args.length > 1
-        comment = args[0]
-        push(path, user, comment, GitflowType::FEATURE)
-      end
-    end
-
-    c.desc "Rebase 'develop' to current feature"
-    c.command :rebase do |rebase|
-      rebase.action do |global_options, options, args|
-        help_now!('user name is required') if user and user.empty?
-        rebase(path, user, GitflowType::FEATURE)
-      end
-    end
-
-    c.desc 'Finish current feature'
-    c.command :finish do |finish|
-      finish.action do |global_options, options, args|
-        help_now!('user name is required') if user and user.empty?
-        finish(path, user, GitflowType::FEATURE)
-      end
-    end
-
-    c.desc 'Publish current feature'
-    c.command :publish do |publish|
-      publish.action do |global_options, options, args|
-        help_now!('user name is required') if user and user.empty?
-        publish(path, user, GitflowType::FEATURE)
-      end
-    end
-
-    c.desc 'Delete feature with name'
-    c.command :delete do |delete|
-      delete.action do |global_options, options, args|
-        help_now!('user name is required') if user and user.empty?
-        help_now!('feature name is required') if args.length < 1
-        name = args[0]
-        delete(path, user, name, GitflowType::FEATURE)
-      end
-    end
-
-    c.desc 'List all the features'
-    c.command :list do |list|
-      list.action do
-        branchs = GitService.new.branchs_with_type(File.expand_path(path), GitflowType::FEATURE)
-        branchs.each do |branch|
-          p branch
-        end
-      end
-    end
-  end
-
-  desc 'Gitflow hotfix operations'
-  command :hotfix do |c|
-
-    c.desc 'Start a new hotfix with name for given modules and main project'
-    c.command :start do |start|
-      start.action do |global_options, options, args|
-        help_now!('user name is required') if user and user.empty?
-        help_now!('hotfix name is required') if args.length < 1
-        name = args[0]
-        modules = args[(1...args.length)] if args.length > 1
-        start(path, version, user, name, modules, GitflowType::HOTFIX)
-      end
-    end
-
-    c.desc 'Update modules for the hotfix with name'
-    c.command :update do |update|
-      update.action do |global_options, options, args|
-        help_now!('user name is required') if user and user.empty?
-        modules = args[(0...args.length)] if args.length > 0
-        update(path, user, modules, GitflowType::HOTFIX)
-      end
-    end
-
-    c.desc 'Switch to the hotfix with name'
-    c.command :switch do |switch|
-      switch.action do |global_options, options, args|
-        help_now!('user name is required') if user and user.empty?
-        help_now!('hotfix name is required') if args.length < 1
-        name = args[0]
-        switch_to(path, version, user, name, GitflowType::HOTFIX)
-      end
-    end
-
-    c.desc 'Pull remote changes for current hotfix'
-    c.command :pull do |pull|
-      pull.action do |global_options, options, args|
-        help_now!('user name is required') if user and user.empty?
-        pull(path, user, GitflowType::HOTFIX)
-      end
-    end
-
-    c.desc 'Push local changes to remote for current hotfix'
-    c.command :push do |push|
-      push.action do |global_options, options, args|
-        help_now!('user name is required') if user and user.empty?
-        help_now!('comment message is required') if args.length < 1
-        help_now!(%Q(comment message should be wrappered with '' or "")) if args.length > 1
-        comment = args[0]
-        push(path, user, comment, GitflowType::HOTFIX)
-      end
-    end
-
-    c.desc "Rebase 'master' to current feature"
-    c.command :rebase do |rebase|
-      rebase.action do |global_options, options, args|
-        help_now!('user name is required') if user and user.empty?
-        rebase(path, user, GitflowType::HOTFIX)
-      end
-    end
-
-    c.desc 'Finish current hotfix'
-    c.command :finish do |finish|
-      finish.action do |global_options, options, args|
-        help_now!('user name is required') if user and user.empty?
-        finish(path, user, GitflowType::HOTFIX)
-      end
-    end
-
-    c.desc 'Publish current feature'
-    c.command :publish do |publish|
-      publish.action do |global_options, options, args|
-        help_now!('user name is required') if user and user.empty?
-        publish(path, user, GitflowType::HOTFIX)
-      end
-    end
-
-    c.desc 'Delete hotfix with name'
-    c.command :delete do |delete|
-      delete.action do |global_options, options, args|
-        help_now!('user name is required') if user and user.empty?
-        help_now!('feature name is required') if args.length < 1
-        name = args[0]
-        delete(path, user, name, GitflowType::HOTFIX)
-      end
-    end
-
-    c.desc 'List all the hotfixes'
-    c.command :list do |list|
-      list.action do
-        branchs = GitService.new.branchs_with_type(File.expand_path(path), GitflowType::HOTFIX)
-        branchs.each do |branch|
-          p branch
-        end
-      end
-    end
-  end
-
-  desc 'Gitflow release operations'
-  command :release do |c|
-
-    c.desc 'Release home project operations'
-    c.command :home do |home|
-      home.desc 'Start release home project'
-      home.command :start do |start|
-        start.action do |global_options, options, args|
-          help_now!('user name is required') if user and user.empty?
-          raise Logger.error("release version is required") if version == nil
-          release_home_start(path, version, user)
-        end
-      end
-
-      home.desc 'Finish release home project'
-      home.command :finish do |finish|
-        finish.action do |global_options, options, args|
-          raise Logger.error("release version is required") if version == nil
-          release_home_finish(path, version)
-        end
-      end
-    end
-
-    c.desc 'release module'
-    c.command :module do |m|
-      m.desc 'Start release module project'
-      m.command :start do |start|
-        start.action do |global_options, options, args|
-          help_now!('module name is required') if args.length != 1
-          raise Logger.error("release version is required") if version == nil
-          module_name = args[0]
-          release_module_start(path, version, user, module_name)
-        end
-      end
-
-      m.desc 'finish release module project'
-      m.command :finish do |finish|
-        finish.action do |global_options, options, args|
-          help_now!('module name is required') if args.length != 1
-          raise Logger.error("release version is required") if version == nil
-          module_name = args[0]
-          release_module_finish(path, version, user, module_name)
-        end
-      end
-    end
-
-  end
-
-  desc 'Podfile operation'
-  command :podfile do |podfile|
-    podfile.flag %i[pod podfile]
-    podfile.desc 'Podfile'
-    path = ''
-
-    podfile.desc 'Detect podname should be locked.'
-    podfile.command :detect do |detect|
-      detect.action do |global_options,options,args|
-        podfile_detect(path)
-      end
-    end
-
-    podfile.desc 'Lock podname should be locked.'
-    podfile.command :lock do |lock|
-      lock.action do |global_options, options, args|
-        podfile_lock(path)
-      end
-    end
-
-    podfile.desc 'Update modules should be upgrade.'
-    podfile.command :update do |lock|
-      lock.action do |global_options, options, args|
-        podfile_modules_update(path)
-      end
-    end
-  end
+  pod_command
 
   desc 'Show version of bigkeeper'
   command :version do |version|
     version.action do |global_options, options, args|
       p "bigkeeper (#{VERSION})"
     end
-end
+  end
+
   exit run(ARGV)
 end

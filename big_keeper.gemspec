@@ -9,9 +9,9 @@ Gem::Specification.new do |spec|
   spec.authors       = ["mmoaay"]
   spec.email         = ["mmoaay@sina.com"]
 
-  spec.summary       = %q{Efficiency improvement for iOS modular development.}
-  spec.description   = %q{Efficiency improvement for iOS modular development, iOSer using this tool can make modular development easier.}
-  spec.homepage      = "https://github.com/BigKeeper/big-keeper"
+  spec.summary       = %q{Efficiency improvement for iOS&Android modular development.}
+  spec.description   = %q{Efficiency improvement for iOS&Android modular development, iOSer&Androider using this tool can make modular development easier.}
+  spec.homepage      = "https://github.com/BigKeeper/bigkeeper"
   spec.license       = "MIT"
 
   # Prevent pushing this gem to RubyGems.org. To allow pushes either set the 'allowed_push_host'

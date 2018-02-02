@@ -23,7 +23,7 @@ module BigKeeper
       File.open(file, 'r') do |file|
         file.each_line do |line|
           modules.each do |module_name|
-            if line =~ /pod\s*'#{module_name}'\s*,\s*:git\s*=>\s*\S*\s*,\s*:branch\s*=>\s*'#{branch_name}'\s*/
+            if line =~ /pod\s*('|")#{module_name}('|")\s*,\s*:git\s*=>\s*\S*\s*,\s*:branch\s*=>\s*('|")#{branch_name}('|")\s*/
               matched_modules << module_name
               break
             end
@@ -39,7 +39,7 @@ module BigKeeper
       File.open(file, 'r') do |file|
         file.each_line do |line|
           modules.each do |module_name|
-            if line =~ /pod\s*'#{module_name}'\s*,#{regex(module_type)}/
+            if line =~ /pod\s*('|")#{module_name}('|")\s*,#{regex(module_type)}/
               matched_modules << module_name
               break
             end
@@ -55,7 +55,7 @@ module BigKeeper
       elsif ModuleType::GIT == module_type
         "\s*:git\s*=>\s*"
       elsif ModuleType::SPEC == module_type
-        "\s*'"
+        "\s*('|\")"
       else
         ""
       end

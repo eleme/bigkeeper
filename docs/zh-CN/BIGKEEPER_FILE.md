@@ -29,7 +29,7 @@ home 'BigKeeperMain', :git => 'git@github.com:BigKeeper/BigKeeperMain.git', :pul
 
 ```
 modules do
-  pod 'BigKeeperModular', :git => 'git@github.com:BigKeeper/BigKeeperModular.git', :pulls => 'https://github.com/BigKeeper/BigKeeperModular/pulls'
+  mod 'BigKeeperModular', :git => 'git@github.com:BigKeeper/BigKeeperModular.git', :pulls => 'https://github.com/BigKeeper/BigKeeperModular/pulls'
 end
 ```
 
@@ -43,7 +43,7 @@ end
 
 ```
 user 'perry' do
-  pod 'BigKeeperModular', :path => '../BigKeeperModular'
+  mod 'BigKeeperModular', :path => '../BigKeeperModular'
 end
 ```
 
