@@ -7,7 +7,7 @@ require 'big_keeper/dependency/dep_type'
 module BigKeeper
   # Operator for podfile
   class DepService
-    def self.dep_operator(path)
+    def self.dep_operator(path, user)
       DepType.operator(path)
     end
   end

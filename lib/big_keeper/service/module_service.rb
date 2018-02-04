@@ -89,7 +89,7 @@ module BigKeeper
       GitService.new.verify_push(module_full_path, "finish branch #{home_branch_name}", home_branch_name, module_name)
 
       module_git = BigkeeperParser.module_git(module_name)
-      DepService.dep_operator(path).update_module_config(
+      DepService.dep_operator(path, user).update_module_config(
                                            module_name,
                                            ModuleType::GIT,
                                            GitInfo.new(module_git, GitType::BRANCH, home_branch_name))
@@ -103,7 +103,7 @@ module BigKeeper
       verify_module(path, user, module_name, home_branch_name, type)
 
       module_path = BigkeeperParser.module_path(user, module_name)
-      DepService.dep_operator(path).update_module_config(
+      DepService.dep_operator(path, user).update_module_config(
                                            module_name,
                                            ModuleType::PATH,
                                            module_path)
@@ -123,7 +123,7 @@ module BigKeeper
 
       module_git = BigkeeperParser.module_git(module_name)
 
-      DepService.dep_operator(path).update_module_config(
+      DepService.dep_operator(path, user).update_module_config(
                                            module_name,
                                            ModuleType::GIT,
                                            GitInfo.new(module_git, GitType::BRANCH, GitflowType.base_branch(type)))

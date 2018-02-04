@@ -26,16 +26,16 @@ module BigKeeper
       end
     end
 
-    def replace_all_module_release(path, module_names, version)
+    def replace_all_module_release(path, user, module_names, version)
       module_names.each do |module_name|
-        DepService.dep_operator(path).update_module_config(
+        DepService.dep_operator(path, user).update_module_config(
                                              module_name,
                                              ModuleType::GIT,
                                              GitInfo.new(BigkeeperParser.module_git(module_name), GitType::TAG, version))
       end
     end
 
-    def find_and_lock(podfile,dictionary)
+    def find_and_lock(podfile, dictionary)
       temp_file = Tempfile.new('.Podfile.tmp')
       begin
         File.open(podfile, 'r') do |file|
@@ -57,7 +57,7 @@ module BigKeeper
       end
     end
 
-    def find_and_upgrade(podfile,dictionary)
+    def find_and_upgrade(podfile, dictionary)
       temp_file = Tempfile.new('.Podfile.tmp')
       begin
         File.open(podfile, 'r') do |file|

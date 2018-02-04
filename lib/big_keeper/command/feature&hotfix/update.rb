@@ -26,7 +26,7 @@ module BigKeeper
 
       full_name = branch_name.gsub(/#{GitflowType.name(type)}\//, '')
 
-      current_modules = DepService.dep_operator(path).modules_with_type(
+      current_modules = DepService.dep_operator(path, user).modules_with_type(
                                 BigkeeperParser.module_names, ModuleType::PATH)
 
       # Verify input modules
@@ -60,10 +60,10 @@ module BigKeeper
         end
 
         # pod install
-        DepService.dep_operator(path).install(false, user)
+        DepService.dep_operator(path, user).install(false)
 
         # Open home workspace
-        DepService.dep_operator(path).open
+        DepService.dep_operator(path, user).open
       end
     ensure
     end

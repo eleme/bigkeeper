@@ -25,7 +25,6 @@ module BigKeeper
           modules.each do |module_name|
             if line =~ /pod\s*('|")#{module_name}('|")\s*,\s*:git\s*=>\s*\S*\s*,\s*:branch\s*=>\s*('|")#{branch_name}('|")\s*/
               matched_modules << module_name
-              break
             end
           end
         end
@@ -41,7 +40,6 @@ module BigKeeper
           modules.each do |module_name|
             if line =~ /pod\s*('|")#{module_name}('|")\s*,#{regex(module_type)}/
               matched_modules << module_name
-              break
             end
           end
         end
@@ -79,7 +77,7 @@ module BigKeeper
       end
     end
 
-    def install(should_update, user)
+    def install(should_update)
       PodOperator.pod_install(@path, should_update)
     end
 

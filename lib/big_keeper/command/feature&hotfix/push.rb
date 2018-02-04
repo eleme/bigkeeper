@@ -12,7 +12,7 @@ module BigKeeper
 
       Logger.error("Not a #{GitflowType.name(type)} branch, exit.") unless branch_name.include? GitflowType.name(type)
 
-      modules = DepService.dep_operator(path).modules_with_type(
+      modules = DepService.dep_operator(path, user).modules_with_type(
                                 BigkeeperParser.module_names, ModuleType::PATH)
 
       modules.each do |module_name|

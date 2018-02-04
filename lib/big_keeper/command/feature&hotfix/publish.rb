@@ -21,11 +21,11 @@ module BigKeeper
       branch_name = GitOperator.new.current_branch(path)
       Logger.error("Not a #{GitflowType.name(type)} branch, exit.") unless branch_name.include? GitflowType.name(type)
 
-      path_modules = DepService.dep_operator(path).modules_with_type(BigkeeperParser.module_names,
+      path_modules = DepService.dep_operator(path, user).modules_with_type(BigkeeperParser.module_names,
         ModuleType::PATH)
       Logger.error("You have unfinished modules #{path_modules}, Use 'finish' first please.") unless path_modules.empty?
 
-      modules = DepService.dep_operator(path).modules_with_branch(BigkeeperParser.module_names,
+      modules = DepService.dep_operator(path, user).modules_with_branch(BigkeeperParser.module_names,
         branch_name)
 
       # Rebase modules and modify podfile as git
@@ -36,10 +36,10 @@ module BigKeeper
       Logger.highlight("Publish branch '#{branch_name}' for 'Home'")
 
       # pod install
-      DepService.dep_operator(path).install(false, user)
+      DepService.dep_operator(path, user).install(false)
 
       # Recover podfile
-      DepService.dep_operator(path).recover
+      DepService.dep_operator(path, user).recover
 
       # Push home changes to remote
       GitService.new.verify_push(path, "publish branch #{branch_name}", branch_name, 'Home')

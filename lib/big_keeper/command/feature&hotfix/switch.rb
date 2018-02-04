@@ -18,7 +18,7 @@ module BigKeeper
 
       GitService.new.verify_home_branch(path, branch_name, OperateType::SWITCH)
 
-      stash_modules = DepService.dep_operator(path).modules_with_type(
+      stash_modules = DepService.dep_operator(path, user).modules_with_type(
                                 BigkeeperParser.module_names, ModuleType::PATH)
 
       # Stash current branch
@@ -31,7 +31,7 @@ module BigKeeper
       # Apply home stash
       StashService.new.pop_stash(path, branch_name, 'Home')
 
-      modules = DepService.dep_operator(path).modules_with_type(
+      modules = DepService.dep_operator(path, user).modules_with_type(
                                 BigkeeperParser.module_names, ModuleType::PATH)
 
       modules.each do |module_name|
@@ -39,10 +39,10 @@ module BigKeeper
       end
 
       # pod install
-      DepService.dep_operator(path).install(false, user)
+      DepService.dep_operator(path, user).install(false)
 
       # Open home workspace
-      DepService.dep_operator(path).open
+      DepService.dep_operator(path, user).open
     ensure
     end
   end

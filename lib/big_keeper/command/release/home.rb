@@ -53,13 +53,14 @@ module BigKeeper
       Logger.highlight(%Q(Start to release/#{version}))
       # step 2 replace_modules
       PodfileOperator.new.replace_all_module_release(project_path,
+                                                     user,
                                                      modules,
                                                      version)
 
       # step 3 change Info.plist value
       InfoPlistOperator.new.change_version_build(project_path, version)
 
-      DepService.dep_operator(project_path).install(true, user)
+      DepService.dep_operator(project_path, user).install(true)
       `open #{project_path}/*.xcworkspace`
     end
   end

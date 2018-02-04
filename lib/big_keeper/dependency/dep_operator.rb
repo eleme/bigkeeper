@@ -2,9 +2,11 @@ module BigKeeper
   # Operator for podfile
   class DepOperator
     @path
+    @user
 
-    def initialize(path)
+    def initialize(path, user)
       @path = path
+      @user = user
     end
 
     def backup
@@ -27,7 +29,7 @@ module BigKeeper
       raise "You should override this method in subclass."
     end
 
-    def install(should_update, user)
+    def install(should_update)
       raise "You should override this method in subclass."
     end
 

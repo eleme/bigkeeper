@@ -21,7 +21,7 @@ module BigKeeper
       branch_name = GitOperator.new.current_branch(path)
       Logger.error("Not a #{GitflowType.name(type)} branch, exit.") unless branch_name.include? GitflowType.name(type)
 
-      modules = DepService.dep_operator(path).modules_with_type(BigkeeperParser.module_names,
+      modules = DepService.dep_operator(path, user).modules_with_type(BigkeeperParser.module_names,
         ModuleType::PATH)
 
       # Rebase modules and modify podfile as git
@@ -32,10 +32,10 @@ module BigKeeper
       Logger.highlight("Finish branch '#{branch_name}' for 'Home'")
 
       # pod install
-      DepService.dep_operator(path).install(false)
+      DepService.dep_operator(path, user).install(false)
 
       # Open home workspace
-      DepService.dep_operator(path).open
+      DepService.dep_operator(path, user).open
 
       # Push home changes to remote
       GitService.new.verify_push(path, "finish branch #{branch_name}", branch_name, 'Home')
