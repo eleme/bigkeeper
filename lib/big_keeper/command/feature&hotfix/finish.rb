@@ -22,6 +22,9 @@ module BigKeeper
       branch_name = GitOperator.new.current_branch(path)
       Logger.error("Not a #{GitflowType.name(type)} branch, exit.") unless branch_name.include? GitflowType.name(type)
 
+      ModuleCacheOperator.new(path).cache_path_modules([])
+      ModuleCacheOperator.new(path).cache_git_modules(modules)
+
       modules = ModuleCacheOperator.new(path).current_path_modules
 
       # Rebase modules and modify podfile as git

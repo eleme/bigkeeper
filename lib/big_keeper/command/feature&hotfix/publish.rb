@@ -25,6 +25,8 @@ module BigKeeper
       path_modules = ModuleCacheOperator.new(path).current_path_modules
       Logger.error("You have unfinished modules #{path_modules}, Use 'finish' first please.") unless path_modules.empty?
 
+      ModuleCacheOperator.new(path).cache_git_modules([])
+
       modules = ModuleCacheOperator.new(path).current_git_modules
 
       # Rebase modules and modify podfile as git

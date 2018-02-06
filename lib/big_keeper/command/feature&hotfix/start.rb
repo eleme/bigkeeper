@@ -71,6 +71,15 @@ module BigKeeper
         "init #{GitflowType.name(type)} #{full_name}",
         branch_name,
         'Home')
+
+      modules.each do |module_name|
+        module_full_path = BigkeeperParser.module_full_path(path, user, module_name)
+        # Push home changes to remote
+        GitService.new.verify_push(module_full_path,
+          "init #{GitflowType.name(type)} #{full_name}",
+          branch_name,
+          module_name)
+      end
     ensure
     end
   end

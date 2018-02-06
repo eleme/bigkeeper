@@ -22,13 +22,14 @@ module BigKeeper
       cache_operator.clean
     end
 
-    def update_setting_config(user, modules)
+    def update_setting_config(current_module_name, user, modules)
       CacheOperator.new(@path).load('settings.gradle')
       begin
         File.open("#{@path}/settings.gradle", 'a') do |file|
           modules.each do |module_name|
-            file.puts "include ':#{module_name.downcase}'\r\n"
-            file.puts "project(':#{module_name.downcase}')." \
+            next if current_module_name == module_name
+            file.puts "\r\ninclude ':module:#{module_name.downcase}'\r\n"
+            file.puts "project(':module:#{module_name.downcase}')." \
               "projectDir = new File(rootProject.projectDir," \
               "'#{BigkeeperParser.module_path(user, module_name)}/#{module_name.downcase}-lib')\r\n"
           end
@@ -112,8 +113,8 @@ module BigKeeper
 
     def generate_compile_config(line, module_name, module_type, source)
       if ModuleType::PATH == module_type
-        line.sub(/(\s*)([\s\S]*)('|")(\S*)#{module_name.downcase}(\S*)('|")(\S*)/){
-          "#{$1}compile project(':#{module_name.downcase}')"
+        line.sub(/(\s*)compile(\s*)('|")(\S*)#{module_name.downcase}(\S*)('|")(\S*)/){
+          "#{$1}compile project(':module:#{module_name.downcase}')"
         }
       elsif ModuleType::GIT == module_type
         branch_name = GitOperator.new.current_branch(@path)
@@ -126,11 +127,19 @@ module BigKeeper
           full_name = branch_name.sub(/([\s\S]*)\/([\s\S]*)/){ $2 }
         end
         line.sub(/(\s*)([\s\S]*)('|")(\S*)#{module_name.downcase}(\S*)('|")(\S*)/){
-          "#{$1}compile '#{prefix_of_module(module_name)}#{module_name.downcase}:#{full_name}-SNAPSHOT'"
+          if $2.include? 'moduleCompile'
+            "#{$1}moduleCompile '#{prefix_of_module(module_name)}#{module_name.downcase}:#{full_name}-SNAPSHOT'"
+          else
+            "#{$1}compile '#{prefix_of_module(module_name)}#{module_name.downcase}:#{full_name}-SNAPSHOT'"
+          end
         }
       elsif ModuleType::SPEC == module_type
         line.sub(/(\s*)([\s\S]*)('|")(\S*)#{module_name.downcase}(\S*)('|")(\S*)/){
-          "#{$1}compile '#{prefix_of_module(module_name)}#{module_name.downcase}:#{source}'"
+          if $2.include? 'moduleCompile'
+            "#{$1}moduleCompile '#{prefix_of_module(module_name)}#{module_name.downcase}:#{source}'"
+          else
+            "#{$1}compile '#{prefix_of_module(module_name)}#{module_name.downcase}:#{source}'"
+          end
         }
       else
         line
