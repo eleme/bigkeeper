@@ -18,8 +18,7 @@ module BigKeeper
 
       GitService.new.verify_home_branch(path, branch_name, OperateType::SWITCH)
 
-      stash_modules = DepService.dep_operator(path, user).modules_with_type(
-                                BigkeeperParser.module_names, ModuleType::PATH)
+      stash_modules = ModuleCacheOperator.new(path).current_path_modules
 
       # Stash current branch
       StashService.new.stash_all(path, branch_name, user, stash_modules)
@@ -31,8 +30,7 @@ module BigKeeper
       # Apply home stash
       StashService.new.pop_stash(path, branch_name, 'Home')
 
-      modules = DepService.dep_operator(path, user).modules_with_type(
-                                BigkeeperParser.module_names, ModuleType::PATH)
+      modules = ModuleCacheOperator.new(path).current_path_modules
 
       modules.each do |module_name|
         ModuleService.new.switch_to(path, user, module_name, branch_name, type)

@@ -1,5 +1,7 @@
 require 'big_keeper/service/git_service'
+
 require 'big_keeper/util/logger'
+require 'big_keeper/util/cache_operator'
 
 module BigKeeper
   # Operator for got
@@ -72,12 +74,13 @@ module BigKeeper
 
       verify_module(path, user, module_name, home_branch_name, type)
 
-      GitService.new.verify_push(module_full_path, "publish branch #{home_branch_name}", home_branch_name, module_name)
-
       module_full_path = BigkeeperParser.module_full_path(path, user, module_name)
+      GitService.new.verify_push(module_full_path, "publish branch #{home_branch_name}", home_branch_name, module_name)
       GitService.new.verify_rebase(module_full_path, GitflowType.base_branch(type), module_name)
 
       `open #{BigkeeperParser.module_pulls(module_name)}`
+
+      ModuleCacheOperator.new(path).del_branch_module(module_name)
     end
 
     def finish(path, user, module_name, home_branch_name, type)
@@ -89,10 +92,13 @@ module BigKeeper
       GitService.new.verify_push(module_full_path, "finish branch #{home_branch_name}", home_branch_name, module_name)
 
       module_git = BigkeeperParser.module_git(module_name)
+
       DepService.dep_operator(path, user).update_module_config(
                                            module_name,
                                            ModuleType::GIT,
                                            GitInfo.new(module_git, GitType::BRANCH, home_branch_name))
+
+      ModuleCacheOperator.new(path).add_branch_module(module_name)
     end
 
     def add(path, user, module_name, name, type)
@@ -107,6 +113,8 @@ module BigKeeper
                                            module_name,
                                            ModuleType::PATH,
                                            module_path)
+
+      ModuleCacheOperator.new(path).add_path_module(module_name)
     end
 
     def del(path, user, module_name, name, type)
@@ -122,11 +130,12 @@ module BigKeeper
       # GitOperator.new.del(module_full_path, home_branch_name)
 
       module_git = BigkeeperParser.module_git(module_name)
-
       DepService.dep_operator(path, user).update_module_config(
                                            module_name,
                                            ModuleType::GIT,
                                            GitInfo.new(module_git, GitType::BRANCH, GitflowType.base_branch(type)))
+
+      ModuleCacheOperator.new(path).del_path_module(module_name)
     end
   end
 end

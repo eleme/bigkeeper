@@ -19,14 +19,14 @@ module BigKeeper
       end
     end
 
-    def self.operator(path)
+    def self.operator(path, user)
       operator_type = type(path)
       if COCOAPODS == operator_type
-        DepPodOperator.new(path)
+        DepPodOperator.new(path, user)
       elsif GRADLE == operator_type
-        DepGradleOperator.new(path)
+        DepGradleOperator.new(path, user)
       else
-        DepOperator.new(path)
+        DepOperator.new(path, user)
       end
     end
   end

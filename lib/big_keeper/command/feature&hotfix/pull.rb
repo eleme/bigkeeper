@@ -1,4 +1,5 @@
 require 'big_keeper/util/logger'
+require 'big_keeper/util/cache_operator'
 
 require 'big_keeper/dependency/dep_service'
 
@@ -11,8 +12,7 @@ module BigKeeper
 
       Logger.error("Not a #{GitflowType.name(type)} branch, exit.") unless branch_name.include? GitflowType.name(type)
 
-      modules = DepService.dep_operator(path, user).modules_with_type(
-                                                      BigkeeperParser.module_names, ModuleType::PATH)
+      modules = ModuleCacheOperator.new(path).current_path_modules
 
       modules.each do |module_name|
         ModuleService.new.pull(path, user, module_name, branch_name, type)

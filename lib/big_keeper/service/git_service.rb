@@ -13,10 +13,10 @@ module BigKeeper
       branch_name = "#{GitflowType.name(type)}/#{name}"
       if !git.has_remote_branch(path, branch_name) && !git.has_local_branch(path, branch_name)
 
-        GitflowOperator.new.verify_git_flow(path)
-
         verify_special_branch(path, 'master')
         verify_special_branch(path, 'develop')
+
+        GitflowOperator.new.verify_git_flow(path)
 
         GitflowOperator.new.start(path, name, type)
         git.push_to_remote(path, branch_name)

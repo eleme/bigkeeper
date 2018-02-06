@@ -6,6 +6,7 @@ require 'big_keeper/util/bigkeeper_parser'
 require 'big_keeper/util/logger'
 require 'big_keeper/util/pod_operator'
 require 'big_keeper/util/xcode_operator'
+require 'big_keeper/util/cache_operator'
 
 require 'big_keeper/dependency/dep_service'
 
@@ -27,10 +28,8 @@ module BigKeeper
 
       GitService.new.verify_home_branch(path, branch_name, OperateType::START)
 
-      stash_modules = DepService.dep_operator(path, user).modules_with_type(
-                                BigkeeperParser.module_names, ModuleType::PATH)
+      stash_modules = ModuleCacheOperator.new(path).current_path_modules
 
-      p stash_modules
       # Stash current branch
       StashService.new.stash_all(path, branch_name, user, stash_modules)
 
@@ -50,6 +49,8 @@ module BigKeeper
       Logger.highlight("Add branch '#{branch_name}' for 'Home'...")
       # Start home feature
       GitService.new.start(path, full_name, type)
+
+      ModuleCacheOperator.new(path).cache_path_modules(modules)
 
       # Backup podfile
       DepService.dep_operator(path, user).backup

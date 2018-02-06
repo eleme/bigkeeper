@@ -4,6 +4,7 @@ require 'big_keeper/util/podfile_operator'
 require 'big_keeper/util/logger'
 require 'big_keeper/util/pod_operator'
 require 'big_keeper/util/xcode_operator'
+require 'big_keeper/util/cache_operator'
 require 'big_keeper/util/bigkeeper_parser'
 
 require 'big_keeper/dependency/dep_service'
@@ -21,12 +22,10 @@ module BigKeeper
       branch_name = GitOperator.new.current_branch(path)
       Logger.error("Not a #{GitflowType.name(type)} branch, exit.") unless branch_name.include? GitflowType.name(type)
 
-      path_modules = DepService.dep_operator(path, user).modules_with_type(BigkeeperParser.module_names,
-        ModuleType::PATH)
+      path_modules = ModuleCacheOperator.new(path).current_path_modules
       Logger.error("You have unfinished modules #{path_modules}, Use 'finish' first please.") unless path_modules.empty?
 
-      modules = DepService.dep_operator(path, user).modules_with_branch(BigkeeperParser.module_names,
-        branch_name)
+      modules = ModuleCacheOperator.new(path).current_git_modules
 
       # Rebase modules and modify podfile as git
       modules.each do |module_name|

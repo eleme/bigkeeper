@@ -16,6 +16,18 @@ module BigKeeper
       end
     end
 
+    def self.command(type)
+      if FEATURE == type
+        :feature
+      elsif HOTFIX == type
+        :hotfix
+      elsif RELEASE == type
+        :release
+      else
+        :feature
+      end
+    end
+
     def self.base_branch(type)
       if FEATURE == type
         "develop"

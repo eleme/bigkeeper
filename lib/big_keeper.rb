@@ -25,24 +25,14 @@ module BigKeeper
   flag %i[v ver], default_value: 'Version in Bigkeeper file'
   flag %i[u user], default_value: GitOperator.new.user.gsub(/[^0-9A-Za-z]/, '').downcase
 
-  path = ''
-  version = ''
-  user = GitOperator.new.user
-
-  pre do |global_options, _command, options, args|
-    path = File.expand_path(global_options[:path])
-    version = global_options[:ver]
-    user = global_options[:user].gsub(/[^0-9A-Za-z]/, '').downcase
-  end
-
   if !GitflowOperator.new.verify_git_flow_command
     p %Q('git-flow' not found, use 'brew install git-flow' to install it)
     exit
   end
 
-  feature_and_hotfix_command(:feature)
+  feature_and_hotfix_command(GitflowType::FEATURE)
 
-  feature_and_hotfix_command(:hotfix)
+  feature_and_hotfix_command(GitflowType::HOTFIX)
 
   release_command
 

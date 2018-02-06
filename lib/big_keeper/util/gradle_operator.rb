@@ -3,31 +3,29 @@ require 'big_keeper/util/cache_operator'
 module BigKeeper
   # Operator for podfile
   class GradleOperator
-    def backup(path)
-      cache_operator = CacheOperator.new(path)
+    def initialize(path)
+      @path = File.expand_path(path)
+    end
+
+    def backup
+      cache_operator = CacheOperator.new(@path)
       cache_operator.save('settings.gradle')
-      Dir.glob("#{path}/*/build.gradle").each do |build_gradle_file_path|
-        build_gradle_file = build_gradle_file_path.gsub!(/#{path}/, '')
+      Dir.glob("#{@path}/*/build.gradle").each do |build_gradle_file_path|
+        build_gradle_file = build_gradle_file_path.gsub!(/#{@path}/, '')
         cache_operator.save(build_gradle_file)
       end
     end
 
-    def recover(path)
-      cache_operator = CacheOperator.new(path)
-
+    def recover
+      cache_operator = CacheOperator.new(@path)
       cache_operator.load('settings.gradle')
-      # Dir.glob("#{path}/*/build.gradle").each do |build_gradle_file_path|
-      #   build_gradle_file = build_gradle_file_path.gsub!(/#{path}/, '')
-      #   cache_operator.load(build_gradle_file)
-      # end
-
       cache_operator.clean
     end
 
-    def update_setting_config(path, user, modules)
-      CacheOperator.new(path).load('settings.gradle')
+    def update_setting_config(user, modules)
+      CacheOperator.new(@path).load('settings.gradle')
       begin
-        File.open("#{path}/settings.gradle", 'a') do |file|
+        File.open("#{@path}/settings.gradle", 'a') do |file|
           modules.each do |module_name|
             file.puts "include ':#{module_name.downcase}'\r\n"
             file.puts "project(':#{module_name.downcase}')." \
@@ -39,8 +37,8 @@ module BigKeeper
       end
     end
 
-    def update_module_config(path, module_name, module_type, source)
-      Dir.glob("#{path}/*/build.gradle").each do |file|
+    def update_module_config(module_name, module_type, source)
+      Dir.glob("#{@path}/*/build.gradle").each do |file|
         temp_file = Tempfile.new('.build.gradle.tmp')
         begin
           version_flag = false
@@ -55,9 +53,9 @@ module BigKeeper
 
                 version_flag = false if 0 == version_flag
 
-                temp_file.puts generate_version_config(path, line, module_name, module_type, source)
+                temp_file.puts generate_version_config(line, module_name, module_type, source)
               else
-                temp_file.puts generate_compile_config(path, line, module_name, module_type, source)
+                temp_file.puts generate_compile_config(line, module_name, module_type, source)
               end
             end
           end
@@ -70,9 +68,9 @@ module BigKeeper
       end
     end
 
-    def generate_version_config(path, line, module_name, module_type, source)
+    def generate_version_config(line, module_name, module_type, source)
       if ModuleType::GIT == module_type
-        branch_name = GitOperator.new.current_branch(path)
+        branch_name = GitOperator.new.current_branch(@path)
         full_name = ''
 
         # Get version part of source.addition
@@ -93,9 +91,9 @@ module BigKeeper
       end
     end
 
-    def prefix_of_module(path, module_name)
+    def prefix_of_module(module_name)
       prefix = ''
-      Dir.glob("#{path}/.bigkeeper/*/build.gradle").each do |file|
+      Dir.glob("#{@path}/.bigkeeper/*/build.gradle").each do |file|
         File.open(file, 'r') do |file|
           file.each_line do |line|
             if line =~ /(\s*)([\s\S]*)('|")(\S*)#{module_name.downcase}(\S*)('|")(\S*)/
@@ -112,13 +110,13 @@ module BigKeeper
       prefix.chop
     end
 
-    def generate_compile_config(path, line, module_name, module_type, source)
+    def generate_compile_config(line, module_name, module_type, source)
       if ModuleType::PATH == module_type
         line.sub(/(\s*)([\s\S]*)('|")(\S*)#{module_name.downcase}(\S*)('|")(\S*)/){
           "#{$1}compile project(':#{module_name.downcase}')"
         }
       elsif ModuleType::GIT == module_type
-        branch_name = GitOperator.new.current_branch(path)
+        branch_name = GitOperator.new.current_branch(@path)
         full_name = ''
 
         # Get version part of source.addition

@@ -8,7 +8,7 @@ module BigKeeper
   # Operator for podfile
   class DepService
     def self.dep_operator(path, user)
-      DepType.operator(path)
+      DepType.operator(path, user)
     end
   end
 end

@@ -7,11 +7,11 @@ module BigKeeper
     command :podfile do |podfile|
       podfile.flag %i[pod podfile]
       podfile.desc 'Podfile'
-      path = ''
 
       podfile.desc 'Detect podname should be locked.'
       podfile.command :detect do |detect|
         detect.action do |global_options,options,args|
+          path = File.expand_path(global_options[:path])
           podfile_detect(path)
         end
       end
@@ -19,6 +19,7 @@ module BigKeeper
       podfile.desc 'Lock podname should be locked.'
       podfile.command :lock do |lock|
         lock.action do |global_options, options, args|
+          path = File.expand_path(global_options[:path])
           podfile_lock(path)
         end
       end
@@ -26,6 +27,7 @@ module BigKeeper
       podfile.desc 'Update modules should be upgrade.'
       podfile.command :update do |lock|
         lock.action do |global_options, options, args|
+          path = File.expand_path(global_options[:path])
           podfile_modules_update(path)
         end
       end

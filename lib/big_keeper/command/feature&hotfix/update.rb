@@ -6,6 +6,7 @@ require 'big_keeper/util/bigkeeper_parser'
 require 'big_keeper/util/logger'
 require 'big_keeper/util/pod_operator'
 require 'big_keeper/util/xcode_operator'
+require 'big_keeper/util/cache_operator'
 
 require 'big_keeper/dependency/dep_service'
 
@@ -26,8 +27,7 @@ module BigKeeper
 
       full_name = branch_name.gsub(/#{GitflowType.name(type)}\//, '')
 
-      current_modules = DepService.dep_operator(path, user).modules_with_type(
-                                BigkeeperParser.module_names, ModuleType::PATH)
+      current_modules = ModuleCacheOperator.new(path).current_path_modules
 
       # Verify input modules
       modules = [] unless modules
@@ -46,6 +46,8 @@ module BigKeeper
 
       add_modules = modules - current_modules
       del_modules = current_modules - modules
+
+      ModuleCacheOperator.new(path).cache_path_modules(modules)
 
       if add_modules.empty? and del_modules.empty?
         Logger.default("There is nothing changed with modules #{modules}.")

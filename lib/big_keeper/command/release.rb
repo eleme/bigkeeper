@@ -11,6 +11,10 @@ module BigKeeper
         home.desc 'Start release home project'
         home.command :start do |start|
           start.action do |global_options, options, args|
+            path = File.expand_path(global_options[:path])
+            version = global_options[:ver]
+            user = global_options[:user].gsub(/[^0-9A-Za-z]/, '').downcase
+
             help_now!('user name is required') if user and user.empty?
             raise Logger.error("release version is required") if version == nil
             release_home_start(path, version, user)
@@ -20,6 +24,9 @@ module BigKeeper
         home.desc 'Finish release home project'
         home.command :finish do |finish|
           finish.action do |global_options, options, args|
+            path = File.expand_path(global_options[:path])
+            version = global_options[:ver]
+
             raise Logger.error("release version is required") if version == nil
             release_home_finish(path, version)
           end
@@ -31,6 +38,10 @@ module BigKeeper
         m.desc 'Start release module project'
         m.command :start do |start|
           start.action do |global_options, options, args|
+            path = File.expand_path(global_options[:path])
+            version = global_options[:ver]
+            user = global_options[:user].gsub(/[^0-9A-Za-z]/, '').downcase
+
             help_now!('module name is required') if args.length != 1
             raise Logger.error("release version is required") if version == nil
             module_name = args[0]
@@ -41,6 +52,10 @@ module BigKeeper
         m.desc 'finish release module project'
         m.command :finish do |finish|
           finish.action do |global_options, options, args|
+            path = File.expand_path(global_options[:path])
+            version = global_options[:ver]
+            user = global_options[:user].gsub(/[^0-9A-Za-z]/, '').downcase
+
             help_now!('module name is required') if args.length != 1
             raise Logger.error("release version is required") if version == nil
             module_name = args[0]
