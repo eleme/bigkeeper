@@ -33,15 +33,6 @@ module BigKeeper
       modules = [] unless modules
       BigkeeperParser.verify_modules(modules)
 
-      # # Handle modules
-      # if modules
-      #   # Verify input modules
-      #   BigkeeperParser.verify_modules(modules)
-      # else
-      #   # Get all modules if not specified
-      #   modules = BigkeeperParser.module_names
-      # end
-
       Logger.highlight("Start to update modules for branch '#{branch_name}'...")
 
       add_modules = modules - current_modules

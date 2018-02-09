@@ -37,49 +37,44 @@ module BigKeeper
       modules = [] unless modules
       BigkeeperParser.verify_modules(modules)
 
-      # # Handle modules
-      # if modules
-      #   # Verify input modules
-      #   BigkeeperParser.verify_modules(modules)
-      # else
-      #   # Get all modules if not specified
-      #   modules = BigkeeperParser.module_names
-      # end
-
       Logger.highlight("Add branch '#{branch_name}' for 'Home'...")
       # Start home feature
       GitService.new.start(path, full_name, type)
 
       ModuleCacheOperator.new(path).cache_path_modules(modules)
 
-      # Backup podfile
+      # Backup home
       DepService.dep_operator(path, user).backup
 
-      # Modify podfile as path and Start modules feature
+      # Start modules feature and modify module as path
       modules.each do |module_name|
         ModuleService.new.add(path, user, module_name, full_name, type)
       end
 
-      # pod install
+      # install
       DepService.dep_operator(path, user).install(true)
 
       # Open home workspace
       DepService.dep_operator(path, user).open
 
+      # Push modules changes to remote
+      modules.each do |module_name|
+        ModuleService.new.push(
+          path,
+          user,
+          module_name,
+          home_branch_name,
+          type,
+          "init #{GitflowType.name(type)} #{full_name}")
+      end
+
       # Push home changes to remote
-      GitService.new.verify_push(path,
+      Logger.highlight("Push branch '#{branch_name}' for 'Home'...")
+      GitService.new.verify_push(
+        path,
         "init #{GitflowType.name(type)} #{full_name}",
         branch_name,
         'Home')
-
-      modules.each do |module_name|
-        module_full_path = BigkeeperParser.module_full_path(path, user, module_name)
-        # Push home changes to remote
-        GitService.new.verify_push(module_full_path,
-          "init #{GitflowType.name(type)} #{full_name}",
-          branch_name,
-          module_name)
-      end
     ensure
     end
   end

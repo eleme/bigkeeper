@@ -47,17 +47,13 @@ module BigKeeper
 
           File.open(file, 'r') do |file|
             file.each_line do |line|
-              version_flag = true if line.include? 'modifyPom'
-              if version_flag
-                version_index += 1 if line.include? '{'
-                version_index -= 1 if line.include? '}'
-
-                version_flag = false if 0 == version_flag
-
-                temp_file.puts generate_version_config(line, module_name, module_type, source)
-              else
-                temp_file.puts generate_compile_config(line, module_name, module_type, source)
-              end
+              [version_index, version_flag] = generate_module_config(
+                line,
+                module_name,
+                module_type,
+                source,
+                version_index,
+                version_flag)
             end
           end
           temp_file.close
@@ -67,6 +63,21 @@ module BigKeeper
           temp_file.unlink
         end
       end
+    end
+
+    def generate_module_config(line, module_name, module_type, source, version_index, version_flag)
+      version_flag = true if line.include? 'modifyPom'
+      if version_flag
+        version_index += 1 if line.include? '{'
+        version_index -= 1 if line.include? '}'
+
+        version_flag = false if 0 == version_flag
+
+        temp_file.puts generate_version_config(line, module_name, module_type, source)
+      else
+        temp_file.puts generate_compile_config(line, module_name, module_type, source)
+      end
+      [version_index, version_flag]
     end
 
     def generate_version_config(line, module_name, module_type, source)
