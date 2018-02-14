@@ -74,11 +74,11 @@ module BigKeeper
 
       verify_module(path, user, module_name, home_branch_name, type)
 
-      module_full_path = BigkeeperParser.module_full_path(path, user, module_name)
-      GitService.new.verify_push(module_full_path, "publish branch #{home_branch_name}", home_branch_name, module_name)
-      GitService.new.verify_rebase(module_full_path, GitflowType.base_branch(type), module_name)
-
-      `open #{BigkeeperParser.module_pulls(module_name)}`
+      module_git = BigkeeperParser.module_git(module_name)
+      DepService.dep_operator(path, user).update_module_config(
+        module_name,
+        ModuleType::GIT,
+        GitInfo.new(module_git, GitType::BRANCH, GitflowType.base_branch(type)))
 
       ModuleCacheOperator.new(path).del_branch_module(module_name)
     end
@@ -117,18 +117,17 @@ module BigKeeper
 
       Logger.highlight("Delete branch '#{home_branch_name}' for module '#{module_name}'...")
 
-      # Stash module current branch
-      module_full_path = BigkeeperParser.module_full_path(path, user, module_name)
-      current_branch_name = GitOperator.new.current_branch(module_full_path)
-      StashService.new.stash(module_full_path, current_branch_name, module_name)
-
-      GitOperator.new.checkout(module_full_path, GitflowType.base_branch(type))
-
       module_git = BigkeeperParser.module_git(module_name)
       DepService.dep_operator(path, user).update_module_config(
         module_name,
         ModuleType::GIT,
         GitInfo.new(module_git, GitType::BRANCH, GitflowType.base_branch(type)))
+
+      # Stash module current branch
+      module_full_path = BigkeeperParser.module_full_path(path, user, module_name)
+      current_branch_name = GitOperator.new.current_branch(module_full_path)
+      StashService.new.stash(module_full_path, current_branch_name, module_name)
+      GitOperator.new.checkout(module_full_path, GitflowType.base_branch(type))
 
       ModuleCacheOperator.new(path).del_path_module(module_name)
     end

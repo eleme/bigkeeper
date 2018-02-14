@@ -34,15 +34,14 @@ module BigKeeper
       StashService.new.stash_all(path, branch_name, user, stash_modules)
 
       # Verify input modules
-      modules = [] unless modules
-      BigkeeperParser.verify_modules(modules)
+      modules = BigkeeperParser.verify_modules(modules)
 
       Logger.highlight("Add branch '#{branch_name}' for 'Home'...")
       # Start home feature
       GitService.new.start(path, full_name, type)
 
+      # Cache all path modules
       ModuleCacheOperator.new(path).cache_path_modules(modules)
-
       # Backup home
       DepService.dep_operator(path, user).backup
 

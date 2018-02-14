@@ -36,7 +36,7 @@ module BigKeeper
         ModuleService.new.switch_to(path, user, module_name, branch_name, type)
       end
 
-      # pod install
+      # Install
       DepService.dep_operator(path, user).install(false)
 
       # Open home workspace

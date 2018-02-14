@@ -48,8 +48,6 @@ module BigKeeper
         if ModuleType::PATH == module_type
           "#{$1}pod '#{module_name}', :path => '#{source}'"
         elsif ModuleType::GIT == module_type
-          # puts source.base
-          # puts source.addition
           if GitType::BRANCH == source.type
             "#{$1}pod '#{module_name}', :git => '#{source.base}', :branch => '#{source.addition}'"
           elsif GitType::TAG == source.type

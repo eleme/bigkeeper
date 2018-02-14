@@ -4,7 +4,7 @@ module BigKeeper
   # Operator for podfile
   class GradleOperator
     def initialize(path)
-      @path = File.expand_path(path)
+      @path = path
     end
 
     def backup
@@ -22,8 +22,9 @@ module BigKeeper
       cache_operator.clean
     end
 
-    def update_setting_config(current_module_name, user, modules)
+    def update_settings_config(current_module_name, modules, user)
       CacheOperator.new(@path).load('settings.gradle')
+
       begin
         File.open("#{@path}/settings.gradle", 'a') do |file|
           modules.each do |module_name|
@@ -38,7 +39,7 @@ module BigKeeper
       end
     end
 
-    def update_module_config(module_name, module_type, source)
+    def update_build_config(current_module_name, modules, module_type, source)
       Dir.glob("#{@path}/*/build.gradle").each do |file|
         temp_file = Tempfile.new('.build.gradle.tmp')
         begin
@@ -47,13 +48,16 @@ module BigKeeper
 
           File.open(file, 'r') do |file|
             file.each_line do |line|
-              [version_index, version_flag] = generate_module_config(
-                line,
-                module_name,
-                module_type,
-                source,
-                version_index,
-                version_flag)
+              modules.each do |module_name|
+                next if current_module_name == module_name
+                [version_index, version_flag] = generate_build_config(
+                  line,
+                  module_name,
+                  module_type,
+                  source,
+                  version_index,
+                  version_flag)
+              end
             end
           end
           temp_file.close
@@ -65,8 +69,8 @@ module BigKeeper
       end
     end
 
-    def generate_module_config(line, module_name, module_type, source, version_index, version_flag)
-      version_flag = true if line.include? 'modifyPom'
+    def generate_build_config(line, module_name, module_type, source, version_index, version_flag)
+      version_flag = true if line.downcase.include? 'modifypom'
       if version_flag
         version_index += 1 if line.include? '{'
         version_index -= 1 if line.include? '}'
@@ -157,6 +161,6 @@ module BigKeeper
       end
     end
 
-    private :generate_compile_config, :generate_version_config, :prefix_of_module
+    private :generate_build_config, :generate_compile_config, :generate_version_config, :prefix_of_module
   end
 end

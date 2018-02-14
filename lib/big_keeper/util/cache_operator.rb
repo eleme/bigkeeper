@@ -54,34 +54,34 @@ module BigKeeper
     end
 
     def cache_path_modules(modules)
-      @modules["path"]["all"] = modules
+      @modules["path"]["all"] = modules.uniq
       cache_modules
     end
 
     def cache_git_modules(modules)
-      @modules["git"]["all"] = modules
+      @modules["git"]["all"] = modules.uniq
       cache_modules
     end
 
     def add_branch_module(module_name)
-      @modules["path"]["current"].delete(module_name)
-      @modules["git"]["current"] << module_name
+      @modules["path"]["current"].delete(module_name) if @modules["path"]["current"].include?(module_name)
+      @modules["git"]["current"] << module_name unless @modules["git"]["current"].include?(module_name)
       cache_modules
     end
 
     def del_branch_module(module_name)
-      @modules["git"]["current"].delete(module_name)
+      @modules["git"]["current"].delete(module_name) if @modules["git"]["current"].include?(module_name)
       cache_modules
     end
 
     def add_path_module(module_name)
-      @modules["git"]["current"].delete(module_name)
-      @modules["path"]["current"] << module_name
+      @modules["git"]["current"].delete(module_name) if @modules["git"]["current"].include?(module_name)
+      @modules["path"]["current"] << module_name unless @modules["path"]["current"].include?(module_name)
       cache_modules
     end
 
     def del_path_module(module_name)
-      @modules["path"]["current"].delete(module_name)
+      @modules["path"]["current"].delete(module_name) if @modules["path"]["current"].include?(module_name)
       cache_modules
     end
 

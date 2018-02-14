@@ -30,8 +30,7 @@ module BigKeeper
       current_modules = ModuleCacheOperator.new(path).current_path_modules
 
       # Verify input modules
-      modules = [] unless modules
-      BigkeeperParser.verify_modules(modules)
+      modules = BigkeeperParser.verify_modules(modules)
 
       Logger.highlight("Start to update modules for branch '#{branch_name}'...")
 
@@ -52,7 +51,7 @@ module BigKeeper
           ModuleService.new.del(path, user, module_name, full_name, type)
         end
 
-        # pod install
+        # Install
         DepService.dep_operator(path, user).install(false)
 
         # Open home workspace
