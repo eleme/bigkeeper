@@ -26,7 +26,7 @@ module BigKeeper
   class ModuleCacheOperator
     def initialize(path)
       @cache_path = File.expand_path("#{path}/.bigkeeper")
-      @modules = {"git" => {"all" => [], "current" => []}, "path" => {"all" => [], "current" => []}}
+      @modules = {"git" => {"all" => [], "current" => []}, "path" => {"all" => [], "add" => [], "del" => [], "current" => []}}
 
       FileUtils.mkdir_p(@cache_path) unless File.exist?(@cache_path)
 
@@ -41,6 +41,14 @@ module BigKeeper
       @modules["path"]["all"]
     end
 
+    def add_path_modules
+      @modules["path"]["add"]
+    end
+
+    def del_path_modules
+      @modules["path"]["del"]
+    end
+
     def current_path_modules
       @modules["path"]["current"]
     end
@@ -53,8 +61,10 @@ module BigKeeper
       @modules["git"]["current"]
     end
 
-    def cache_path_modules(modules)
+    def cache_path_modules(modules, add_modules, del_modules)
       @modules["path"]["all"] = modules.uniq
+      @modules["path"]["add"] = add_modules.uniq
+      @modules["path"]["del"] = del_modules.uniq
       cache_modules
     end
 

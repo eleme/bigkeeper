@@ -41,7 +41,7 @@ module BigKeeper
       GitService.new.start(path, full_name, type)
 
       # Cache all path modules
-      ModuleCacheOperator.new(path).cache_path_modules(modules)
+      ModuleCacheOperator.new(path).cache_path_modules(modules, modules, [])
       # Backup home
       DepService.dep_operator(path, user).backup
 

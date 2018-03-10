@@ -88,7 +88,7 @@ module BigKeeper
 
     def has_commits(path, branch_name)
       has_commits = false
-      IO.popen("cd #{path}; git log --branches --not --remotes") do |io|
+      IO.popen("cd #{path}; git log #{branch_name} --not --remotes") do |io|
         io.each do |line|
           has_commits = true if line.include? branch_name
         end

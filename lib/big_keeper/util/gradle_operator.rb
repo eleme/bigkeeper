@@ -50,7 +50,8 @@ module BigKeeper
             file.each_line do |line|
               modules.each do |module_name|
                 next if current_module_name == module_name
-                [version_index, version_flag] = generate_build_config(
+
+                version_index, version_flag = generate_build_config(
                   line,
                   module_name,
                   module_type,
@@ -112,7 +113,7 @@ module BigKeeper
       Dir.glob("#{@path}/.bigkeeper/*/build.gradle").each do |file|
         File.open(file, 'r') do |file|
           file.each_line do |line|
-            if line =~ /(\s*)([\s\S]*)('|")(\S*)#{module_name.downcase}(\S*)('|")(\S*)/
+            if line =~ /(\s*)([\s\S]*)('|")(\S*):#{module_name.downcase}:(\S*)('|")(\S*)/
               prefix = line.sub(/(\s*)([\s\S]*)('|")(\S*)#{module_name.downcase}(\S*)('|")(\S*)/){
                 $4
               }
@@ -128,7 +129,7 @@ module BigKeeper
 
     def generate_compile_config(line, module_name, module_type, source)
       if ModuleType::PATH == module_type
-        line.sub(/(\s*)compile(\s*)('|")(\S*)#{module_name.downcase}(\S*)('|")(\S*)/){
+        line.sub(/(\s*)compile(\s*)('|")(\S*):#{module_name.downcase}:(\S*)('|")(\S*)/){
           "#{$1}compile project(':module:#{module_name.downcase}')"
         }
       elsif ModuleType::GIT == module_type
@@ -141,16 +142,16 @@ module BigKeeper
         else
           full_name = branch_name.sub(/([\s\S]*)\/([\s\S]*)/){ $2 }
         end
-        line.sub(/(\s*)([\s\S]*)('|")(\S*)#{module_name.downcase}(\S*)('|")(\S*)/){
-          if $2.include? 'moduleCompile'
+        line.sub(/(\s*)([\s\S]*)('|")(\S*):#{module_name.downcase}:(\S*)('|")(\S*)/){
+          if $2.downcase.include? 'modulecompile'
             "#{$1}moduleCompile '#{prefix_of_module(module_name)}#{module_name.downcase}:#{full_name}-SNAPSHOT'"
           else
             "#{$1}compile '#{prefix_of_module(module_name)}#{module_name.downcase}:#{full_name}-SNAPSHOT'"
           end
         }
       elsif ModuleType::SPEC == module_type
-        line.sub(/(\s*)([\s\S]*)('|")(\S*)#{module_name.downcase}(\S*)('|")(\S*)/){
-          if $2.include? 'moduleCompile'
+        line.sub(/(\s*)([\s\S]*)('|")(\S*):#{module_name.downcase}:(\S*)('|")(\S*)/){
+          if $2.downcase.include? 'modulecompile'
             "#{$1}moduleCompile '#{prefix_of_module(module_name)}#{module_name.downcase}:#{source}'"
           else
             "#{$1}compile '#{prefix_of_module(module_name)}#{module_name.downcase}:#{source}'"

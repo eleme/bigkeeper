@@ -50,7 +50,7 @@ module BigKeeper
       end
 
       # Delete all path modules and cache git modules
-      ModuleCacheOperator.new(path).cache_path_modules([])
+      ModuleCacheOperator.new(path).cache_path_modules([], [], [])
       ModuleCacheOperator.new(path).cache_git_modules(modules)
 
       # Push home changes to remote

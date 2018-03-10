@@ -37,13 +37,13 @@ module BigKeeper
       add_modules = modules - current_modules
       del_modules = current_modules - modules
 
-      ModuleCacheOperator.new(path).cache_path_modules(modules)
+      ModuleCacheOperator.new(path).cache_path_modules(modules, add_modules, del_modules)
 
       if add_modules.empty? and del_modules.empty?
         Logger.default("There is nothing changed with modules #{modules}.")
       else
         # Modify podfile as path and Start modules feature
-        add_modules.each do |module_name|
+        modules.each do |module_name|
           ModuleService.new.add(path, user, module_name, full_name, type)
         end
 
