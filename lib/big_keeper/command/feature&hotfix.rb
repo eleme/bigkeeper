@@ -131,11 +131,7 @@ module BigKeeper
           Logger.highlight("Generating feature tree of all version...") if args.length < 1
           path = File.expand_path(global_options[:path])
           user = global_options[:user].gsub(/[^0-9A-Za-z]/, '').downcase
-          list(path,user)
-          # branchs = GitService.new.branchs_with_type(File.expand_path(path), type)
-          # branchs.each do |branch|
-          #   p branch
-          # end
+          list(path,user,type)
         end
       end
     end
