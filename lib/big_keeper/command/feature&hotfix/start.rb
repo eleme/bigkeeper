@@ -28,7 +28,7 @@ module BigKeeper
 
       GitService.new.verify_home_branch(path, branch_name, OperateType::START)
 
-      stash_modules = ModuleCacheOperator.new(path).current_path_modules
+      stash_modules = ModuleCacheOperator.new(path).all_path_modules
 
       # Stash current branch
       StashService.new.stash_all(path, branch_name, user, stash_modules)
@@ -42,6 +42,8 @@ module BigKeeper
 
       # Cache all path modules
       ModuleCacheOperator.new(path).cache_path_modules(modules, modules, [])
+      modules = ModuleCacheOperator.new(path).remain_path_modules
+
       # Backup home
       DepService.dep_operator(path, user).backup
 

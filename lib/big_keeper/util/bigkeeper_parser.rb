@@ -166,6 +166,7 @@ module BigKeeper
     def self.verify_modules(modules)
       modules = [] unless modules
       modules = modules.uniq
+      p modules
       modules.each do |item|
         Logger.error("Can not find module #{item} in Bigkeeper file") unless @@config[:modules][item]
       end

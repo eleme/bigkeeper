@@ -35,6 +35,7 @@ module BigKeeper
     PATH = 1
     GIT = 2
     SPEC = 3
+    RECOVER = 4
   end
 
   module GitType

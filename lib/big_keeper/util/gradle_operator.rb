@@ -108,22 +108,29 @@ module BigKeeper
       end
     end
 
-    def prefix_of_module(module_name)
-      prefix = ''
+    def origin_config_of_module(module_name)
+      origin_config = ''
+
       Dir.glob("#{@path}/.bigkeeper/*/build.gradle").each do |file|
         File.open(file, 'r') do |file|
           file.each_line do |line|
             if line =~ /(\s*)([\s\S]*)('|")(\S*):#{module_name.downcase}:(\S*)('|")(\S*)/
-              prefix = line.sub(/(\s*)([\s\S]*)('|")(\S*)#{module_name.downcase}(\S*)('|")(\S*)/){
-                $4
-              }
+              origin_config = line
               break
             end
           end
         end
-        break unless prefix.empty?
+        break unless origin_config.empty?
       end
 
+      origin_config.chop
+    end
+
+    def prefix_of_module(module_name)
+      origin_config = origin_config_of_module(module_name)
+      prefix = origin_config.sub(/(\s*)([\s\S]*)('|")(\S*)#{module_name.downcase}(\S*)('|")(\S*)/){
+        $4
+      }
       prefix.chop
     end
 

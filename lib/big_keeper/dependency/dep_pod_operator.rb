@@ -59,12 +59,29 @@ module BigKeeper
           end
         elsif ModuleType::SPEC == module_type
           "#{$1}pod '#{module_name}', '#{source}'"
+        elsif ModuleType::RECOVER == module_type
+          origin_config_of_module(module_name)
         else
           line
         end
       }
     end
 
-    private :generate_module_config
+    def origin_config_of_module(module_name)
+      origin_config = ''
+
+      File.open("#{@path}/.bigkeeper/Podfile", 'r') do |file|
+        file.each_line do |line|
+          if line =~ /(\s*)pod(\s*)('|")#{module_name}('|")([\s\S]*)/
+            origin_config = line
+            break
+          end
+        end
+      end
+
+      origin_config.chop
+    end
+
+    private :generate_module_config, :origin_config_of_module
   end
 end

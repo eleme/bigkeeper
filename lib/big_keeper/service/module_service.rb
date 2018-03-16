@@ -80,7 +80,7 @@ module BigKeeper
         ModuleType::GIT,
         GitInfo.new(module_git, GitType::BRANCH, GitflowType.base_branch(type)))
 
-      ModuleCacheOperator.new(path).del_branch_module(module_name)
+      ModuleCacheOperator.new(path).del_git_module(module_name)
     end
 
     def finish(path, user, module_name, home_branch_name, type)
@@ -94,7 +94,8 @@ module BigKeeper
         ModuleType::GIT,
         GitInfo.new(module_git, GitType::BRANCH, home_branch_name))
 
-      ModuleCacheOperator.new(path).add_branch_module(module_name)
+      ModuleCacheOperator.new(path).del_path_module(module_name)
+      ModuleCacheOperator.new(path).add_git_module(module_name)
     end
 
     def add(path, user, module_name, name, type)
@@ -120,8 +121,8 @@ module BigKeeper
       module_git = BigkeeperParser.module_git(module_name)
       DepService.dep_operator(path, user).update_module_config(
         module_name,
-        ModuleType::GIT,
-        GitInfo.new(module_git, GitType::BRANCH, GitflowType.base_branch(type)))
+        ModuleType::RECOVER,
+        NULL)
 
       # Stash module current branch
       module_full_path = BigkeeperParser.module_full_path(path, user, module_name)

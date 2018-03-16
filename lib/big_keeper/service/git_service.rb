@@ -120,6 +120,8 @@ module BigKeeper
     def verify_del(path, branch_name, name, type)
       git = GitOperator.new
 
+      p branch_name
+
       if git.has_local_branch(path, branch_name)
         Logger.highlight("Delete local branch '#{branch_name}' for '#{name}'...")
 

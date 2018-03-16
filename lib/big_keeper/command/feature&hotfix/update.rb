@@ -27,7 +27,7 @@ module BigKeeper
 
       full_name = branch_name.gsub(/#{GitflowType.name(type)}\//, '')
 
-      current_modules = ModuleCacheOperator.new(path).current_path_modules
+      current_modules = ModuleCacheOperator.new(path).all_path_modules
 
       # Verify input modules
       modules = BigkeeperParser.verify_modules(modules)
@@ -38,6 +38,7 @@ module BigKeeper
       del_modules = current_modules - modules
 
       ModuleCacheOperator.new(path).cache_path_modules(modules, add_modules, del_modules)
+      modules = ModuleCacheOperator.new(path).remain_path_modules
 
       if add_modules.empty? and del_modules.empty?
         Logger.default("There is nothing changed with modules #{modules}.")

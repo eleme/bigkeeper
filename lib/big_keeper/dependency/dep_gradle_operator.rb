@@ -20,21 +20,25 @@ module BigKeeper
 
     def update_module_config(module_name, module_type, source)
       module_full_path = BigkeeperParser.module_full_path(@path, @user, module_name)
-      modules = []
+      add_modules = []
+      del_modules = []
+
+      # get modules
       if ModuleType::PATH == module_type
-        modules = ModuleCacheOperator.new(@path).all_path_modules
+        add_modules = ModuleCacheOperator.new(@path).add_path_modules
+        del_modules = ModuleCacheOperator.new(@path).del_path_modules
       elsif ModuleType::GIT == module_type
+        GradleOperator.new(module_full_path).recover
         if 'develop' == source.addition || 'master' == source.addition
           modules = ModuleCacheOperator.new(@path).all_git_modules
         else
           modules = ModuleCacheOperator.new(@path).all_path_modules
         end
-      else
+      elsif ModuleType::RECOVER == module_type
+        GradleOperator.new(module_full_path).recover
       end
 
-      GradleOperator.new(@path).update_settings_config('', modules, @user)
-      GradleOperator.new(@path).update_build_config('', modules, module_type, source)
-
+      # update module config
       if ModuleType::PATH == module_type
         GradleOperator.new(module_full_path).backup
         GradleOperator.new(module_full_path).update_settings_config(module_name, modules, @user)
@@ -44,6 +48,10 @@ module BigKeeper
       end
 
       GradleOperator.new(module_full_path).update_build_config(module_name, modules, module_type, source)
+
+      # update home config
+      GradleOperator.new(@path).update_settings_config('', modules, @user)
+      GradleOperator.new(@path).update_build_config('', modules, module_type, source)
     end
 
     def install(should_update)
