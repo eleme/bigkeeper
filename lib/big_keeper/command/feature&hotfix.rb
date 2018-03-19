@@ -7,6 +7,7 @@ require 'big_keeper/command/feature&hotfix/push'
 require 'big_keeper/command/feature&hotfix/rebase'
 require 'big_keeper/command/feature&hotfix/publish'
 require 'big_keeper/command/feature&hotfix/delete'
+require 'big_keeper/command/feature&hotfix/list'
 
 module BigKeeper
   def self.feature_and_hotfix_command(type)
@@ -127,12 +128,10 @@ module BigKeeper
       c.desc "List all the #{GitflowType.name(type)}s"
       c.command :list do |list|
         list.action do |global_options, options, args|
+          Logger.highlight("Generating feature tree of all version...") if args.length < 1
           path = File.expand_path(global_options[:path])
-
-          branchs = GitService.new.branchs_with_type(File.expand_path(path), type)
-          branchs.each do |branch|
-            p branch
-          end
+          user = global_options[:user].gsub(/[^0-9A-Za-z]/, '').downcase
+          list(path,user,type)
         end
       end
     end

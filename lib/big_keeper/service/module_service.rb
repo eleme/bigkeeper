@@ -137,5 +137,15 @@ module BigKeeper
 
       ModuleCacheOperator.new(path).del_path_module(module_name)
     end
+
+    def list(path, user, module_path)
+      branches_name = []
+      IO.popen("cd #{path}; git branch -a") do |io|
+        io.each do |line|
+          branches_name << line.strip if line.include? 'feature'
+        end
+      end
+      branches_name
+    end
   end
 end
