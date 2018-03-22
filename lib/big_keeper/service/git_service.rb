@@ -59,6 +59,10 @@ module BigKeeper
         verify_checkout(path, name)
         git.push_to_remote(path, name)
       end
+
+      if FileOperator.definitely_exists?("#{path}/.bigkeeper")
+        Logger.error(%Q('#{name}' has '.bigkeeper' cache path, you should fix it manually...))
+      end
     end
 
     def verify_home_branch(path, branch_name, type)
@@ -119,9 +123,7 @@ module BigKeeper
 
     def verify_del(path, branch_name, name, type)
       git = GitOperator.new
-
-      p branch_name
-
+      
       if git.has_local_branch(path, branch_name)
         Logger.highlight("Delete local branch '#{branch_name}' for '#{name}'...")
 

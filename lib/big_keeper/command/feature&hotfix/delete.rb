@@ -26,8 +26,10 @@ module BigKeeper
       modules.each do |module_name|
         module_full_path = BigkeeperParser.module_full_path(path, user, module_name)
 
-        StashService.new.pop_stash(module_full_path, branch_name, module_name)
-        GitService.new.verify_del(module_full_path, branch_name, module_name, type)
+        if FileOperator.definitely_exists?(module_full_path)
+          StashService.new.pop_stash(module_full_path, branch_name, module_name)
+          GitService.new.verify_del(module_full_path, branch_name, module_name, type)
+        end
       end
 
       StashService.new.pop_stash(path, branch_name, 'Home')
