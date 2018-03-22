@@ -9,16 +9,27 @@ module BigKeeper
 
     def backup
       cache_operator = CacheOperator.new(@path)
+
       cache_operator.save('settings.gradle')
+
       Dir.glob("#{@path}/*/build.gradle").each do |build_gradle_file_path|
         build_gradle_file = build_gradle_file_path.gsub!(/#{@path}/, '')
         cache_operator.save(build_gradle_file)
       end
     end
 
-    def recover
+    def recover(settings_config, build_config)
       cache_operator = CacheOperator.new(@path)
-      cache_operator.load('settings.gradle')
+
+      cache_operator.load('settings.gradle') if settings_config
+
+      if build_config
+        Dir.glob("#{@path}/*/build.gradle").each do |build_gradle_file_path|
+          build_gradle_file = build_gradle_file_path.gsub!(/#{@path}/, '')
+          cache_operator.load(build_gradle_file)
+        end
+      end
+
       cache_operator.clean
     end
 
@@ -164,6 +175,8 @@ module BigKeeper
             "#{$1}compile '#{prefix_of_module(module_name)}#{module_name.downcase}:#{source}'"
           end
         }
+      elsif ModuleType::RECOVER == module_type
+        origin_config_of_module(module_name)
       else
         line
       end

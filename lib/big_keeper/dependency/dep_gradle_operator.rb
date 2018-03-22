@@ -15,7 +15,7 @@ module BigKeeper
     end
 
     def recover
-      GradleOperator.new(@path).recover
+      GradleOperator.new(@path).recover(true, false)
     end
 
     def update_module_config(module_name, module_type, source)
