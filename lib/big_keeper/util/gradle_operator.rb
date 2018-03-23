@@ -33,10 +33,9 @@ module BigKeeper
       cache_operator.clean
     end
 
-    def update_settings_config(current_module_name, modules, user)
+    def update_settings_config(current_module_name, modules, module_type, user)
       CacheOperator.new(@path).load('settings.gradle')
-
-      begin
+      if ModuleType::PATH == module_type
         File.open("#{@path}/settings.gradle", 'a') do |file|
           modules.each do |module_name|
             next if current_module_name == module_name
@@ -46,11 +45,35 @@ module BigKeeper
               "'#{BigkeeperParser.module_path(user, module_name)}/#{module_name.downcase}-lib')\r\n"
           end
         end
-      ensure
+      else
+        temp_file = Tempfile.new('.settings.gradle.tmp')
+        begin
+          File.open(file, 'r') do |file|
+            file.each_line do |line|
+              matched = false
+              modules.each do |module_name|
+                next if current_module_name == module_name
+
+                if line =~ /(\s*)include(\s*)('|")(\S*):#{module_name.downcase}('|")(\S*)/
+                  || line =~ /(\s*)project\(('|")(\S*):#{module_name.downcase}('|")\).(\S*)/
+                  matched = true
+                  break
+                end
+              end
+              temp_file.puts(line) unless matched
+              end
+            end
+          end
+          temp_file.close
+          FileUtils.mv(temp_file.path, file)
+        ensure
+          temp_file.close
+          temp_file.unlink
+        end
       end
     end
 
-    def update_build_config(current_module_name, modules, module_type, source)
+    def update_build_config(current_module_name, modules, module_type, source, user)
       Dir.glob("#{@path}/*/build.gradle").each do |file|
         temp_file = Tempfile.new('.build.gradle.tmp')
         begin
@@ -61,6 +84,15 @@ module BigKeeper
             file.each_line do |line|
               modules.each do |module_name|
                 next if current_module_name == module_name
+
+                if ModuleType::PATH == module_type
+                  source = BigkeeperParser.module_path(user, module_name)
+                elsif ModuleType::GIT == module_type
+                  source.base = BigkeeperParser.module_git(module_name)
+                elsif ModuleType::SPEC == module_type
+                elsif ModuleType::RECOVER == module_type
+                else
+                end
 
                 version_index, version_flag = generate_build_config(
                   line,
@@ -119,32 +151,6 @@ module BigKeeper
       end
     end
 
-    def origin_config_of_module(module_name)
-      origin_config = ''
-
-      Dir.glob("#{@path}/.bigkeeper/*/build.gradle").each do |file|
-        File.open(file, 'r') do |file|
-          file.each_line do |line|
-            if line =~ /(\s*)([\s\S]*)('|")(\S*):#{module_name.downcase}:(\S*)('|")(\S*)/
-              origin_config = line
-              break
-            end
-          end
-        end
-        break unless origin_config.empty?
-      end
-
-      origin_config.chop
-    end
-
-    def prefix_of_module(module_name)
-      origin_config = origin_config_of_module(module_name)
-      prefix = origin_config.sub(/(\s*)([\s\S]*)('|")(\S*)#{module_name.downcase}(\S*)('|")(\S*)/){
-        $4
-      }
-      prefix.chop
-    end
-
     def generate_compile_config(line, module_name, module_type, source)
       if ModuleType::PATH == module_type
         line.sub(/(\s*)compile(\s*)('|")(\S*):#{module_name.downcase}:(\S*)('|")(\S*)/){
@@ -182,6 +188,32 @@ module BigKeeper
       end
     end
 
-    private :generate_build_config, :generate_compile_config, :generate_version_config, :prefix_of_module
+    def origin_config_of_module(module_name)
+      origin_config = ''
+
+      Dir.glob("#{@path}/.bigkeeper/*/build.gradle").each do |file|
+        File.open(file, 'r') do |file|
+          file.each_line do |line|
+            if line =~ /(\s*)([\s\S]*)('|")(\S*):#{module_name.downcase}:(\S*)('|")(\S*)/
+              origin_config = line
+              break
+            end
+          end
+        end
+        break unless origin_config.empty?
+      end
+
+      origin_config.chop
+    end
+
+    def prefix_of_module(module_name)
+      origin_config = origin_config_of_module(module_name)
+      prefix = origin_config.sub(/(\s*)([\s\S]*)('|")(\S*)#{module_name.downcase}(\S*)('|")(\S*)/){
+        $4
+      }
+      prefix.chop
+    end
+
+    private :generate_build_config, :generate_compile_config, :generate_version_config, :origin_config_of_module, :prefix_of_module
   end
 end
