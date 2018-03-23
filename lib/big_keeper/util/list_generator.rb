@@ -4,6 +4,7 @@ module BigKeeper
   class ListGenerator
     def self.generate(file_path,branches_name)
       module_branches_dic = {}
+      home_name = BigkeeperParser.home_name
       File.open(file_path, 'r') do |file|
         file.each_line do |line|
           if /=>/ =~ line.delete('{}"')
@@ -13,7 +14,7 @@ module BigKeeper
       end
 
       branches_name.each do |branch_name|
-        Logger.highlight(" LPDTeamiOS - #{branch_name} ")
+        Logger.highlight(" #{home_name} - #{branch_name} ")
         module_branches_dic.keys.each do |module_name|
           module_branches_dic[module_name].each do |module_branch|
             if module_branch.include?(branch_name.strip.delete('*'))
