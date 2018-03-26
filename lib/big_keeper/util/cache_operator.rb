@@ -26,7 +26,6 @@ module BigKeeper
   class ModuleCacheOperator
     def initialize(path)
       @cache_path = File.expand_path("#{path}/.bigkeeper")
-      @modules = {"git" => {"all" => [], "current" => []}, "path" => {"all" => [], "add" => [], "del" => [], "current" => []}}
 
       FileUtils.mkdir_p(@cache_path) unless File.exist?(@cache_path)
 
@@ -34,6 +33,8 @@ module BigKeeper
         file = File.open("#{@cache_path}/module.cache", 'r')
         @modules = JSON.load(file.read())
         file.close
+      else
+        @modules = {"git" => {"all" => [], "current" => []}, "path" => {"all" => [], "add" => [], "del" => [], "current" => []}}
       end
     end
 

@@ -58,17 +58,6 @@ module BigKeeper
       # Open home workspace
       DepService.dep_operator(path, user).open
 
-      # Push modules changes to remote
-      modules.each do |module_name|
-        ModuleService.new.push(
-          path,
-          user,
-          module_name,
-          home_branch_name,
-          type,
-          "init #{GitflowType.name(type)} #{full_name}")
-      end
-
       # Push home changes to remote
       Logger.highlight("Push branch '#{branch_name}' for 'Home'...")
       GitService.new.verify_push(

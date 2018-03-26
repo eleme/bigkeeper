@@ -39,6 +39,7 @@ module BigKeeper
       elsif ModuleOperateType::PUBLISH == module_operate_type
         modules = ModuleCacheOperator.new(@path).all_git_modules
         GradleOperator.new(module_full_path).update_build_config(module_name, modules, ModuleOperateType::PUBLISH)
+        GradleOperator.new(module_full_path).recover(true, false)
       end
 
       GradleOperator.new(@path).update_build_config('', [module_name], module_operate_type)

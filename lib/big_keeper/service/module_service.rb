@@ -76,6 +76,11 @@ module BigKeeper
 
       DepService.dep_operator(path, user).update_module_config(module_name, ModuleOperateType::PUBLISH)
 
+      module_full_path = BigkeeperParser.module_full_path(path, user, module_name)
+      GitService.new.verify_push(module_full_path, "publish branch #{home_branch_name}", home_branch_name, module_name)
+
+      `open #{BigkeeperParser.module_pulls(module_name)}`
+
       ModuleCacheOperator.new(path).del_git_module(module_name)
     end
 
@@ -86,8 +91,11 @@ module BigKeeper
 
       DepService.dep_operator(path, user).update_module_config(module_name, ModuleOperateType::FINISH)
 
-      ModuleCacheOperator.new(path).del_path_module(module_name)
+      module_full_path = BigkeeperParser.module_full_path(path, user, module_name)
+      GitService.new.verify_push(module_full_path, "finish branch #{home_branch_name}", home_branch_name, module_name)
+
       ModuleCacheOperator.new(path).add_git_module(module_name)
+      ModuleCacheOperator.new(path).del_path_module(module_name)
     end
 
     def add(path, user, module_name, name, type)
@@ -97,6 +105,9 @@ module BigKeeper
       verify_module(path, user, module_name, home_branch_name, type)
 
       DepService.dep_operator(path, user).update_module_config(module_name, ModuleOperateType::ADD)
+
+      module_full_path = BigkeeperParser.module_full_path(path, user, module_name)
+      GitService.new.verify_push(module_full_path, "init #{GitflowType.name(type)} #{name}", home_branch_name, module_name)
 
       ModuleCacheOperator.new(path).add_path_module(module_name)
     end

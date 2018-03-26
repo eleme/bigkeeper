@@ -27,7 +27,7 @@ module BigKeeper
 
       full_name = branch_name.gsub(/#{GitflowType.name(type)}\//, '')
 
-      current_modules = ModuleCacheOperator.new(path).all_path_modules
+      current_modules = ModuleCacheOperator.new(path).current_path_modules
 
       # Verify input modules
       modules = BigkeeperParser.verify_modules(modules)
@@ -38,26 +38,26 @@ module BigKeeper
       del_modules = current_modules - modules
 
       ModuleCacheOperator.new(path).cache_path_modules(modules, add_modules, del_modules)
-      modules = ModuleCacheOperator.new(path).remain_path_modules
+      remain_path_modules = ModuleCacheOperator.new(path).remain_path_modules
 
       if add_modules.empty? and del_modules.empty?
         Logger.default("There is nothing changed with modules #{modules}.")
       else
         # Modify podfile as path and Start modules feature
-        modules.each do |module_name|
+        remain_path_modules.each do |module_name|
           ModuleService.new.add(path, user, module_name, full_name, type)
         end
 
         del_modules.each do |module_name|
           ModuleService.new.del(path, user, module_name, full_name, type)
         end
-
-        # Install
-        DepService.dep_operator(path, user).install(false)
-
-        # Open home workspace
-        DepService.dep_operator(path, user).open
       end
+
+      # Install
+      DepService.dep_operator(path, user).install(false)
+
+      # Open home workspace
+      DepService.dep_operator(path, user).open
     ensure
     end
   end

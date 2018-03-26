@@ -99,11 +99,11 @@ module BigKeeper
 
     def current_branch_type(path)
       branch_name = GitOperator.new.current_branch(path)
-      if line =~ /^feature\/S*/
+      if branch_name =~ /^feature\/S*/
         GitflowType::FEATURE
-      elsif line =~ /^hotfix\/S*/
+      elsif branch_name =~ /^hotfix\/S*/
         GitflowType::HOTFIX
-      elsif line =~ /^release\/S*/
+      elsif branch_name =~ /^release\/S*/
         GitflowType::RELEASE
       else
         GitflowType::FEATURE

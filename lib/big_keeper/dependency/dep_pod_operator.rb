@@ -24,7 +24,7 @@ module BigKeeper
       begin
         File.open(file, 'r') do |file|
           file.each_line do |line|
-            temp_file.puts generate_module_config(line, module_name, module_type, source)
+            temp_file.puts generate_module_config(line, module_name, module_operate_type)
           end
         end
         temp_file.close
@@ -45,24 +45,24 @@ module BigKeeper
 
     def generate_module_config(line, module_name, module_operate_type)
       line.sub(/(\s*)pod(\s*)('|")#{module_name}('|")([\s\S]*)/){
-        if ModuleOperateType::ADD == module_type
+        if ModuleOperateType::ADD == module_operate_type
           module_path = BigkeeperParser.module_path(@user, module_name)
           "#{$1}pod '#{module_name}', :path => '#{module_path}'"
-        elsif ModuleOperateType::DELETE == module_type
+        elsif ModuleOperateType::DELETE == module_operate_type
           origin_config_of_module = origin_config_of_module(module_name)
           if origin_config_of_module.empty?
             line
           else
             origin_config_of_module
           end
-        elsif ModuleOperateType::FINISH == module_type
+        elsif ModuleOperateType::FINISH == module_operate_type
           module_git = BigkeeperParser.module_git(module_name)
           branch_name = GitOperator.new.current_branch(@path)
           "#{$1}pod '#{module_name}', :git => '#{module_git}', :branch => '#{branch_name}'"
-        elsif ModuleOperateType::PUBLISH == module_type
+        elsif ModuleOperateType::PUBLISH == module_operate_type
           module_git = BigkeeperParser.module_git(module_name)
           branch_name = GitOperator.new.current_branch(@path)
-          base_branch_name = GitflowType.base_branch(GitService.new.current_branch_type(branch_name))
+          base_branch_name = GitflowType.base_branch(GitService.new.current_branch_type(@path))
           "#{$1}pod '#{module_name}', :git => '#{module_git}', :branch => '#{base_branch_name}'"
         else
           line

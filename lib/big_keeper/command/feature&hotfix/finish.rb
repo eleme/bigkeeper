@@ -22,8 +22,14 @@ module BigKeeper
       branch_name = GitOperator.new.current_branch(path)
       Logger.error("Not a #{GitflowType.name(type)} branch, exit.") unless branch_name.include? GitflowType.name(type)
 
-      modules = ModuleCacheOperator.new(path).current_path_modules
+      # Cache git modules
+      if ModuleCacheOperator.new(path).all_path_modules.empty?
+        Logger.error("Branch '#{branch_name}' is already finished, exit.")
+      end
 
+      ModuleCacheOperator.new(path).cache_git_modules(ModuleCacheOperator.new(path).all_path_modules)
+
+      modules = ModuleCacheOperator.new(path).remain_git_modules
       # Rebase modules and modify module as git
       modules.each do |module_name|
         ModuleService.new.finish(path, user, module_name, branch_name, type)
@@ -37,21 +43,8 @@ module BigKeeper
       # Open home workspace
       DepService.dep_operator(path, user).open
 
-      # Push modules changes to remote
-      modules = ModuleCacheOperator.new(path).all_path_modules
-      modules.each do |module_name|
-        ModuleService.new.push(
-          path,
-          user,
-          module_name,
-          branch_name,
-          type,
-          "finish branch #{branch_name}")
-      end
-
-      # Delete all path modules and cache git modules
+      # Delete all path modules
       ModuleCacheOperator.new(path).cache_path_modules([], [], [])
-      ModuleCacheOperator.new(path).cache_git_modules(modules)
 
       # Push home changes to remote
       GitService.new.verify_push(path, "finish branch #{branch_name}", branch_name, 'Home')
