@@ -74,11 +74,7 @@ module BigKeeper
 
       verify_module(path, user, module_name, home_branch_name, type)
 
-      module_git = BigkeeperParser.module_git(module_name)
-      DepService.dep_operator(path, user).update_module_config(
-        module_name,
-        ModuleType::GIT,
-        GitInfo.new(module_git, GitType::BRANCH, GitflowType.base_branch(type)))
+      DepService.dep_operator(path, user).update_module_config(module_name, ModuleOperateType::PUBLISH)
 
       ModuleCacheOperator.new(path).del_git_module(module_name)
     end
@@ -88,11 +84,7 @@ module BigKeeper
 
       verify_module(path, user, module_name, home_branch_name, type)
 
-      module_git = BigkeeperParser.module_git(module_name)
-      DepService.dep_operator(path, user).update_module_config(
-        module_name,
-        ModuleType::GIT,
-        GitInfo.new(module_git, GitType::BRANCH, home_branch_name))
+      DepService.dep_operator(path, user).update_module_config(module_name, ModuleOperateType::FINISH)
 
       ModuleCacheOperator.new(path).del_path_module(module_name)
       ModuleCacheOperator.new(path).add_git_module(module_name)
@@ -104,11 +96,7 @@ module BigKeeper
 
       verify_module(path, user, module_name, home_branch_name, type)
 
-      module_path = BigkeeperParser.module_path(user, module_name)
-      DepService.dep_operator(path, user).update_module_config(
-        module_name,
-        ModuleType::PATH,
-        module_path)
+      DepService.dep_operator(path, user).update_module_config(module_name, ModuleOperateType::ADD)
 
       ModuleCacheOperator.new(path).add_path_module(module_name)
     end
@@ -119,10 +107,7 @@ module BigKeeper
       Logger.highlight("Delete branch '#{home_branch_name}' for module '#{module_name}'...")
 
       module_git = BigkeeperParser.module_git(module_name)
-      DepService.dep_operator(path, user).update_module_config(
-        module_name,
-        ModuleType::RECOVER,
-        NULL)
+      DepService.dep_operator(path, user).update_module_config(module_name, ModuleOperateType::DELETE)
 
       # Stash module current branch
       module_full_path = BigkeeperParser.module_full_path(path, user, module_name)

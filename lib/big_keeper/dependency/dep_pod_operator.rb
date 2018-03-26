@@ -17,7 +17,7 @@ module BigKeeper
       cache_operator.clean
     end
 
-    def update_module_config(module_name, module_type, source)
+    def update_module_config(module_name, module_operate_type)
       file = "#{@path}/Podfile"
       temp_file = Tempfile.new('.Podfile.tmp')
 
@@ -43,24 +43,27 @@ module BigKeeper
       XcodeOperator.open_workspace(@path)
     end
 
-    def generate_module_config(line, module_name, module_type, source)
+    def generate_module_config(line, module_name, module_operate_type)
       line.sub(/(\s*)pod(\s*)('|")#{module_name}('|")([\s\S]*)/){
-        if ModuleType::PATH == module_type
-          "#{$1}pod '#{module_name}', :path => '#{source}'"
-        elsif ModuleType::GIT == module_type
-          if GitType::BRANCH == source.type
-            "#{$1}pod '#{module_name}', :git => '#{source.base}', :branch => '#{source.addition}'"
-          elsif GitType::TAG == source.type
-            "#{$1}pod '#{module_name}', :git => '#{source.base}', :tag => '#{source.addition}'"
-          elsif GitType::COMMIT == source.type
-            "#{$1}pod '#{module_name}', :git => '#{source.base}', :commit => '#{source.addition}'"
+        if ModuleOperateType::ADD == module_type
+          module_path = BigkeeperParser.module_path(@user, module_name)
+          "#{$1}pod '#{module_name}', :path => '#{module_path}'"
+        elsif ModuleOperateType::DELETE == module_type
+          origin_config_of_module = origin_config_of_module(module_name)
+          if origin_config_of_module.empty?
+            line
           else
-            "#{$1}pod '#{module_name}', :git => '#{source.base}'"
+            origin_config_of_module
           end
-        elsif ModuleType::SPEC == module_type
-          "#{$1}pod '#{module_name}', '#{source}'"
-        elsif ModuleType::RECOVER == module_type
-          origin_config_of_module(module_name)
+        elsif ModuleOperateType::FINISH == module_type
+          module_git = BigkeeperParser.module_git(module_name)
+          branch_name = GitOperator.new.current_branch(@path)
+          "#{$1}pod '#{module_name}', :git => '#{module_git}', :branch => '#{branch_name}'"
+        elsif ModuleOperateType::PUBLISH == module_type
+          module_git = BigkeeperParser.module_git(module_name)
+          branch_name = GitOperator.new.current_branch(@path)
+          base_branch_name = GitflowType.base_branch(GitService.new.current_branch_type(branch_name))
+          "#{$1}pod '#{module_name}', :git => '#{module_git}', :branch => '#{base_branch_name}'"
         else
           line
         end

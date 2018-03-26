@@ -17,7 +17,7 @@ module BigKeeper
       raise "You should override this method in subclass."
     end
 
-    def update_module_config(module_name, module_type, source)
+    def update_module_config(module_name, module_operate_type)
       raise "You should override this method in subclass."
     end
 

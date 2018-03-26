@@ -97,6 +97,19 @@ module BigKeeper
       end
     end
 
+    def current_branch_type(path)
+      branch_name = GitOperator.new.current_branch(path)
+      if line =~ /^feature\/S*/
+        GitflowType::FEATURE
+      elsif line =~ /^hotfix\/S*/
+        GitflowType::HOTFIX
+      elsif line =~ /^release\/S*/
+        GitflowType::RELEASE
+      else
+        GitflowType::FEATURE
+      end
+    end
+
     def branchs_with_type(path, type)
       branchs = []
       Dir.chdir(path) do
@@ -123,7 +136,7 @@ module BigKeeper
 
     def verify_del(path, branch_name, name, type)
       git = GitOperator.new
-      
+
       if git.has_local_branch(path, branch_name)
         Logger.highlight("Delete local branch '#{branch_name}' for '#{name}'...")
 

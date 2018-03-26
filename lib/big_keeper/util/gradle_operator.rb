@@ -33,9 +33,9 @@ module BigKeeper
       cache_operator.clean
     end
 
-    def update_settings_config(current_module_name, modules, module_type, user)
+    def update_settings_config(current_module_name, modules, module_operate_type, user)
       CacheOperator.new(@path).load('settings.gradle')
-      if ModuleType::PATH == module_type
+      if ModuleOperateType::ADD == module_operate_type
         File.open("#{@path}/settings.gradle", 'a') do |file|
           modules.each do |module_name|
             next if current_module_name == module_name
@@ -54,14 +54,13 @@ module BigKeeper
               modules.each do |module_name|
                 next if current_module_name == module_name
 
-                if line =~ /(\s*)include(\s*)('|")(\S*):#{module_name.downcase}('|")(\S*)/
-                  || line =~ /(\s*)project\(('|")(\S*):#{module_name.downcase}('|")\).(\S*)/
+                if line =~ /(\s*)include(\s*)('|")(\S*):#{module_name.downcase}('|")(\S*)/ ||
+                  line =~ /(\s*)project\(('|")(\S*):#{module_name.downcase}('|")\).(\S*)/
                   matched = true
                   break
                 end
               end
               temp_file.puts(line) unless matched
-              end
             end
           end
           temp_file.close
@@ -73,7 +72,7 @@ module BigKeeper
       end
     end
 
-    def update_build_config(current_module_name, modules, module_type, source, user)
+    def update_build_config(current_module_name, modules, module_operate_type, user)
       Dir.glob("#{@path}/*/build.gradle").each do |file|
         temp_file = Tempfile.new('.build.gradle.tmp')
         begin
@@ -85,20 +84,11 @@ module BigKeeper
               modules.each do |module_name|
                 next if current_module_name == module_name
 
-                if ModuleType::PATH == module_type
-                  source = BigkeeperParser.module_path(user, module_name)
-                elsif ModuleType::GIT == module_type
-                  source.base = BigkeeperParser.module_git(module_name)
-                elsif ModuleType::SPEC == module_type
-                elsif ModuleType::RECOVER == module_type
-                else
-                end
-
                 version_index, version_flag = generate_build_config(
                   line,
                   module_name,
-                  module_type,
-                  source,
+                  module_operate_type,
+                  user,
                   version_index,
                   version_flag)
               end
@@ -113,7 +103,7 @@ module BigKeeper
       end
     end
 
-    def generate_build_config(line, module_name, module_type, source, version_index, version_flag)
+    def generate_build_config(line, module_name, module_operate_type, version_index, version_flag)
       version_flag = true if line.downcase.include? 'modifypom'
       if version_flag
         version_index += 1 if line.include? '{'
@@ -121,20 +111,20 @@ module BigKeeper
 
         version_flag = false if 0 == version_flag
 
-        temp_file.puts generate_version_config(line, module_name, module_type, source)
+        temp_file.puts generate_version_config(line, module_name, module_operate_type)
       else
-        temp_file.puts generate_compile_config(line, module_name, module_type, source)
+        temp_file.puts generate_compile_config(line, module_name, module_operate_type)
       end
       [version_index, version_flag]
     end
 
-    def generate_version_config(line, module_name, module_type, source)
-      if ModuleType::GIT == module_type
+    def generate_version_config(line, module_name, module_operate_type)
+      if ModuleOperateType::FINISH == module_operate_type || ModuleOperateType::PUBLISH == module_operate_type
         branch_name = GitOperator.new.current_branch(@path)
         full_name = ''
 
         # Get version part of source.addition
-        if 'develop' == source.addition || 'master' == source.addition
+        if ModuleOperateType::PUBLISH == module_operate_type
           full_name = branch_name.sub(/([\s\S]*)\/(\d+.\d+.\d+)_([\s\S]*)/){ $2 }
         else
           full_name = branch_name.sub(/([\s\S]*)\/([\s\S]*)/){ $2 }
@@ -142,26 +132,29 @@ module BigKeeper
         line.sub(/(\s*)version ('|")(\S*)('|")([\s\S]*)/){
           "#{$1}version '#{full_name}'#{$5}"
         }
-      elsif ModuleType::SPEC == module_type
-        line.sub(/(\s*)version ('|")(\S*)('|")([\s\S]*)/){
-          "#{$1}version '#{source}'#{$5}"
-        }
       else
         line
       end
     end
 
-    def generate_compile_config(line, module_name, module_type, source)
-      if ModuleType::PATH == module_type
+    def generate_compile_config(line, module_name, module_operate_type)
+      if ModuleOperateType::ADD == module_operate_type
         line.sub(/(\s*)compile(\s*)('|")(\S*):#{module_name.downcase}:(\S*)('|")(\S*)/){
           "#{$1}compile project(':module:#{module_name.downcase}')"
         }
-      elsif ModuleType::GIT == module_type
+      elsif ModuleOperateType::DELETE == module_operate_type
+        origin_config_of_module = origin_config_of_module(module_name)
+        if origin_config_of_module.empty?
+          line
+        else
+          origin_config_of_module
+        end
+      elsif ModuleOperateType::FINISH == module_operate_type || ModuleOperateType::PUBLISH == module_operate_type
         branch_name = GitOperator.new.current_branch(@path)
         full_name = ''
 
         # Get version part of source.addition
-        if 'develop' == source.addition || 'master' == source.addition
+        if ModuleOperateType::PUBLISH == module_operate_type
           full_name = branch_name.sub(/([\s\S]*)\/(\d+.\d+.\d+)_([\s\S]*)/){ $2 }
         else
           full_name = branch_name.sub(/([\s\S]*)\/([\s\S]*)/){ $2 }
@@ -173,16 +166,6 @@ module BigKeeper
             "#{$1}compile '#{prefix_of_module(module_name)}#{module_name.downcase}:#{full_name}-SNAPSHOT'"
           end
         }
-      elsif ModuleType::SPEC == module_type
-        line.sub(/(\s*)([\s\S]*)('|")(\S*):#{module_name.downcase}:(\S*)('|")(\S*)/){
-          if $2.downcase.include? 'modulecompile'
-            "#{$1}moduleCompile '#{prefix_of_module(module_name)}#{module_name.downcase}:#{source}'"
-          else
-            "#{$1}compile '#{prefix_of_module(module_name)}#{module_name.downcase}:#{source}'"
-          end
-        }
-      elsif ModuleType::RECOVER == module_type
-        origin_config_of_module(module_name)
       else
         line
       end
