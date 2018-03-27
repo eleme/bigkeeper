@@ -69,10 +69,18 @@ module BigKeeper
       verify_module(path, user, module_name, home_branch_name, type)
     end
 
-    def publish(path, user, module_name, home_branch_name, type)
-      Logger.highlight("Publish branch '#{home_branch_name}' for module '#{module_name}'...")
+    def pre_publish(path, user, module_name, home_branch_name, type)
+      Logger.highlight("Prepare to publish branch '#{home_branch_name}' for module '#{module_name}'...")
 
       verify_module(path, user, module_name, home_branch_name, type)
+
+      module_full_path = BigkeeperParser.module_full_path(path, user, module_name)
+      GitService.new.verify_push(module_full_path, "prepare to rebase #{branch_name}", home_branch_name, module_name)
+      GitService.new.verify_rebase(module_full_path, GitflowType.base_branch(type), module_name)
+    end
+
+    def publish(path, user, module_name, home_branch_name, type)
+      Logger.highlight("Publish branch '#{home_branch_name}' for module '#{module_name}'...")
 
       DepService.dep_operator(path, user).update_module_config(module_name, ModuleOperateType::PUBLISH)
 

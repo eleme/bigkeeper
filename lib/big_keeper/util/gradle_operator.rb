@@ -34,6 +34,8 @@ module BigKeeper
     end
 
     def update_settings_config(current_module_name, modules, module_operate_type, user)
+      # return if modules.empty
+
       CacheOperator.new(@path).load('settings.gradle')
       if ModuleOperateType::ADD == module_operate_type
         File.open("#{@path}/settings.gradle", 'a') do |file|
@@ -48,7 +50,7 @@ module BigKeeper
       else
         temp_file = Tempfile.new('.settings.gradle.tmp')
         begin
-          File.open(file, 'r') do |file|
+          File.open("#{@path}/settings.gradle", 'r') do |file|
             file.each_line do |line|
               matched = false
               modules.each do |module_name|
@@ -64,7 +66,7 @@ module BigKeeper
             end
           end
           temp_file.close
-          FileUtils.mv(temp_file.path, file)
+          FileUtils.mv(temp_file.path, "#{@path}/settings.gradle")
         ensure
           temp_file.close
           temp_file.unlink
@@ -72,7 +74,9 @@ module BigKeeper
       end
     end
 
-    def update_build_config(current_module_name, modules, module_operate_type, user)
+    def update_build_config(current_module_name, modules, module_operate_type)
+      return if modules.empty?
+
       Dir.glob("#{@path}/*/build.gradle").each do |file|
         temp_file = Tempfile.new('.build.gradle.tmp')
         begin
@@ -85,10 +89,10 @@ module BigKeeper
                 next if current_module_name == module_name
 
                 version_index, version_flag = generate_build_config(
+                  temp_file,
                   line,
                   module_name,
                   module_operate_type,
-                  user,
                   version_index,
                   version_flag)
               end
@@ -103,7 +107,7 @@ module BigKeeper
       end
     end
 
-    def generate_build_config(line, module_name, module_operate_type, version_index, version_flag)
+    def generate_build_config(temp_file, line, module_name, module_operate_type, version_index, version_flag)
       version_flag = true if line.downcase.include? 'modifypom'
       if version_flag
         version_index += 1 if line.include? '{'
