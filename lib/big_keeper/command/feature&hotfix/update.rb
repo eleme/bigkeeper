@@ -30,43 +30,34 @@ module BigKeeper
       current_modules = ModuleCacheOperator.new(path).current_path_modules
 
       # Verify input modules
-      modules = [] unless modules
-      BigkeeperParser.verify_modules(modules)
-
-      # # Handle modules
-      # if modules
-      #   # Verify input modules
-      #   BigkeeperParser.verify_modules(modules)
-      # else
-      #   # Get all modules if not specified
-      #   modules = BigkeeperParser.module_names
-      # end
+      modules = BigkeeperParser.verify_modules(modules)
 
       Logger.highlight("Start to update modules for branch '#{branch_name}'...")
 
       add_modules = modules - current_modules
       del_modules = current_modules - modules
 
-      ModuleCacheOperator.new(path).cache_path_modules(modules)
+      ModuleCacheOperator.new(path).cache_path_modules(modules, add_modules, del_modules)
+      remain_path_modules = ModuleCacheOperator.new(path).remain_path_modules
 
       if add_modules.empty? and del_modules.empty?
         Logger.default("There is nothing changed with modules #{modules}.")
       else
         # Modify podfile as path and Start modules feature
-        add_modules.each do |module_name|
+        remain_path_modules.each do |module_name|
           ModuleService.new.add(path, user, module_name, full_name, type)
         end
 
         del_modules.each do |module_name|
           ModuleService.new.del(path, user, module_name, full_name, type)
         end
-
-        # pod install
-        DepService.dep_operator(path, user).install(false)
-
-        # Open home workspace
-        DepService.dep_operator(path, user).open
       end
+
+      # Install
+      DepService.dep_operator(path, user).install(false)
+
+      # Open home workspace
+      DepService.dep_operator(path, user).open
     ensure
     end
   end

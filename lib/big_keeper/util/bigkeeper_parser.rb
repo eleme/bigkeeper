@@ -164,9 +164,12 @@ module BigKeeper
     end
 
     def self.verify_modules(modules)
+      modules = [] unless modules
+      modules = modules.uniq
       modules.each do |item|
         Logger.error("Can not find module #{item} in Bigkeeper file") unless @@config[:modules][item]
       end
+      modules
     end
 
     def self.module_names

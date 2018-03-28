@@ -59,6 +59,10 @@ module BigKeeper
         verify_checkout(path, name)
         git.push_to_remote(path, name)
       end
+
+      if FileOperator.definitely_exists?("#{path}/.bigkeeper")
+        Logger.error(%Q('#{name}' has '.bigkeeper' cache path, you should fix it manually...))
+      end
     end
 
     def verify_home_branch(path, branch_name, type)
@@ -90,6 +94,19 @@ module BigKeeper
         end
       else
         Logger.error(%(Not a valid command for '#{branch_name}'.))
+      end
+    end
+
+    def current_branch_type(path)
+      branch_name = GitOperator.new.current_branch(path)
+      if branch_name =~ /^feature\/S*/
+        GitflowType::FEATURE
+      elsif branch_name =~ /^hotfix\/S*/
+        GitflowType::HOTFIX
+      elsif branch_name =~ /^release\/S*/
+        GitflowType::RELEASE
+      else
+        GitflowType::FEATURE
       end
     end
 
