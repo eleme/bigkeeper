@@ -61,7 +61,7 @@ module BigKeeper
       end
 
       if FileOperator.definitely_exists?("#{path}/.bigkeeper")
-        # Logger.error(%Q('#{name}' has '.bigkeeper' cache path, you should fix it manually...))
+        Logger.error(%Q('#{name}' has '.bigkeeper' cache path, you should fix it manually...))
       end
     end
 
