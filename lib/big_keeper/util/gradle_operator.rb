@@ -34,13 +34,13 @@ module BigKeeper
     end
 
     def update_settings_config(current_module_name, modules, module_operate_type, user)
-      # return if modules.empty
+      return if modules.empty?
 
-      CacheOperator.new(@path).load('settings.gradle')
       if ModuleOperateType::ADD == module_operate_type
-        File.open("#{@path}/settings.gradle", 'a') do |file|
-          modules.each do |module_name|
-            next if current_module_name == module_name
+        modules.each do |module_name|
+          next if current_module_name == module_name
+
+          File.open("#{@path}/settings.gradle", 'a') do |file|
             file.puts "\r\ninclude ':module:#{module_name.downcase}'\r\n"
             file.puts "project(':module:#{module_name.downcase}')." \
               "projectDir = new File(rootProject.projectDir," \
@@ -48,28 +48,24 @@ module BigKeeper
           end
         end
       else
-        temp_file = Tempfile.new('.settings.gradle.tmp')
-        begin
-          File.open("#{@path}/settings.gradle", 'r') do |file|
-            file.each_line do |line|
-              matched = false
-              modules.each do |module_name|
-                next if current_module_name == module_name
-
-                if line =~ /(\s*)include(\s*)('|")(\S*):#{module_name.downcase}('|")(\S*)/ ||
+        modules.each do |module_name|
+          next if current_module_name == module_name
+          temp_file = Tempfile.new('.settings.gradle.tmp')
+          begin
+            File.open("#{@path}/settings.gradle", 'r') do |file|
+              file.each_line do |line|
+                unless line =~ /(\s*)include(\s*)('|")(\S*):#{module_name.downcase}('|")(\S*)/ ||
                   line =~ /(\s*)project\(('|")(\S*):#{module_name.downcase}('|")\).(\S*)/
-                  matched = true
-                  break
+                  temp_file.puts(line)
                 end
               end
-              temp_file.puts(line) unless matched
             end
+            temp_file.close
+            FileUtils.mv(temp_file.path, "#{@path}/settings.gradle")
+          ensure
+            temp_file.close
+            temp_file.unlink
           end
-          temp_file.close
-          FileUtils.mv(temp_file.path, "#{@path}/settings.gradle")
-        ensure
-          temp_file.close
-          temp_file.unlink
         end
       end
     end
@@ -77,37 +73,40 @@ module BigKeeper
     def update_build_config(current_module_name, modules, module_operate_type)
       return if modules.empty?
 
-      Dir.glob("#{@path}/*/build.gradle").each do |file|
-        temp_file = Tempfile.new('.build.gradle.tmp')
-        begin
-          version_flag = false
-          version_index = 0
+      Dir.glob("#{@path}/*/build.gradle").each do |file_path|
+        modules.each do |module_name|
+          next if current_module_name == module_name
 
-          File.open(file, 'r') do |file|
-            file.each_line do |line|
-              modules.each do |module_name|
-                next if current_module_name == module_name
+          temp_file = Tempfile.new('.build.gradle.tmp')
+          begin
+            version_flag = false
+            version_index = 0
 
-                version_index, version_flag = generate_build_config(
-                  temp_file,
+            File.open(file_path, 'r') do |file|
+              file.each_line do |line|
+                new_line, version_index, version_flag = generate_build_config(
                   line,
                   module_name,
                   module_operate_type,
                   version_index,
                   version_flag)
+
+                temp_file.puts(new_line)
               end
             end
+            temp_file.close
+            FileUtils.mv(temp_file.path, file_path)
+          ensure
+            temp_file.close
+            temp_file.unlink
           end
-          temp_file.close
-          FileUtils.mv(temp_file.path, file)
-        ensure
-          temp_file.close
-          temp_file.unlink
         end
       end
     end
 
-    def generate_build_config(temp_file, line, module_name, module_operate_type, version_index, version_flag)
+    def generate_build_config(line, module_name, module_operate_type, version_index, version_flag)
+      new_line = line
+
       version_flag = true if line.downcase.include? 'modifypom'
       if version_flag
         version_index += 1 if line.include? '{'
@@ -115,11 +114,12 @@ module BigKeeper
 
         version_flag = false if 0 == version_flag
 
-        temp_file.puts generate_version_config(line, module_name, module_operate_type)
+        new_line = generate_version_config(line, module_name, module_operate_type)
       else
-        temp_file.puts generate_compile_config(line, module_name, module_operate_type)
+        new_line = generate_compile_config(line, module_name, module_operate_type)
       end
-      [version_index, version_flag]
+
+      [new_line, version_index, version_flag]
     end
 
     def generate_version_config(line, module_name, module_operate_type)
@@ -133,6 +133,7 @@ module BigKeeper
         else
           full_name = branch_name.sub(/([\s\S]*)\/([\s\S]*)/){ $2 }
         end
+
         line.sub(/(\s*)version ('|")(\S*)('|")([\s\S]*)/){
           "#{$1}version '#{full_name}'#{$5}"
         }
@@ -147,12 +148,14 @@ module BigKeeper
           "#{$1}compile project(':module:#{module_name.downcase}')"
         }
       elsif ModuleOperateType::DELETE == module_operate_type
-        origin_config_of_module = origin_config_of_module(module_name)
-        if origin_config_of_module.empty?
-          line
-        else
-          origin_config_of_module
-        end
+        line.sub(/(\s*)([\s\S]*)('|")(\S*):#{module_name.downcase}:(\S*)('|")(\S*)/){
+          origin_config_of_module = origin_config_of_module(module_name)
+          if origin_config_of_module.empty?
+            line
+          else
+            origin_config_of_module
+          end
+        }
       elsif ModuleOperateType::FINISH == module_operate_type || ModuleOperateType::PUBLISH == module_operate_type
         branch_name = GitOperator.new.current_branch(@path)
         full_name = ''
@@ -163,11 +166,11 @@ module BigKeeper
         else
           full_name = branch_name.sub(/([\s\S]*)\/([\s\S]*)/){ $2 }
         end
-        line.sub(/(\s*)([\s\S]*)('|")(\S*):#{module_name.downcase}:(\S*)('|")(\S*)/){
+        line.sub(/(\s*)([\s\S]*)('|")(\S*):#{module_name.downcase}(:\S*)*('|")(\S*)/){
           if $2.downcase.include? 'modulecompile'
-            "#{$1}moduleCompile '#{prefix_of_module(module_name)}#{module_name.downcase}:#{full_name}-SNAPSHOT'"
+            "#{$1}moduleCompile '#{prefix_of_module(module_name)}:#{module_name.downcase}:#{full_name}-SNAPSHOT'"
           else
-            "#{$1}compile '#{prefix_of_module(module_name)}#{module_name.downcase}:#{full_name}-SNAPSHOT'"
+            "#{$1}compile '#{prefix_of_module(module_name)}:#{module_name.downcase}:#{full_name}-SNAPSHOT'"
           end
         }
       else

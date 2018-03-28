@@ -75,7 +75,7 @@ module BigKeeper
       verify_module(path, user, module_name, home_branch_name, type)
 
       module_full_path = BigkeeperParser.module_full_path(path, user, module_name)
-      GitService.new.verify_push(module_full_path, "prepare to rebase #{branch_name}", home_branch_name, module_name)
+      GitService.new.verify_push(module_full_path, "prepare to rebase '#{GitflowType.base_branch(type)}'", home_branch_name, module_name)
       GitService.new.verify_rebase(module_full_path, GitflowType.base_branch(type), module_name)
     end
 

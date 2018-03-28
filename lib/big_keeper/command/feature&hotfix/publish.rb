@@ -28,7 +28,7 @@ module BigKeeper
       # Push modules changes to remote then rebase
       modules = ModuleCacheOperator.new(path).current_git_modules
       modules.each do |module_name|
-        ModuleService.new.pre_publish(path, user, module_name, home_branch_name, type)
+        ModuleService.new.pre_publish(path, user, module_name, branch_name, type)
       end
 
       # Install

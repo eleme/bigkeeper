@@ -26,9 +26,10 @@ module BigKeeper
         GradleOperator.new(module_full_path).backup
 
         add_modules = ModuleCacheOperator.new(@path).add_path_modules
-        del_modules = ModuleCacheOperator.new(@path).del_path_modules
         GradleOperator.new(module_full_path).update_build_config(module_name, add_modules, ModuleOperateType::ADD)
         GradleOperator.new(module_full_path).update_settings_config(module_name, add_modules, ModuleOperateType::ADD, @user)
+
+        del_modules = ModuleCacheOperator.new(@path).del_path_modules
         GradleOperator.new(module_full_path).update_build_config(module_name, del_modules, ModuleOperateType::DELETE)
         GradleOperator.new(module_full_path).update_settings_config(module_name, del_modules, ModuleOperateType::DELETE, @user)
       elsif ModuleOperateType::DELETE == module_operate_type
