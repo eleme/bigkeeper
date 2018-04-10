@@ -60,8 +60,8 @@ module BigKeeper
         git.push_to_remote(path, name)
       end
 
-      if FileOperator.definitely_exists?("#{path}/.bigkeeper")
-        Logger.error(%Q('#{name}' has '.bigkeeper' cache path, you should fix it manually...))
+      if FileOperator.definitely_exists?("#{path}/.bigkeeper/module.cache")
+        Logger.error(%Q('#{name}' has '.bigkeeper/module.cache' cache path, you should fix it manually...))
       end
     end
 
