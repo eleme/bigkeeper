@@ -23,5 +23,32 @@ module BigKeeper
       end
       Logger.highlight('Finish pod install.')
     end
+
+    def self.pod_repo_push(path, module_name, source, version)
+      Logger.highlight(%Q(Start Pod repo push #{module_name}))
+      Dir.chdir(path) do
+        command = ""
+        if source.length > 0
+          command = "pod repo push LPDSpecs #{module_name}.podspec --allow-warnings --sources=#{source} --verbose --use-libraries"
+        else
+          command = "pod repo push LPDSpecs #{module_name}.podspec --allow-warnings --verbose --use-libraries"
+        end
+
+        IO.popen("pod repo push LPDSpecs #{module_name}.podspec --allow-warnings --sources=#{source} --verbose --use-libraries") do |io|
+          is_success = false
+          error_info = Array.new
+          io.each do |line|
+            error_info.push(line)
+            is_success = true if line.include? "Updating spec repo"
+          end
+          unless is_success
+            puts error_info
+            Logger.error("Fail: '#{module_name}' Pod repo fail")
+          end
+          Logger.highlight(%Q(Success release #{module_name} V#{version}))
+        end
+      end
+    end
+
   end
 end

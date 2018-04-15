@@ -80,13 +80,21 @@ module BigKeeper
 
     def podspec_change(podspec_file, version, module_name)
       temp_file = Tempfile.new(".#{module_name}.podspec")
+      has_change = false
       begin
         File.open(podspec_file, 'r') do |file|
           file.each_line do |line|
             if line.include?("s.version")
               temp_line = line
-              if temp_line.split("=")[0].delete(" ") == "s.version"
-                temp_file.puts "s.version = '#{version}'"
+              temp_line_arr = temp_line.split("=")
+              if temp_line_arr[0].delete(" ") == "s.version"
+                unless temp_line_arr[temp_line_arr.length - 1].include? "#{version}"
+                    temp_file.puts "s.version = '#{version}'"
+                    has_change = true
+                else
+                    temp_file.puts line
+                    Logger.highlight("The version in PodSpec is equal your input version")
+                end
               else
                 temp_file.puts line
               end
@@ -101,6 +109,7 @@ module BigKeeper
         temp_file.close
         temp_file.unlink
       end
+      has_change
     end
 
     private :generate_pod_config
