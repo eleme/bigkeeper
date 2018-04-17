@@ -11,5 +11,11 @@ module BigKeeper
     def find_all(path, name)
       Dir.glob("#{path}/*/#{name}")
     end
+
+    def current_username
+      current_name = `whoami`
+      current_name.chomp
+    end
+    
   end
 end

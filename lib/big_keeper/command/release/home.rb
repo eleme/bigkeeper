@@ -43,34 +43,32 @@ module BigKeeper
     PodfileOperator.new.replace_all_module_release(path,
                                                    user,
                                                    modules,
-                                                   version)
+                                                   ModuleOperateType::RELEASE)
 
     # step 3 change Info.plist value
-    InfoPlistOperator.new.change_version_build(project_path, version)
+    InfoPlistOperator.new.change_version_build(path, version)
 
     DepService.dep_operator(path, user).install(true)
     XcodeOperator.new.open_workspace(path)
   end
 
   def self.release_home_finish(path, version)
-    Dir.chdir(path) do
-      if GitOperator.new.has_branch(path, "release/#{version}")
-        if GitOperator.new.current_branch(path) == "release/#{version}"
-          GitOperator.new.commit(path, "release: V #{version}")
-          GitOperator.new.push_to_remote(path, "release/#{version}")
-          GitflowOperator.new.finish_release(path, version)
-          if GitOperator.new.current_branch(path) == "master"
-            GitOperator.new.tag(path, version)
-          else
-            GitOperator.new.checkout(path, "master")
-            GitOperator.new.tag(path, version)
-          end
+    if GitOperator.new.has_branch(path, "release/#{version}")
+      if GitOperator.new.current_branch(path) == "release/#{version}"
+        GitOperator.new.commit(path, "release: V #{version}")
+        GitOperator.new.push_to_remote(path, "release/#{version}")
+        GitflowOperator.new.finish_release(path, version)
+        if GitOperator.new.current_branch(path) == "master"
+          GitOperator.new.tag(path, version)
         else
-          raise Logger.error("Not in release branch, please check your branches.")
+          GitOperator.new.checkout(path, "master")
+          GitOperator.new.tag(path, version)
         end
       else
-        raise Logger.error("Not has release branch, please use release start first.")
+        raise Logger.error("Not in release branch, please check your branches.")
       end
+    else
+      raise Logger.error("Not has release branch, please use release start first.")
     end
   end
 

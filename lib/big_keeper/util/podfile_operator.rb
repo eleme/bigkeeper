@@ -30,9 +30,9 @@ module BigKeeper
       module_names.each do |module_name|
         DepService.dep_operator(path, user).update_module_config(
                                              module_name,
-                                             ModuleType::GIT,
-                                             GitInfo.new(BigkeeperParser.module_git(module_name), GitType::TAG, version))
+                                             ModuleOperateType::RELEASE)
       end
+
     end
 
     def find_and_lock(podfile, dictionary)

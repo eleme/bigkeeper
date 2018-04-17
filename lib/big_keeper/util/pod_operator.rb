@@ -6,13 +6,7 @@ module BigKeeper
     def self.pod_install(path, repo_update)
       # pod install
       if repo_update
-        Logger.highlight('Start pod repo update, waiting...')
-        cmd = 'pod repo update'
-        Open3.popen3(cmd) do |stdin , stdout , stderr, wait_thr|
-          while line = stdout.gets
-            puts line
-          end
-        end
+        PodOperator.pod_update_private_repos()
       end
       Logger.highlight('Start pod install, waiting...')
       cmd = "pod install --project-directory=#{path}"
@@ -46,6 +40,16 @@ module BigKeeper
             Logger.error("Fail: '#{module_name}' Pod repo fail")
           end
           Logger.highlight(%Q(Success release #{module_name} V#{version}))
+        end
+      end
+    end
+
+    def self.pod_update_private_repos
+      Logger.highlight('Start pod repo update, waiting...')
+      cmd = 'pod repo update LPDSpecs'
+      Open3.popen3(cmd) do |stdin , stdout , stderr, wait_thr|
+        while line = stdout.gets
+          puts line
         end
       end
     end
