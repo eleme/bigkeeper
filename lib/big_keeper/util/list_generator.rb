@@ -18,7 +18,7 @@ module BigKeeper
         module_branches_dic.keys.each do |module_name|
           module_branches_dic[module_name].each do |module_branch|
             if module_branch.include?(branch_name.strip.delete('*'))
-              Logger.default("   |_ _ _ #{module_name} - #{branch_name}")
+              Logger.default("   ├── #{module_name} - #{branch_name}")
                 break
             end
           end

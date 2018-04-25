@@ -12,7 +12,9 @@ module BigKeeper
     #get modules list
     begin
       modules = BigkeeperParser.module_names
-      file = File.new("#{path}/.bigkeeper/feature_list", 'w')
+      cache_path = File.expand_path("#{path}/.bigkeeper")
+      FileUtils.mkdir_p(cache_path) unless File.exist?(cache_path)
+      file = File.new("#{cache_path}/feature_list", 'w')
       begin
         #read git info
         git_operator = GitOperator.new
@@ -30,11 +32,11 @@ module BigKeeper
           file << dic
           file << "\n\n"
         end
-         file.close
+        file.close
       end
 
       #print list
-      ListGenerator.generate(file,branches)
+      ListGenerator.generate(file, branches)
     ensure
       file.close
     end
