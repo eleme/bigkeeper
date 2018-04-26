@@ -126,12 +126,13 @@ module BigKeeper
       end
 
       c.desc "List all the #{GitflowType.name(type)}s"
+      c.flag %i[v version] , default_value: 'all versions'
       c.command :list do |list|
         list.action do |global_options, options, args|
           Logger.highlight("Generating feature tree of all version...") if args.length < 1
           path = File.expand_path(global_options[:path])
           user = global_options[:user].gsub(/[^0-9A-Za-z]/, '').downcase
-          list(path,user,type)
+          list(path,user,type,options)
         end
       end
     end

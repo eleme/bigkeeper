@@ -5,7 +5,7 @@ require 'big_keeper/service/module_service'
 
 
 module BigKeeper
-  def self.list(path,user,type)
+  def self.list(path,user,type,options)
     BigkeeperParser.parse("#{path}/Bigkeeper")
     #get home project branches
     branches = GitService.new.branchs_with_type(File.expand_path(path), type)
@@ -34,9 +34,10 @@ module BigKeeper
         end
         file.close
       end
-
       #print list
-      ListGenerator.generate(file, branches)
+      search_version = options[:version]
+      search_version = "all versions" if options[:all]
+      ListGenerator.generate(file, branches,search_version)
     ensure
       file.close
     end
