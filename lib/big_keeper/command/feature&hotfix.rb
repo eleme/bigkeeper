@@ -126,13 +126,27 @@ module BigKeeper
       end
 
       c.desc "List all the #{GitflowType.name(type)}s"
-      c.flag %i[v version] , default_value: 'all versions'
       c.command :list do |list|
-        list.action do |global_options, options, args|
-          Logger.highlight("Generating feature tree of all version...") if args.length < 1
-          path = File.expand_path(global_options[:path])
-          user = global_options[:user].gsub(/[^0-9A-Za-z]/, '').downcase
-          list(path,user,type,options)
+        list.flag %i[v version] , default_value: 'all versions'
+        list.desc "Print list of TREE format."
+        list.command :tree do |tree|
+          tree.action do |global_options, options, args|
+            Logger.highlight("Generating feature tree of all version...") if args.length < 1
+            path = File.expand_path(global_options[:path])
+            user = global_options[:user].gsub(/[^0-9A-Za-z]/, '').downcase
+            list(path,user,type,options)
+          end
+        end
+
+        list.desc "Print list of JSON format."
+        list.command :json do |json|
+          json.action do |global_options, options, args|
+            options[:json] = true
+            Logger.highlight("Generating feature json of all version...") if args.length < 1
+            path = File.expand_path(global_options[:path])
+            user = global_options[:user].gsub(/[^0-9A-Za-z]/, '').downcase
+            list(path,user,type,options)
+          end
         end
       end
     end

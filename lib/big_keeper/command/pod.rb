@@ -5,7 +5,6 @@ module BigKeeper
   def self.pod_command
     desc 'Podfile operation'
     command :podfile do |podfile|
-      podfile.flag %i[pod podfile]
       podfile.desc 'Podfile'
 
       podfile.desc 'Detect podname should be locked.'

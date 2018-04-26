@@ -2,9 +2,9 @@ require 'big_keeper/util/logger'
 
 module BigKeeper
   class ListGenerator
-    def self.generate(file_path,branches_name,version)
+    #generate tree print throught console
+    def self.generate_tree(file_path,branches_name,version)
       module_branches_dic = {}
-      home_name = BigkeeperParser.home_name
       File.open(file_path, 'r') do |file|
         file.each_line do |line|
           if /=>/ =~ line.delete('{}"')
@@ -13,7 +13,25 @@ module BigKeeper
         end
       end
       # p module_branches_dic
-      print_all = true if version == "all versions"
+      to_tree(module_branches_dic,branches_name,version)
+    end
+
+      #generate json print throught console
+    def self.generate_json(file_path,branches,version)
+      to_json(file_path,branches)
+    end
+
+    def self.to_json(file_path,branches_name)
+      File.open(file_path, 'r') do |file|
+        file.each_line do |line|
+          p line
+        end
+      end
+    end
+
+    def self.to_tree(module_branches_dic,branches_name,version)
+      home_name = BigkeeperParser.home_name
+      print_all = version == "all versions"
       branches_name.each do |branch_name|
         next unless branch_name.include?(version) || print_all
         Logger.highlight(" #{home_name} - #{branch_name} ")

@@ -36,8 +36,11 @@ module BigKeeper
       end
       #print list
       search_version = options[:version]
-      search_version = "all versions" if options[:all]
-      ListGenerator.generate(file, branches,search_version)
+      if options[:json]
+          ListGenerator.generate_json(file, branches,search_version)
+      else
+          ListGenerator.generate_tree(file, branches,search_version)
+      end
     ensure
       file.close
     end
