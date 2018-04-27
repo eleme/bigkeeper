@@ -22,13 +22,14 @@ module BigKeeper
       Logger.highlight(%Q(Start Pod repo push #{module_name}))
       Dir.chdir(path) do
         command = ""
+        p BigkeeperParser.source_spec_name(module_name)
         if source.length > 0
-          command = "pod repo push LPDSpecs #{module_name}.podspec --allow-warnings --sources=#{source} --verbose --use-libraries"
+          command = "pod repo push #{BigkeeperParser.source_spec_name(module_name)} #{module_name}.podspec --allow-warnings --sources=#{source} --verbose --use-libraries"
         else
-          command = "pod repo push LPDSpecs #{module_name}.podspec --allow-warnings --verbose --use-libraries"
+          command = "pod repo push #{BigkeeperParser.source_spec_name(module_name)} #{module_name}.podspec --allow-warnings --verbose --use-libraries"
         end
 
-        IO.popen("pod repo push LPDSpecs #{module_name}.podspec --allow-warnings --sources=#{source} --verbose --use-libraries") do |io|
+        IO.popen(command) do |io|
           is_success = false
           error_info = Array.new
           io.each do |line|
@@ -44,9 +45,9 @@ module BigKeeper
       end
     end
 
-    def self.pod_update_private_repos
+    def self.pod_update_private_repos(module_name)
       Logger.highlight('Start pod repo update, waiting...')
-      cmd = 'pod repo update LPDSpecs'
+      cmd = "pod repo update #{BigkeeperParser.source_spec_name(module_name)}"
       Open3.popen3(cmd) do |stdin , stdout , stderr, wait_thr|
         while line = stdout.gets
           puts line

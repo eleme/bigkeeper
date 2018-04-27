@@ -153,7 +153,12 @@ module BigKeeper
           unmerged_branch.push(line) if line.include? "#{condition}"
         end
       end
-      unmerged_branch
+      if (unmerged_branch.size > 0)
+        unmerged_branch.map { |item|
+            Logger.default(item)
+        }
+        Logger.error("Still has unmerged feature branch, please check")
+      end
     end
 
     def check_diff(path, branch, compare_branch)

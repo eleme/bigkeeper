@@ -27,6 +27,7 @@ module BigKeeper
 
   def self.source(name)
     BigkeeperParser.parse_source(name)
+    yield if block_given?
   end
 
   # Bigkeeper file parser
@@ -43,23 +44,25 @@ module BigKeeper
         content.gsub!(/version\s/, 'BigKeeper::version ')
         content.gsub!(/user\s/, 'BigKeeper::user ')
         content.gsub!(/home\s/, 'BigKeeper::home ')
+        content.gsub!(/source\s/, 'BigKeeper::source ')
         content.gsub!(/mod\s/, 'BigKeeper::mod ')
         content.gsub!(/modules\s/, 'BigKeeper::modules ')
-        content.gsub!(/source\s/, 'BigKeeper::source ')
         eval content
-        # p @@config
+      end
+    end
+
+    def self.parse_source(name)
+      @@config.delete("tmpSpec")
+      source_split = name.split(",") unless name.split(",").length != 2
+      if source_split != nil
+        sources = Hash["#{source_split[1].lstrip}" => "#{source_split[0]}"]
+        @@config[:source] = sources
+        @@config[:tmpSpec] = source_split[1].lstrip
       end
     end
 
     def self.parse_version(name)
       @@config[:version] = name
-    end
-
-    def self.parse_source(name)
-      sources = []
-      sources << @@config[:source]
-      sources << name
-      @@config[:source] = sources
     end
 
     def self.parse_user(name)
@@ -96,6 +99,9 @@ module BigKeeper
     end
 
     def self.parse_modules_mod(name, params)
+      if @@config[:source] != nil
+          params[:spec] = "#{@@config[:tmpSpec]}"
+      end
       modules = @@config[:modules]
       modules[name] = params
       @@config[:modules] = modules
@@ -123,12 +129,13 @@ module BigKeeper
       @@config[:home][:pulls]
     end
 
-    def self.sourcemodule_path
-      if @@config[:source] == nil
-        return ""
-      else
-        @@config[:source].join(",").reverse.chop.reverse
-      end
+    def self.source_spec_path(module_name)
+      spec = @@config[:modules][module_name][:spec]
+      @@config[:source][spec]
+    end
+
+    def self.source_spec_name(module_name)
+      spec = @@config[:modules][module_name][:spec]
     end
 
     def self.module_full_path(home_path, user_name, module_name)

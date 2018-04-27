@@ -16,15 +16,7 @@ module BigKeeper
     StashService.new.stash_all(path, GitOperator.new.current_branch(path), user, modules)
 
     # check
-    unmerged_branchs = GitOperator.new.check_merge(path, "feature/#{version}")
-    if (unmerged_branchs.size > 0)
-      unmerged_branchs.map { |item|
-          Logger.default(item)
-      }
-      Logger.error("Still has unmerged feature branch, please check")
-      return
-    end
-
+    GitOperator.new.check_merge(module_path, "feature/#{version}")
     GitOperator.new.check_diff(path, "develop", "master")
 
     #checkout release branch

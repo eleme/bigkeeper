@@ -10,39 +10,21 @@ require 'big_keeper/util/pod_operator'
 module BigKeeper
   def self.release_module_start(path, version, user, module_name, ignore)
     BigkeeperParser.parse("#{path}/Bigkeeper")
-
-    module_path = self.get_module_path_default(path, user, module_name)
+    module_path = BigkeeperParser.module_full_path(path, user, module_name)
 
     # stash
-    if GitOperator.new.has_changes(module_path)
-      StashService.new.stash_all(module_path, GitOperator.new.current_branch(module_path), user, module_name.split())
-    end
+    StashService.new.stash(module_path, GitOperator.new.current_branch(module_path), module_name)
 
     #check
     if ignore != true
-      unmerged_branchs = GitOperator.new.check_merge(module_path, "feature/#{version}")
-      if (unmerged_branchs.size > 0)
-        unmerged_branchs.map { |item|
-            Logger.default(item)
-        }
-        Logger.error("Still has unmerged feature branch, please check")
-        return
-      end
-
+      GitOperator.new.check_merge(module_path, "feature/#{version}")
       GitOperator.new.check_diff(module_path, "develop", "master")
       Logger.highlight(%Q(#{module_name} release check finish))
     end
 
     # checkout to develop branch
-    if GitOperator.new.current_branch(module_path) != "develop"
-      Logger.highlight(%Q(Start checkout #{module_name} to Branch develop))
-      if GitOperator.new.has_branch(module_path, "develop")
-        GitOperator.new.verify_checkout(module_path, "develop")
-        GitOperator.new.pull(module_path, "develop")
-      else
-        Logger.error("Cann't find develop branch, please check.")
-      end
-    end
+    Logger.highlight(%Q(Start checkout #{module_name} to Branch develop))
+    GitService.new.verify_checkout_pull(module_path, "develop")
 
     Logger.highlight(%Q(#{module_name} release start finish))
   end
@@ -50,17 +32,13 @@ module BigKeeper
 ## release finish
   def self.release_module_finish(path, version, user, module_name)
     BigkeeperParser.parse("#{path}/Bigkeeper")
-    module_path = self.get_module_path_default(path, user, module_name)
+    module_path = BigkeeperParser.module_full_path(path, user, module_name)
 
     # check commit
     Logger.error("current branch has unpush files") if GitOperator.new.has_changes(module_path)
     # check out master
-    if GitOperator.new.current_branch(module_path) != "master"
-      current_name = GitOperator.new.current_branch(module_path)
-      GitOperator.new.checkout(module_path, "master")
-      GitOperator.new.pull(module_path)
-      Logger.highlight("'#{current_name}' checkout branch to master...")
-    end
+    Logger.highlight("'#{module_name}' checkout branch to master...")
+    GitService.new.verify_checkout_pull(module_path, "master")
 
     Logger.highlight(%Q(Merge develop to master))
     # merge develop to master
@@ -74,16 +52,7 @@ module BigKeeper
     GitOperator.new.tag(module_path, version)
 
     # pod repo push
-    PodOperator.pod_repo_push(module_path, module_name, BigkeeperParser.sourcemodule_path, version)
+    PodOperator.pod_repo_push(module_path, module_name, BigkeeperParser.source_spec_path(module_name), version)
   end
 
-  def self.get_module_path_default(path, user, module_name)
-    module_path = BigkeeperParser::module_path(user, module_name)
-    if module_path == "../#{module_name}"
-      path_array = path.split('/')
-      path_array.pop()
-      module_path = path_array.join('/') + "/#{module_name}"
-    end
-    module_path
-  end
 end
