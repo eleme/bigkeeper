@@ -137,11 +137,14 @@ module BigKeeper
       ModuleCacheOperator.new(path).del_path_module(module_name)
     end
 
-    def list(path, user, module_path)
+    def list(path, user,type, module_path,version)
       branches_name = []
       IO.popen("cd #{path}; git branch -a") do |io|
         io.each do |line|
-          branches_name << line.strip if line.include? 'feature'
+          next unless line.include? GitflowType.name(type)
+          if line.include?(version) ||  version == 'all versions'
+          branches_name << line.strip
+          end
         end
       end
       branches_name
