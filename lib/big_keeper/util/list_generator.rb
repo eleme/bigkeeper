@@ -3,7 +3,7 @@ require 'big_keeper/util/logger'
 module BigKeeper
   class ListGenerator
     #generate tree print throught console
-    def self.generate_tree(file_path,branches_name,version)
+    def self.generate_tree(file_path, branches_name, version)
       module_branches_dic = {}
       File.open(file_path, 'r') do |file|
         file.each_line do |line|
@@ -13,15 +13,15 @@ module BigKeeper
         end
       end
       # p module_branches_dic
-      to_tree(module_branches_dic,branches_name,version)
+      to_tree(module_branches_dic, branches_name, version)
     end
 
       #generate json print throught console
-    def self.generate_json(file_path,branches,version)
-      to_json(file_path,branches)
+    def self.generate_json(file_path, branches, version)
+      to_json(file_path, branches)
     end
 
-    def self.to_json(file_path,branches_name)
+    def self.to_json(file_path, branches_name)
       File.open(file_path, 'r') do |file|
         file.each_line do |line|
           p line
@@ -29,7 +29,7 @@ module BigKeeper
       end
     end
 
-    def self.to_tree(module_branches_dic,branches_name,version)
+    def self.to_tree(module_branches_dic, branches_name, version)
       home_name = BigkeeperParser.home_name
       print_all = version == "all versions"
       branches_name.each do |branch_name|

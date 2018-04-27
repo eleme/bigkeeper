@@ -5,7 +5,7 @@ require 'big_keeper/service/module_service'
 
 
 module BigKeeper
-  def self.list(path,user,type,options)
+  def self.list(path, user, type, options)
     BigkeeperParser.parse("#{path}/Bigkeeper")
     #get home project branches
     branches = GitService.new.branchs_with_type(File.expand_path(path), type)
@@ -28,7 +28,7 @@ module BigKeeper
             module_git = BigkeeperParser.module_git(module_name)
             git_operator.clone(File.expand_path("#{module_full_path}/../"), module_git)
           end
-          feature_modules_list = ModuleService.new.list(module_full_path, user,type, module_name,version)
+          feature_modules_list = ModuleService.new.list(module_full_path, user, type, module_name, version)
           module_list_dic[module_name] = feature_modules_list
         end
         file << module_list_dic.to_json
@@ -36,9 +36,9 @@ module BigKeeper
       end
       #print list
       if options[:json]
-          ListGenerator.generate_json(file, branches,version)
+          ListGenerator.generate_json(file, branches, version)
       else
-          ListGenerator.generate_tree(file, branches,version)
+          ListGenerator.generate_tree(file, branches, version)
       end
     ensure
       file.close
