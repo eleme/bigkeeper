@@ -1,7 +1,7 @@
 
 module BigKeeper
 
-class Podfile_Modle
+class PodfileModle
   attr_accessor :name, :git, :path, :configurations, :branch,:tag, :comment
   def initialize(sentence)
     if sentence.include?('#')
