@@ -142,7 +142,6 @@ module BigKeeper
         list.command :json do |json|
           json.action do |global_options, options, args|
             options[:json] = true
-            Logger.highlight("Generating feature json of all version...") if args.length < 1
             path = File.expand_path(global_options[:path])
             user = global_options[:user].gsub(/[^0-9A-Za-z]/, '').downcase
             list(path, user, type, options)

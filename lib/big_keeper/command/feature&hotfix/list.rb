@@ -10,6 +10,7 @@ module BigKeeper
     #get home project branches
     branches = GitService.new.branchs_with_type(File.expand_path(path), type)
     #get modules list
+    is_print_log = false if options[:json]
     begin
       modules = BigkeeperParser.module_names
       cache_path = File.expand_path("#{path}/.bigkeeper")
@@ -24,7 +25,7 @@ module BigKeeper
           module_full_path = BigkeeperParser.module_full_path(path, user, module_name)
           #local project verify
           if !File.exist? module_full_path
-            Logger.default("No local repository for module '#{module_name}', clone it...")
+            Logger.default("No local repository for module '#{module_name}', clone it...") if is_print_log
             module_git = BigkeeperParser.module_git(module_name)
             git_operator.clone(File.expand_path("#{module_full_path}/../"), module_git)
           end
