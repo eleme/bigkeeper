@@ -3,6 +3,7 @@ require 'big_keeper/dependency/dep_operator'
 require 'big_keeper/util/pod_operator'
 require 'big_keeper/util/xcode_operator'
 require 'big_keeper/util/cache_operator'
+require 'big_keeper/util/file_operator'
 
 module BigKeeper
   # Operator for podfile
@@ -64,6 +65,10 @@ module BigKeeper
           branch_name = GitOperator.new.current_branch(@path)
           base_branch_name = GitflowType.base_branch(GitService.new.current_branch_type(@path))
           "#{$1}pod '#{module_name}', :git => '#{module_git}', :branch => '#{base_branch_name}'"
+        elsif ModuleOperateType::RELEASE == module_operate_type
+          module_git = BigkeeperParser.module_git(module_name)
+          lastest_tag = find_lastest_tag(module_name)
+          "#{$1}pod '#{module_name}', '#{lastest_tag}'"
         else
           line
         end
@@ -85,6 +90,29 @@ module BigKeeper
       origin_config.chop
     end
 
-    private :generate_module_config, :origin_config_of_module
+    def find_lastest_tag(module_name)
+      username = FileOperator.new.current_username
+      tag = ''
+      tags_repos_pwd = Array.new
+      tags_list = Array.new
+
+      IO.popen("find /Users/#{username}/.cocoapods/repos -type d -name #{module_name}") do |io|
+        io.each do |line|
+          tags_repos_pwd.push(line) if line.include? "#{module_name}"
+        end
+      end
+      for pwd in tags_repos_pwd do
+        path = pwd.chomp
+        IO.popen("cd #{path}; ls") do |io|
+          io.each do |line|
+            tags_list.push(line)
+          end
+        end
+      end
+      tag_set = tags_list.to_set.to_a
+      tag_set.at(tag_set.length - 1).chomp
+    end
+
+    private :generate_module_config, :origin_config_of_module, :find_lastest_tag
   end
 end

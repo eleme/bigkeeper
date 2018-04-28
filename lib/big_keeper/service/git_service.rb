@@ -43,6 +43,11 @@ module BigKeeper
       end
     end
 
+    def verify_checkout_pull(path, branch_name)
+      GitService.new.verify_checkout(path, branch_name)
+      GitService.new.pull(path, branch_name)
+    end
+
     def verify_special_branch(path, name)
       git = GitOperator.new
 

@@ -34,6 +34,7 @@ module BigKeeper
       end
 
       c.desc 'release module'
+      c.switch [:i,:ignore]
       c.command :module do |m|
         m.desc 'Start release module project'
         m.command :start do |start|
@@ -45,7 +46,7 @@ module BigKeeper
             help_now!('module name is required') if args.length != 1
             raise Logger.error("release version is required") if version == nil
             module_name = args[0]
-            release_module_start(path, version, user, module_name)
+            release_module_start(path, version, user, module_name, options[:ignore])
           end
         end
 
