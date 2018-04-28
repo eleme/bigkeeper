@@ -42,6 +42,7 @@ module BigKeeper
             end
           end
         end
+        Logger.default("~~~~")
       end
     end
   end
