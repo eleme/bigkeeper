@@ -131,7 +131,7 @@ module BigKeeper
         list.desc "Print list of TREE format."
         list.command :tree do |tree|
           tree.action do |global_options, options, args|
-            Logger.highlight("Generating feature tree of all version...") if args.length < 1
+            Logger.highlight("Generating #{GitflowType.name(type)} tree of all version...") if args.length < 1
             path = File.expand_path(global_options[:path])
             user = global_options[:user].gsub(/[^0-9A-Za-z]/, '').downcase
             list(path, user, type, options)
