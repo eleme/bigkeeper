@@ -30,12 +30,11 @@ module BigKeeper
     end
 
     def self.to_tree(module_branches_dic, branches_name, version)
-      p module_branches_dic
       home_name = BigkeeperParser.home_name
       print_all = version == "all versions"
       branches_name.each do |branch_name|
         next unless branch_name.include?(version) || print_all
-        Logger.highlight(" #{home_name} - #{branch_name.strip} ")
+        Logger.highlight(branch_name.strip)
         module_branches_dic.keys.each do |module_name|
           module_branches_dic[module_name].each do |module_branch|
             if module_branch.include?(branch_name.strip.delete('*'))
@@ -44,6 +43,7 @@ module BigKeeper
             end
           end
         end
+        Logger.default("~~~~")
       end
     end
   end

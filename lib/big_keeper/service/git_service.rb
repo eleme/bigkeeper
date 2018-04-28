@@ -120,7 +120,7 @@ module BigKeeper
       Dir.chdir(path) do
         IO.popen('git branch -a') do |io|
           io.each do |line|
-            branchs << line.rstrip if line =~ /(\* |  )#{GitflowType.name(type)}*/
+            branchs << line.gsub(/\s/, '') if line =~ /[\s\S]*#{GitflowType.name(type)}*/
           end
         end
       end
