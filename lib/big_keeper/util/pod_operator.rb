@@ -8,7 +8,7 @@ module BigKeeper
       if repo_update
         Logger.highlight('Start pod repo update, waiting...')
         cmd = 'pod repo update'
-        Open3.popen3(cmd) do |stdin , stdout , stderr, wait_thr|
+        Open3.popen3(cmd) do |stdin, stdout, stderr, wait_thr|
           while line = stdout.gets
             puts line
           end
@@ -16,7 +16,7 @@ module BigKeeper
       end
       Logger.highlight('Start pod install, waiting...')
       cmd = "pod install --project-directory=#{path}"
-      Open3.popen3(cmd) do |stdin , stdout , stderr, wait_thr|
+      Open3.popen3(cmd) do |stdin, stdout, stderr, wait_thr|
         while line = stdout.gets
           puts line
         end

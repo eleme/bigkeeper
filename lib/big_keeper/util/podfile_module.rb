@@ -42,7 +42,7 @@ class PodfileModuleDetector
     Logger.highlight("Analyzing modules info...") unless podfile_lines.size.zero?
       podfile_lines.collect do |sentence|
         if sentence =~(/pod/)
-          sentence = sentence.sub('pod','')
+          sentence = sentence.sub('pod', '')
           sentence = sentence.delete('\n\'')
           match_result = sentence.split(',')
           pod_name = match_result[0].strip
