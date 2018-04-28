@@ -17,7 +17,7 @@ module BigKeeper
       false
     end
 
-    def generate_pod_config(pod_name, version,comment)
+    def generate_pod_config(pod_name, version, comment)
       module_config = ''
       if comment != nil
         module_config = "  pod '#{pod_name}' , '#{version}' # #{comment}"
@@ -43,7 +43,7 @@ module BigKeeper
             pod_model = PodfileDetector.get_pod_model(line)
             if pod_model != nil && pod_model.name != nil && dictionary[pod_model.name] != nil
                 # p "#{pod_name},#{dictionary[pod_name]}"
-                temp_file.puts generate_pod_config(pod_model.name,dictionary[pod_model.name],pod_model.comment)
+                temp_file.puts generate_pod_config(pod_model.name, dictionary[pod_model.name], pod_model.comment)
             else
                 temp_file.puts line
             end
@@ -64,7 +64,7 @@ module BigKeeper
           file.each_line do |line|
             pod_model = PodfileDetector.get_pod_model(line)
             if pod_model != nil && pod_model.name != nil && dictionary[pod_model.name] != nil
-                temp_file.puts generate_pod_config(pod_model.name,dictionary[pod_model.name],pod_model.comment)
+                temp_file.puts generate_pod_config(pod_model.name, dictionary[pod_model.name], pod_model.comment)
             else
                 temp_file.puts line
             end
