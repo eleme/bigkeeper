@@ -16,7 +16,7 @@ module BigKeeper
       cache_path = File.expand_path("#{path}/.bigkeeper")
       version = options[:version]
       FileUtils.mkdir_p(cache_path) unless File.exist?(cache_path)
-      file = File.new("#{cache_path}/feature_list", 'w')
+      file = File.new("#{cache_path}/branches", 'w')
       begin
         #read git info
         git_operator = GitOperator.new
