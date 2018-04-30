@@ -140,7 +140,7 @@ module BigKeeper
     def list(path, user, type, module_path, version)
       matched_branches = []
       branches = GitService.new.branchs_with_type(File.expand_path(path), type)
-      p branches
+      # p branches
 
       if version == 'all versions'
         matched_branches = branches
