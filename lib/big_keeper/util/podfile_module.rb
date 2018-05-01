@@ -31,7 +31,6 @@ class PodfileModuleDetector
     end
   end
 
-
   def get_pod_search_result(pod_name)
     #输入pod Search 结果
     `pod search #{pod_name} --ios --simple >> #{@main_path}/bigKeeperPodInfo.tmp`

@@ -22,13 +22,16 @@ class PodfileDetector
       deal_podfile_line(sentence) unless sentence =~(/(\d+.){1,2}\d+/)
       end
       $unlock_pod_list
-      # p $unlock_pod_list
   end
 
   def deal_podfile_line(sentence)
-    if sentence.include?('pod ')
-      pod_model = PodfileModle.new(sentence)
-      if !pod_model.name.empty? && pod_model.configurations != '[\'Debug\']' && pod_model.path == nil && pod_model.tag == nil
+    return unless !sentence.strip.start_with?("#")
+    if sentence.strip.include?('pod ')
+      pod_model = PodfileModel.new(sentence)
+      if !pod_model.name.empty? &&
+         pod_model.configurations != '[\'Debug\']' &&
+         pod_model.path == nil &&
+         pod_model.tag == nil
             $unlock_pod_list << pod_model.name unless @module_list.include?(pod_model.name)
       end
       pod_model
@@ -64,7 +67,7 @@ class PodfileDetector
 
   def self.get_pod_model(sentence)
     if sentence.include?('pod ')
-      pod_model = Podfile_Modle.new(sentence)
+      pod_model = PodfileModel.new(sentence)
       return pod_model
     end
   end
