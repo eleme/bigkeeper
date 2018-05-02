@@ -138,16 +138,20 @@ module BigKeeper
     end
 
     def list(path, user, type, module_path, version)
-      branches_name = []
-      IO.popen("cd #{path}; git branch -a") do |io|
-        io.each do |line|
-          next unless line.include? GitflowType.name(type)
-          if line.include?(version) ||  version == 'all versions'
-          branches_name << line.strip
+      matched_branches = []
+      branches = GitService.new.branchs_with_type(File.expand_path(path), type)
+      # p branches
+
+      if version == 'all versions'
+        matched_branches = branches
+      else
+        branches.each do |branch|
+          if branch.include?(version)
+            matched_branches << branch
           end
         end
       end
-      branches_name
+      matched_branches
     end
 
     private :verify_module
