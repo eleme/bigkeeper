@@ -30,7 +30,7 @@ module BigKeeper
   end
 
 ## release finish
-  def self.release_module_finish(path, version, user, module_name)
+  def self.release_module_finish(path, version, user, module_name, spec)
     BigkeeperParser.parse("#{path}/Bigkeeper")
     module_path = BigkeeperParser.module_full_path(path, user, module_name)
 
@@ -44,7 +44,7 @@ module BigKeeper
     # merge develop to master
     GitOperator.new.merge(module_path, "master")
     GitService.new.verify_push(module_path, "finish merge develop to master", "master", "#{module_name}")
-
+    
     #修改 podspec 文件
     # TO DO: - advanced to use Regular Expression
     has_change = PodfileOperator.new.podspec_change(%Q(#{module_path}/#{module_name}.podspec), version, module_name)
@@ -52,7 +52,9 @@ module BigKeeper
     GitOperator.new.tag(module_path, version)
 
     # pod repo push
-    PodOperator.pod_repo_push(module_path, module_name, BigkeeperParser.source_spec_path(module_name), version)
+    if spec == true
+      PodOperator.pod_repo_push(module_path, module_name, BigkeeperParser.source_spec_path(module_name), version)
+    end
   end
 
 end

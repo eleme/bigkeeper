@@ -67,8 +67,14 @@ module BigKeeper
           "#{$1}pod '#{module_name}', :git => '#{module_git}', :branch => '#{base_branch_name}'"
         elsif ModuleOperateType::RELEASE == module_operate_type
           module_git = BigkeeperParser.module_git(module_name)
-          lastest_tag = find_lastest_tag(module_name)
-          "#{$1}pod '#{module_name}', '#{lastest_tag}'"
+          lastest_tag, isSpec = find_lastest_tag(module_name)
+          if isSpec == true
+            Logger.default("#{module_name} lastest tag is #{lastest_tag}, this tag has published.")
+            "#{$1}pod '#{module_name}', '#{lastest_tag}'"
+          else
+            Logger.default("#{module_name} lastest tag is #{lastest_tag}, this tag not publish.")
+            "#{$1}pod '#{module_name}', :git => '#{module_git}', :tag => '#{lastest_tag}'"
+          end
         else
           line
         end
@@ -92,9 +98,9 @@ module BigKeeper
 
     def find_lastest_tag(module_name)
       username = FileOperator.new.current_username
-      tag = ''
       tags_repos_pwd = Array.new
-      tags_list = Array.new
+      tags_spec_list = Array.new
+      tags_module_list = Array.new
 
       IO.popen("find /Users/#{username}/.cocoapods/repos -type d -name #{module_name}") do |io|
         io.each do |line|
@@ -105,12 +111,18 @@ module BigKeeper
         path = pwd.chomp
         IO.popen("cd #{path}; ls") do |io|
           io.each do |line|
-            tags_list.push(line)
+            tags_spec_list.push(line)
           end
         end
       end
-      tag_set = tags_list.to_set.to_a
-      tag_set.at(tag_set.length - 1).chomp
+
+      tags_module_list = GitOperator.new.tag_list(BigkeeperParser.module_full_path(@path, @user, module_name))
+      last_tag = tags_module_list[tags_module_list.length - 1]
+      if tags_module_list.include?(last_tag) && tags_spec_list.include?(last_tag)
+        return [last_tag.chomp, true]
+      else
+        return [last_tag.chomp, false]
+      end
     end
 
     private :generate_module_config, :origin_config_of_module, :find_lastest_tag

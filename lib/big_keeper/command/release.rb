@@ -51,6 +51,7 @@ module BigKeeper
         end
 
         m.desc 'finish release module project'
+        m.switch [:s,:spec]
         m.command :finish do |finish|
           finish.action do |global_options, options, args|
             path = File.expand_path(global_options[:path])
@@ -60,7 +61,7 @@ module BigKeeper
             help_now!('module name is required') if args.length != 1
             raise Logger.error("release version is required") if version == nil
             module_name = args[0]
-            release_module_finish(path, version, user, module_name)
+            release_module_finish(path, version, user, module_name, options[:spec])
           end
         end
       end
