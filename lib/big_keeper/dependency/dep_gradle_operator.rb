@@ -7,47 +7,47 @@ module BigKeeper
 
     def backup
       GradleOperator.new(@path).backup
+      modules = ModuleCacheOperator.new(@path).all_path_modules
+      modules.each do |module_name|
+        module_full_path = BigkeeperParser.module_full_path(@path, @user, module_name)
+        GradleOperator.new(module_full_path).backup
+      end
     end
 
     def recover
-      GradleOperator.new(@path).recover
+      GradleOperator.new(@path).recover(true, false)
     end
 
-    def update_module_config(module_name, module_type, source)
-      GradleOperator.new(@path).update_module_config(module_name, module_type, source)
-
+    def update_module_config(module_name, module_operate_type)
       module_full_path = BigkeeperParser.module_full_path(@path, @user, module_name)
 
-      if ModuleType::PATH == module_type
+      # get modules
+      if ModuleOperateType::ADD == module_operate_type
         GradleOperator.new(module_full_path).backup
 
-        all_path_modules = ModuleCacheOperator.new(@path).all_path_modules
-        all_path_modules.each do |path_module_name|
-          next if path_module_name == module_name
-          module_full_path = BigkeeperParser.module_full_path(@path, @user, path_module_name)
-          GradleOperator.new(module_full_path).update_module_config(module_name, module_type, source)
-        end
-      elsif ModuleType::GIT == module_type
-        GradleOperator.new(module_full_path).recover
+        add_modules = ModuleCacheOperator.new(@path).add_path_modules
+        GradleOperator.new(module_full_path).update_build_config(module_name, add_modules, ModuleOperateType::ADD)
+        GradleOperator.new(module_full_path).update_settings_config(module_name, add_modules, ModuleOperateType::ADD, @user)
 
-        all_path_modules = ModuleCacheOperator.new(@path).all_path_modules
-        all_path_modules.each do |path_module_name|
-          next if path_module_name == module_name
-          module_full_path = BigkeeperParser.module_full_path(@path, @user, path_module_name)
-          GradleOperator.new(module_full_path).update_module_config(module_name, module_type, source)
-        end
-      else
+        del_modules = ModuleCacheOperator.new(@path).del_path_modules
+        GradleOperator.new(module_full_path).update_build_config(module_name, del_modules, ModuleOperateType::DELETE)
+        GradleOperator.new(module_full_path).update_settings_config(module_name, del_modules, ModuleOperateType::DELETE, @user)
+      elsif ModuleOperateType::DELETE == module_operate_type
+        GradleOperator.new(module_full_path).recover(true, true)
+      elsif ModuleOperateType::FINISH == module_operate_type
+        modules = ModuleCacheOperator.new(@path).all_path_modules
+        GradleOperator.new(module_full_path).update_build_config(module_name, modules, ModuleOperateType::FINISH)
+      elsif ModuleOperateType::PUBLISH == module_operate_type
+        modules = ModuleCacheOperator.new(@path).all_git_modules
+        GradleOperator.new(module_full_path).update_build_config(module_name, modules, ModuleOperateType::PUBLISH)
+        GradleOperator.new(module_full_path).recover(true, false)
       end
+
+      GradleOperator.new(@path).update_build_config('', [module_name], module_operate_type)
+      GradleOperator.new(@path).update_settings_config('', [module_name], module_operate_type, @user)
     end
 
     def install(should_update)
-      modules = ModuleCacheOperator.new(@path).all_path_modules
-      GradleOperator.new(@path).update_setting_config('', @user, modules)
-
-      modules.each do |module_name|
-        module_full_path = BigkeeperParser.module_full_path(@path, @user, module_name)
-        GradleOperator.new(module_full_path).update_setting_config(module_name, @user, modules)
-      end
     end
 
     def open

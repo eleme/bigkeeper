@@ -14,7 +14,7 @@ module BigKeeper
       # Get modules' name
       module_list = BigkeeperParser.module_names
       # initialize PodfileDetector
-      detector = PodfileDetector.new(path,module_list)
+      detector = PodfileDetector.new(path, module_list)
       # Get unlocked third party pods list
       unlock_pod_list = detector.get_unlock_pod_list
       # Print out unlock pod list
@@ -31,15 +31,15 @@ module BigKeeper
       # Get modules' name
       module_list = BigkeeperParser.module_names
       # initialize PodfileDetector
-      detector = PodfileDetector.new(path,module_list)
+      detector = PodfileDetector.new(path, module_list)
       # Get unlocked third party pods list
       unlock_pod_list = detector.get_unlock_pod_list
       # Get Version
-      dictionary = detector.deal_lock_file(path,unlock_pod_list)
+      dictionary = detector.deal_lock_file(path, unlock_pod_list)
       if dictionary.empty?
         Logger.warning("There is nothing to be locked.")
       else
-        PodfileOperator.new.find_and_lock("#{path}/Podfile",dictionary)
+        PodfileOperator.new.find_and_lock("#{path}/Podfile", dictionary)
         Logger.highlight("The Podfile has been changed.")
         Logger.separator
       end
@@ -61,7 +61,7 @@ module BigKeeper
       if module_dictionary.empty?
         Logger.warning("There is nothing to be upgrade.")
       else
-        PodfileOperator.new.find_and_upgrade("#{path}/Podfile",module_dictionary)
+        PodfileOperator.new.find_and_upgrade("#{path}/Podfile", module_dictionary)
         Logger.highlight("The Podfile has been changed.")
       end
   end

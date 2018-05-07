@@ -130,11 +130,59 @@ module BigKeeper
     end
 
     def tag(path, version)
-      Dir.chdir(path) do
-        `git tag -a #{version} -m "release: V #{version}" master`
-        `git push --tags`
+      tags = Array.new
+      IO.popen("cd #{path}; git tag") do |io|
+        io.each do |line|
+          tags << line
+        end
+      end
+      unless tags.include? "#{version}\n"
+        Dir.chdir(path) do
+          `git tag -a #{version} -m "release: V #{version}" master;`
+          `git push --tags`
+        end
+        return
+      end
+      Logger.highlight("tag already exists in the remote, skip this step")
+    end
+
+    def check_merge(path, condition)
+      unmerged_branch = Array.new
+      IO.popen("cd #{path}; git branch --no-merged") do |io|
+        io.each do |line|
+          unmerged_branch.push(line) if line.include? "#{condition}"
+        end
+      end
+      if (unmerged_branch.size > 0)
+        unmerged_branch.map { |item|
+            Logger.default(item)
+        }
+        Logger.error("Still has unmerged feature branch, please check")
       end
     end
+
+    def check_diff(path, branch, compare_branch)
+      compare_branch_commits = Array.new
+      IO.popen("cd #{path}; git log --left-right #{branch}...#{compare_branch} --pretty=oneline") do |io|
+        io.each do |line|
+          compare_branch_commits.push(line) if (line.include? '>') && (line.include? "Merge branch #{branch} into #{compare_branch}")
+        end
+      end
+      if compare_branch_commits.size > 0
+        compare_branch_commits.map { |item|
+            Logger.default(item)
+        }
+        Logger.error("#{compare_branch} branch has commit dont committed in #{branch}, please check")
+        return
+      end
+    end
+
+    def merge(path, branch_name)
+      IO.popen("cd #{path}; git merge #{branch_name}") do |line|
+        Logger.error("Merge conflict in #{branch_name}") if line.include? 'Merge conflict'
+      end
+    end
+
   end
 
   # p GitOperator.new.user
