@@ -148,8 +148,8 @@ module BigKeeper
           matched_branches << branch if branch.include?(version)
         end
       end
-      result_dic[:current_branch] = GitOperator.new.current_branch(module_path)
       result_dic[:module_name] = module_name
+      result_dic[:current_branch] = GitOperator.new.current_branch(module_path)
       result_dic[:branches] = matched_branches
       result_dic
     end
