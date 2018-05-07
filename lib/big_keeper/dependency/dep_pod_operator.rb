@@ -67,8 +67,8 @@ module BigKeeper
           "#{$1}pod '#{module_name}', :git => '#{module_git}', :branch => '#{base_branch_name}'"
         elsif ModuleOperateType::RELEASE == module_operate_type
           module_git = BigkeeperParser.module_git(module_name)
-          lastest_tag, isSpec = find_lastest_tag(module_name)
-          if isSpec == true
+          lastest_tag, is_spec = find_lastest_tag(module_name)
+          if is_spec == true
             Logger.default("#{module_name} lastest tag is #{lastest_tag}, this tag has published.")
             "#{$1}pod '#{module_name}', '#{lastest_tag}'"
           else
