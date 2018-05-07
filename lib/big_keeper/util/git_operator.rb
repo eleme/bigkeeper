@@ -146,6 +146,18 @@ module BigKeeper
       Logger.highlight("tag already exists in the remote, skip this step")
     end
 
+    def tag_list(path)
+      tag_list = Array.new
+      IO.popen("cd #{path}; git tag -l") do |io|
+        io.each do |line|
+          unless line=~(/[a-zA-Z]/)
+            tag_list << line
+          end
+        end
+      end
+      tag_list
+    end
+
     def check_merge(path, condition)
       unmerged_branch = Array.new
       IO.popen("cd #{path}; git branch --no-merged") do |io|
