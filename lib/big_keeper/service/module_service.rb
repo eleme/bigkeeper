@@ -137,21 +137,21 @@ module BigKeeper
       ModuleCacheOperator.new(path).del_path_module(module_name)
     end
 
-    def list(path, user, type, module_path, version)
+    def module_info(module_path, home_branch_name, user, type, module_name, version)
+      result_dic = {}
       matched_branches = []
-      branches = GitService.new.branchs_with_type(File.expand_path(path), type)
-      # p branches
-
+      branches = GitService.new.branchs_with_type(module_path, type)
       if version == 'all versions'
         matched_branches = branches
       else
-        branches.each do |branch|
-          if branch.include?(version)
-            matched_branches << branch
-          end
+        branches.each do | branch |
+          matched_branches << branch if branch.include?(version)
         end
       end
-      matched_branches
+      result_dic[:current_branch] = GitOperator.new.current_branch(module_path)
+      result_dic[:module_name] = module_name
+      result_dic[:branches] = matched_branches
+      result_dic
     end
 
     private :verify_module
