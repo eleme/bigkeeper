@@ -16,7 +16,7 @@ module BigKeeper
     StashService.new.stash_all(path, GitOperator.new.current_branch(path), user, modules)
 
     # check
-    GitOperator.new.check_merge(module_path, "feature/#{version}")
+    GitOperator.new.check_merge(path, "feature/#{version}")
     GitOperator.new.check_diff(path, "develop", "master")
 
     #checkout release branch
@@ -41,7 +41,7 @@ module BigKeeper
     InfoPlistOperator.new.change_version_build(path, version)
 
     DepService.dep_operator(path, user).install(true)
-    XcodeOperator.new.open_workspace(path)
+    XcodeOperator.open_workspace(path)
   end
 
   def self.release_home_finish(path, version)

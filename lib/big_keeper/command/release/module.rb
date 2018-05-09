@@ -42,15 +42,14 @@ module BigKeeper
 
     Logger.highlight(%Q(Merge develop to master))
     # merge develop to master
-    GitOperator.new.merge(module_path, "master")
-    GitService.new.verify_push(module_path, "finish merge develop to master", "master", "#{module_name}")
-    
+    GitOperator.new.merge(module_path, "develop")
+    GitOperator.new.push_to_remote(module_path, "master")
+
     #修改 podspec 文件
     # TO DO: - advanced to use Regular Expression
     has_change = PodfileOperator.new.podspec_change(%Q(#{module_path}/#{module_name}.podspec), version, module_name)
     GitService.new.verify_push(module_path, "Change version number", "master", "#{module_name}") if has_change == true
     GitOperator.new.tag(module_path, version)
-
     # pod repo push
     if spec == true
       PodOperator.pod_repo_push(module_path, module_name, BigkeeperParser.source_spec_path(module_name), version)

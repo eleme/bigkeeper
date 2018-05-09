@@ -138,6 +138,10 @@ module BigKeeper
       spec = @@config[:modules][module_name][:spec]
     end
 
+    def self.sources
+      @@config[:source].keys
+    end
+
     def self.module_full_path(home_path, user_name, module_name)
       if @@config[:users] \
         && @@config[:users][user_name] \
