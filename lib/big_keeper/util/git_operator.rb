@@ -185,7 +185,8 @@ module BigKeeper
             Logger.default(item)
         }
         Logger.error("#{compare_branch} branch has commit dont committed in #{branch}, please check")
-        return
+      else
+        Logger.highlight("#{compare_branch} branch dont has commit before #{branch}")
       end
     end
 
