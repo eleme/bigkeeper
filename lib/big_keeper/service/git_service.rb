@@ -43,6 +43,11 @@ module BigKeeper
       end
     end
 
+    def verify_checkout_pull(path, branch_name)
+      GitService.new.verify_checkout(path, branch_name)
+      GitService.new.pull(path, branch_name)
+    end
+
     def verify_special_branch(path, name)
       git = GitOperator.new
 
@@ -58,6 +63,10 @@ module BigKeeper
       else
         verify_checkout(path, name)
         git.push_to_remote(path, name)
+      end
+
+      if FileOperator.definitely_exists?("#{path}/.bigkeeper/module.cache")
+        Logger.error(%Q('#{name}' has '.bigkeeper/module.cache' cache path, you should fix it manually...))
       end
     end
 
@@ -93,12 +102,25 @@ module BigKeeper
       end
     end
 
+    def current_branch_type(path)
+      branch_name = GitOperator.new.current_branch(path)
+      if branch_name =~ /^feature\/S*/
+        GitflowType::FEATURE
+      elsif branch_name =~ /^hotfix\/S*/
+        GitflowType::HOTFIX
+      elsif branch_name =~ /^release\/S*/
+        GitflowType::RELEASE
+      else
+        GitflowType::FEATURE
+      end
+    end
+
     def branchs_with_type(path, type)
       branchs = []
       Dir.chdir(path) do
-        IO.popen('git branch -a') do |io|
-          io.each do |line|
-            branchs << line.rstrip if line =~ /(\* |  )#{GitflowType.name(type)}*/
+        IO.popen('git branch -a') do | io |
+          io.each do | line |
+            branchs << line.gsub(/\s/, '') if line =~ /[\s\S]*#{GitflowType.name(type)}*/
           end
         end
       end

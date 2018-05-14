@@ -16,4 +16,12 @@ module BigKeeper
       end
     end
   end
+
+  module ModuleOperateType
+    ADD = 1
+    DELETE = 2
+    FINISH = 3
+    PUBLISH = 4
+    RELEASE = 5
+  end
 end

@@ -31,7 +31,6 @@ class PodfileModuleDetector
     end
   end
 
-
   def get_pod_search_result(pod_name)
     #输入pod Search 结果
     `pod search #{pod_name} --ios --simple >> #{@main_path}/bigKeeperPodInfo.tmp`
@@ -42,7 +41,7 @@ class PodfileModuleDetector
     Logger.highlight("Analyzing modules info...") unless podfile_lines.size.zero?
       podfile_lines.collect do |sentence|
         if sentence =~(/pod/)
-          sentence = sentence.sub('pod','')
+          sentence = sentence.sub('pod', '')
           sentence = sentence.delete('\n\'')
           match_result = sentence.split(',')
           pod_name = match_result[0].strip
