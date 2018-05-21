@@ -11,6 +11,7 @@ require 'big_keeper/model/gitflow_type'
 require 'big_keeper/command/feature&hotfix'
 require 'big_keeper/command/release'
 require 'big_keeper/command/pod'
+require 'big_keeper/command/module'
 
 require 'big_keeper/service/git_service'
 
@@ -43,6 +44,8 @@ module BigKeeper
   release_command
 
   pod_command
+
+  module_command
 
   desc 'Show version of bigkeeper'
   command :version do |version|
