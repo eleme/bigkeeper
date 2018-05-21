@@ -39,7 +39,26 @@ module BigKeeper
               end
             end
           end
-          branch_dic["home_branche_name"] = home_branch_name
+
+          branch_dic["is_remote"] = false
+          if home_branch_name =~ /^remotes\//
+            home_branch_name = $~.post_match
+            branch_dic["is_remote"] = true
+          end
+
+          if home_branch_name =~ /^origin\//
+            home_branch_name = $~.post_match
+          end
+
+          if home_branch_name =~ /^feature\//
+            home_branch_name = $~.post_match
+          end
+
+          if home_branch_name =~ /^hotfix\//
+            home_branch_name = $~.post_match
+          end
+
+          branch_dic["home_branch_name"] = home_branch_name
           branch_dic["involve_modules"] = involve_modules
           json_array << branch_dic
       end
