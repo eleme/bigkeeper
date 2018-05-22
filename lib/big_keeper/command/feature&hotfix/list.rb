@@ -22,7 +22,7 @@ module BigKeeper
       file = File.new(json_path, 'w')
       begin
         #get all modules info
-        module_list_dic = get_module_info(path, user, type, version, branches)
+        module_list_dic = get_module_info(path, user, type, version, branches, is_print_log)
         file << module_list_dic.to_json
         file.close
       end
@@ -33,7 +33,7 @@ module BigKeeper
     end
   end
 
-  def self.get_module_info(path, user, type, version, home_branches)
+  def self.get_module_info(path, user, type, version, home_branches, is_print_log)
     #get module list
     modules = BigkeeperParser.module_names
     git_operator = GitOperator.new

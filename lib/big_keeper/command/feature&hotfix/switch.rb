@@ -7,13 +7,12 @@ require 'big_keeper/util/xcode_operator'
 require 'big_keeper/dependency/dep_service'
 
 module BigKeeper
-  def self.switch_to(path, version, user, name, type)
+  def self.switch_to(path, version, user, full_name, type)
     begin
       # Parse Bigkeeper file
       BigkeeperParser.parse("#{path}/Bigkeeper")
 
       version = BigkeeperParser.version if version == 'Version in Bigkeeper file'
-      full_name = "#{version}_#{user}_#{name}"
       branch_name = "#{GitflowType.name(type)}/#{full_name}"
 
       GitService.new.verify_home_branch(path, branch_name, OperateType::SWITCH)
