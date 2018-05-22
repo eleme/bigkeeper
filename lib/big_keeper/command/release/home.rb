@@ -81,7 +81,7 @@ module BigKeeper
 
       Logger.highlight("Finish release home for #{version}")
     else
-      raise Logger.error("Dont have release/#{version} branch, please use release hom start first.")
+      raise Logger.error("Dont have release/#{version} branch, please use release home start first.")
     end
   end
 
