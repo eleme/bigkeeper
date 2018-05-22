@@ -184,9 +184,9 @@ module BigKeeper
         compare_branch_commits.map { |item|
             Logger.default(item)
         }
-        Logger.error("#{compare_branch} branch has commit dont committed in #{branch}, please check")
+        Logger.error("#{compare_branch} branch has commit doesn't committed in #{branch}, please check")
       else
-        Logger.highlight("#{compare_branch} branch dont has commit before #{branch}")
+        Logger.highlight("#{compare_branch} branch doesn't has commit before #{branch}")
       end
     end
 
