@@ -36,6 +36,12 @@ module BigKeeper
 
     # check commit
     Logger.error("current branch has unpush files") if GitOperator.new.has_changes(module_path)
+
+    #修改 podspec 文件
+    # TO DO: - advanced to use Regular Expression
+    has_change = PodfileOperator.new.podspec_change(%Q(#{module_path}/#{module_name}.podspec), version, module_name)
+    GitService.new.verify_push(module_path, "Change version number", "develop", "#{module_name}") if has_change == true
+
     # check out master
     Logger.highlight("'#{module_name}' checkout branch to master...")
     GitService.new.verify_checkout_pull(module_path, "master")
@@ -43,13 +49,9 @@ module BigKeeper
     Logger.highlight(%Q(Merge develop to master))
     # merge develop to master
     GitOperator.new.merge(module_path, "develop")
-    GitOperator.new.push_to_remote(module_path, "master")
+    # GitOperator.new.push_to_remote(module_path, "master")
 
-    #修改 podspec 文件
-    # TO DO: - advanced to use Regular Expression
-    has_change = PodfileOperator.new.podspec_change(%Q(#{module_path}/#{module_name}.podspec), version, module_name)
-    GitService.new.verify_push(module_path, "Change version number", "master", "#{module_name}") if has_change == true
-    GitOperator.new.tag(module_path, version)
+    # GitOperator.new.tag(module_path, version)
     # pod repo push
     if spec == true
       PodOperator.pod_repo_push(module_path, module_name, BigkeeperParser.source_spec_path(module_name), version)
