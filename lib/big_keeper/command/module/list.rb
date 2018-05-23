@@ -13,6 +13,6 @@ module BigKeeper
         module_list << dic
       end
       json = JSON.pretty_generate(module_list)
-      Logger.default(json)
+      puts json
   end
 end
