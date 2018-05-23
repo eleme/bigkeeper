@@ -9,6 +9,7 @@ module BigKeeper
       json_data = File.read(file_path)
       module_branches_dic = JSON.parse(json_data)
       to_tree(module_branches_dic, home_branches, version)
+      File.delete(file_path)
     end
 
       #generate json print throught console
@@ -18,6 +19,7 @@ module BigKeeper
       module_branches_dic = JSON.parse(json_data)
       json = to_json(home_branches, module_branches_dic, version)
       puts JSON.pretty_generate(json)
+      File.delete(file_path)
     end
 
     def self.to_json(home_branches, module_info_list, version)
@@ -31,7 +33,7 @@ module BigKeeper
             next unless module_info_dic["branches"] != nil
             module_name = module_info_dic["module_name"]
             module_info_dic["branches"].each do | module_branch |
-              if module_branch.strip.delete("*") == home_branch_name
+              if module_branch.strip.delete("*") == home_branch_name.strip.delete("*")
                 module_current_info = {}
                 module_current_info["module_name"] = module_name
                 module_current_info["current_branch"] = module_info_dic["current_branch"]
@@ -41,6 +43,8 @@ module BigKeeper
           end
 
           branch_dic["is_remote"] = false
+          branch_dic["is_current"] = false
+
           if home_branch_name =~ /^remotes\//
             home_branch_name = $~.post_match
             branch_dic["is_remote"] = true
@@ -48,6 +52,11 @@ module BigKeeper
 
           if home_branch_name =~ /^origin\//
             home_branch_name = $~.post_match
+          end
+
+          if home_branch_name.include?("*")
+            home_branch_name = home_branch_name.delete("*")
+            branch_dic["is_current"] = true
           end
 
           if home_branch_name =~ /^feature\//
