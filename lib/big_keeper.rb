@@ -12,6 +12,7 @@ require 'big_keeper/command/feature&hotfix'
 require 'big_keeper/command/release'
 require 'big_keeper/command/pod'
 require 'big_keeper/command/module'
+require 'big_keeper/command/spec'
 
 require 'big_keeper/service/git_service'
 
@@ -46,6 +47,8 @@ module BigKeeper
   pod_command
 
   module_command
+
+  spec_command
 
   desc 'Show version of bigkeeper'
   command :version do |version|
