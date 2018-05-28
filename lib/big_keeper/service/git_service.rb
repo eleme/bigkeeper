@@ -171,6 +171,8 @@ module BigKeeper
         else
           git.push_to_remote(path, branch_name)
         end
+
+        GitOperator.new.check_push_success(path, branch_name, "origin/#{branch_name}")
       else
         Logger.default("Nothing to push for '#{name}'.")
       end

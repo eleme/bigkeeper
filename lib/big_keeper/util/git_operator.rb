@@ -78,6 +78,7 @@ module BigKeeper
       Dir.chdir(path) do
         `git push -u origin #{branch_name}`
       end
+      GitOperator.new.check_push_success(path, branch_name, "origin/#{branch_name}")
     end
 
     def pull(path)
@@ -186,13 +187,30 @@ module BigKeeper
         }
         Logger.error("#{compare_branch} branch has commit doesn't committed in #{branch}, please check")
       else
-        Logger.highlight("#{compare_branch} branch doesn't has commit before #{branch}")
+        Logger.highlight("#{compare_branch} branch doesn't have commit before #{branch}")
       end
     end
 
     def merge(path, branch_name)
       IO.popen("cd #{path}; git merge #{branch_name}") do |line|
         Logger.error("Merge conflict in #{branch_name}") if line.include? 'Merge conflict'
+      end
+    end
+
+    def check_push_success(path, branch, compare_branch)
+      compare_branch_commits = Array.new
+      IO.popen("cd #{path}; git log --left-right #{branch}...#{compare_branch} --pretty=oneline") do |io|
+        io.each do |line|
+          compare_branch_commits.push(line) if (line.include? '>') || (line.include? 'fatal')
+        end
+      end
+      if compare_branch_commits.size > 0
+        compare_branch_commits.map { |item|
+            Logger.default(item)
+        }
+        Logger.error("#{branch} branch push unsuccess, please check")
+      else
+        Logger.highlight("#{branch} branch push success")
       end
     end
 
