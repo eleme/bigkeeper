@@ -49,9 +49,9 @@ module BigKeeper
     Logger.highlight(%Q(Merge develop to master))
     # merge develop to master
     GitOperator.new.merge(module_path, "develop")
-    # GitOperator.new.push_to_remote(module_path, "master")
+    GitOperator.new.push_to_remote(module_path, "master")
 
-    # GitOperator.new.tag(module_path, version)
+    GitOperator.new.tag(module_path, version)
     # pod repo push
     if spec == true
       PodOperator.pod_repo_push(module_path, module_name, BigkeeperParser.source_spec_path(module_name), version)

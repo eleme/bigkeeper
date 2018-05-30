@@ -45,6 +45,7 @@ module BigKeeper
     # step 3 change Info.plist value
     InfoPlistOperator.new.change_version_build(path, version)
 
+    GitService.new.verify_push(path, "Change version to #{version}", "release/#{version}", 'Home')
     DepService.dep_operator(path, user).install(true)
     XcodeOperator.open_workspace(path)
   end
@@ -59,13 +60,12 @@ module BigKeeper
         GitOperator.new.checkout(path, "release/#{version}")
       end
 
-      GitOperator.new.commit(path, "release: V #{version}")
-      GitOperator.new.push_to_remote(path, "release/#{version}")
+      GitService.new.verify_push(path, "finish release branch", "release/#{version}", 'Home')
 
       # master
       GitOperator.new.checkout(path, "master")
       GitOperator.new.merge(path, "release/#{version}")
-      GitOperator.new.push_to_remote(path, "master")
+      GitService.new.verify_push(path, "release V#{version}", "master", 'Home')
 
       GitOperator.new.tag(path, version)
 
@@ -74,12 +74,12 @@ module BigKeeper
       CacheOperator.new(path).load('Podfile')
       CacheOperator.new(path).clean()
       GitOperator.new.commit(path, "reset #{version} Podfile")
-      GitOperator.new.push_to_remote(path, "release/#{version}")
+      GitService.new.verify_push(path, "reset #{version} Podfile", "release/#{version}", 'Home')
 
       # develop
       GitOperator.new.checkout(path, "develop")
       GitOperator.new.merge(path, "release/#{version}")
-      GitOperator.new.push_to_remote(path, "develop")
+      GitService.new.verify_push(path, "merge release/#{version} to develop", "develop", 'Home')
       GitOperator.new.check_diff(path, "develop", "master")
 
       Logger.highlight("Finish release home for #{version}")
