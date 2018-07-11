@@ -13,7 +13,7 @@ module BigKeeper
       has_branch = false
       IO.popen("cd #{path}; git branch -r") do |io|
         io.each do |line|
-          has_branch = true if line.include? branch_name
+          has_branch = true if line.include? "(#{branch_name})"
         end
       end
       has_branch
