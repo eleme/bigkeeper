@@ -13,10 +13,13 @@ module BigKeeper
     version = BigkeeperParser.version if version == 'Version in Bigkeeper file'
     modules = BigkeeperParser.module_names
 
-    CacheOperator.new(path).save('Podfile')
-
     #stash
     StashService.new.stash_all(path, GitOperator.new.current_branch(path), user, modules)
+
+    # delete cache
+    CacheOperator.new(path).clean()
+    # cache Podfile
+    CacheOperator.new(path).save('Podfile')
 
     # check
     GitOperator.new.check_diff(path, "develop", "master")
@@ -42,6 +45,7 @@ module BigKeeper
     # step 3 change Info.plist value
     InfoPlistOperator.new.change_version_build(path, version)
 
+    GitService.new.verify_push(path, "Change version to #{version}", "release/#{version}", 'Home')
     DepService.dep_operator(path, user).install(true)
     XcodeOperator.open_workspace(path)
   end
@@ -50,38 +54,37 @@ module BigKeeper
     BigkeeperParser.parse("#{path}/Bigkeeper")
     version = BigkeeperParser.version if version == 'Version in Bigkeeper file'
     Logger.highlight("Start finish release home for #{version}")
+
     if GitOperator.new.has_branch(path, "release/#{version}")
       if GitOperator.new.current_branch(path) != "release/#{version}"
         GitOperator.new.checkout(path, "release/#{version}")
       end
 
-      GitOperator.new.commit(path, "release: V #{version}")
-      GitOperator.new.push_to_remote(path, "release/#{version}")
+      GitService.new.verify_push(path, "finish release branch", "release/#{version}", 'Home')
 
       # master
       GitOperator.new.checkout(path, "master")
       GitOperator.new.merge(path, "release/#{version}")
-      GitOperator.new.push_to_remote(path, "master")
-      if GitOperator.new.current_branch(path) != "master"
-        GitOperator.new.checkout(path, "master")
-      end
+      GitService.new.verify_push(path, "release V#{version}", "master", 'Home')
+
       GitOperator.new.tag(path, version)
 
-      # develop
+      # release branch
       GitOperator.new.checkout(path, "release/#{version}")
       CacheOperator.new(path).load('Podfile')
       CacheOperator.new(path).clean()
-      GitOperator.new.commit(path, "reset #{verbose} Podfile")
-      GitOperator.new.push_to_remote(path, "release/#{version}")
+      GitOperator.new.commit(path, "reset #{version} Podfile")
+      GitService.new.verify_push(path, "reset #{version} Podfile", "release/#{version}", 'Home')
 
+      # develop
       GitOperator.new.checkout(path, "develop")
       GitOperator.new.merge(path, "release/#{version}")
-      GitOperator.new.push_to_remote(path, "develop")
+      GitService.new.verify_push(path, "merge release/#{version} to develop", "develop", 'Home')
       GitOperator.new.check_diff(path, "develop", "master")
 
       Logger.highlight("Finish release home for #{version}")
     else
-      raise Logger.error("Dont have release/#{version} branch, please use release home start first.")
+      raise Logger.error("There is no release/#{version} branch, please use release home start first.")
     end
   end
 
