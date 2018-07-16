@@ -25,6 +25,7 @@ module BigKeeper
     def self.to_json(home_branches, module_info_list, version)
       json_array = []
       print_all = version == "all versions"
+      home_branches = home_branches.uniq
       home_branches.each do | home_branch_name |
           next unless home_branch_name.include?(version) || print_all
           branch_dic = {}
