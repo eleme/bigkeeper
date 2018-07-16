@@ -1,7 +1,8 @@
 PATH
   remote: .
   specs:
-    bigkeeper (0.8.4)
+    bigkeeper (0.8.5)
+      big_resources
       big_stash (~> 0.1)
       cocoapods
       colorize
@@ -19,8 +20,15 @@ GEM
       thread_safe (~> 0.3, >= 0.3.4)
       tzinfo (~> 1.1)
     ast (2.3.0)
+    big_resources (0.1.1)
+      chunky_png
+      cocoapods
+      colorize
+      gli (~> 2.16)
+      plist
     big_stash (0.6.0)
       gli (~> 2.16)
+    chunky_png (1.3.10)
     claide (1.0.1)
     cocoapods (1.2.1)
       activesupport (>= 4.0.2, < 5)
@@ -100,6 +108,7 @@ PLATFORMS
   ruby
 
 DEPENDENCIES
+  big_resources
   big_stash (~> 0.1)
   bigkeeper!
   bundler (~> 1.15)

@@ -1,8 +1,8 @@
-require 'big_resources/stash_operator'
+require 'big_resources/util/image/name_analyze_util'
 
 module BigKeeper
 
-  def self.module_command
+  def self.image_command
 
     desc 'Image operation'
     command :image do | c |
@@ -10,7 +10,7 @@ module BigKeeper
         c.command :name do | name |
           name.action do | global_options, options, args |
             path = File.expand_path(global_options[:path])
-            ImageAnalyzeUtil.get_duplicate_name_file_with_type(path, PNG)
+            BigResources::ImageAnalyzeUtil.get_duplicate_name_file_with_type(path, BigResources::PNG)
           end
         end
 
@@ -18,7 +18,7 @@ module BigKeeper
         c.command :content do | content |
           content.action do | global_options, options, args |
             path = File.expand_path(global_options[:path])
-            ImageAnalyzeUtil.get_duplicate_content_file_with_type(path, PNG)
+            BigResources::ImageAnalyzeUtil.get_duplicate_content_file_with_type(path, BigResources::PNG)
           end
         end
     end
