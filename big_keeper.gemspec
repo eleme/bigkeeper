@@ -35,11 +35,13 @@ Gem::Specification.new do |spec|
   spec.add_runtime_dependency "cocoapods"
   spec.add_runtime_dependency "plist"
   spec.add_runtime_dependency "colorize"
+  spec.add_runtime_dependency "big_resources"
 
   spec.add_development_dependency "bundler", "~> 1.15"
   spec.add_development_dependency "rake", "~> 10.0"
   spec.add_development_dependency "gli", "~> 2.16"
   spec.add_development_dependency "big_stash", "~> 0.1"
+  spec.add_development_dependency "big_resources"
   spec.add_development_dependency "cocoapods"
   spec.add_development_dependency "plist"
   spec.add_development_dependency "colorize"

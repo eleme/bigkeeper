@@ -118,7 +118,7 @@ module BigKeeper
     def branchs_with_type(path, type)
       branchs = []
       Dir.chdir(path) do
-        IO.popen('git branch -a') do | io |
+        IO.popen('git branch -r') do | io |
           io.each do | line |
             branchs << line.gsub(/\s/, '') if line =~ /[\s\S]*#{GitflowType.name(type)}*/
           end
@@ -171,6 +171,8 @@ module BigKeeper
         else
           git.push_to_remote(path, branch_name)
         end
+
+        GitOperator.new.check_push_success(path, branch_name, "origin/#{branch_name}")
       else
         Logger.default("Nothing to push for '#{name}'.")
       end
