@@ -1,3 +1,5 @@
+![](../../resources/banner.png)
+
 [中文](../zh-CN/README.md)
 
 ---

@@ -11,7 +11,6 @@ require 'big_keeper/model/gitflow_type'
 require 'big_keeper/command/feature&hotfix'
 require 'big_keeper/command/release'
 require 'big_keeper/command/pod'
-require 'big_keeper/command/module'
 require 'big_keeper/command/spec'
 require 'big_keeper/command/image'
 
@@ -46,8 +45,6 @@ module BigKeeper
   release_command
 
   pod_command
-
-  module_command
 
   spec_command
 
