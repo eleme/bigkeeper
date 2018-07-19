@@ -68,6 +68,8 @@ COMMANDS
 
 ### feature 的工作区
 
+在开始了解各条指令执行后工程的状态之前，我们先了解一下 bigkeeper feature 流程的工作区。
+
 ![](../../resources/readme/big-keeper-readme.001.png)
 
 feature 的工作区主要由两部分组成：
@@ -81,6 +83,8 @@ feature 的工作区主要由两部分组成：
 - stash 缓存区，当用户需要切换新的 feature 时，对于用户来不及提交的改动，我们会缓存到各个项目的 stash 中，（PS：所以代码突然不见了不要担心，都在 git 的 stash 里面），而当用户切换回某个 feature 时，我们会把和该 feature 分支同名的 stash 恢复回来，从而使用户可以继续开发之前未完成的部分，因为需要通过 feature 的分支名来匹配 stash，而 git stash 又没有提供给 stash 命名的功能，所以我们实现了 [bigstash](https://github.com/BigKeeper/bigstash) 来完成这个功能；
 - git。
 
-> 注：所有的指令我们都做了良好的出错提示和异常恢复机制，当某个步骤报错时，只需要根据提示的错误手动修复问题，重新输入指令，bigkeeper 会继续执行接下来的流程。
+> 注：
+> 1. 所有的指令我们都做了良好的出错提示和异常恢复机制，当某个步骤报错时，只需要根据提示的错误手动修复问题，重新输入指令，bigkeeper 会继续执行接下来的流程。
+> 2. 所有的代码都会保存在工作区中，除了 delete 操作，bigkeeper 不会删除任何工作区的代码，也就是说：你总是可以在变更区、Stash 中或者远端找到你变更的代码。
 
 ### big feature start
