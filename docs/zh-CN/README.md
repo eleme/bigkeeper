@@ -59,7 +59,7 @@ bigkeeper 的出现就是为了解决这些问题。
   直接在命令行执行 `bigkeeper` 可以查看其提供的所有功能：
 
   ```
-NAME
+  NAME
     big - Efficiency improvement for iOS&Android module development, iOSer&Android using this tool can make module development easier.
 
 SYNOPSIS
