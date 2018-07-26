@@ -13,7 +13,7 @@ module BigKeeper
       has_branch = false
       IO.popen("cd #{path}; git branch -r") do |io|
         io.each do |line|
-          has_branch = true if line.include? "(#{branch_name})"
+          has_branch = true if line.include? branch_name
         end
       end
       has_branch
@@ -91,7 +91,7 @@ module BigKeeper
       has_commits = false
       IO.popen("cd #{path}; git log --branches --not --remotes") do |io|
         io.each do |line|
-          has_commits = true if line.include? branch_name
+          has_commits = true if line.include? "(#{branch_name})"
         end
       end
       has_commits

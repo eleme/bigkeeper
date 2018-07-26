@@ -1,10 +1,10 @@
-![](./resources/banner.png)
-
 [English](./docs/en-US/README.md)
 
 ---
 
 # bigkeeper
+
+![](./resources/banner.png)
 
 [![Build Status](https://travis-ci.org/BigKeeper/bigkeeper.svg?branch=master)](https://travis-ci.org/BigKeeper/bigkeeper)
 [![Maintainability](https://api.codeclimate.com/v1/badges/c6dc4161e84fcec9a890/maintainability)](https://codeclimate.com/github/BigKeeper/big-keeper/maintainability)
@@ -66,17 +66,17 @@ bigkeeper 的出现就是为了解决这些问题。
   NAME
     big - Efficiency improvement for iOS&Android module development, iOSer&Android using this tool can make module development easier.
 
-SYNOPSIS
+  SYNOPSIS
     big [global options] command [command options] [arguments...]
 
 
-GLOBAL OPTIONS
+  GLOBAL OPTIONS
     --help         - Show this message
     -p, --path=arg - (default: ./)
     -u, --user=arg - (default: mmoaay)
     -v, --ver=arg  - (default: Version in Bigkeeper file)
 
-COMMANDS
+  COMMANDS
     feature - Gitflow feature operations
     help    - Shows a list of commands or help for one command
     hotfix  - Gitflow hotfix operations
