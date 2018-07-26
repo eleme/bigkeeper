@@ -25,11 +25,33 @@ home 'BigKeeperMain', :git => 'git@github.com:BigKeeper/BigKeeperMain.git', :pul
 - 主项目的 git 远程仓库地址；
 - 主项目的 pull request / merge request 页面地址，完成某个 feature / hotfix 时，会自动打开这个页面，让开发者提交 pull request / merge request。
 
+## 配置模块源
+
+```
+source 'git@git.elenet.me:LPD-iOS/LPDSpecs.git, elenet-lpdspecs' do
+  modules do
+    ...
+  end
+end
+
+source ...
+  ...
+end
+```
+
+考虑到我们的业务模块可能属于不同的源，所以配置业务模块之前，要先在最外层配置源信息：
+
+- 源 git 地址；
+- 源名称。
+
+配置这个主要是方便对我们关心的源执行 `pod repo update`，从而节省命令执行的时间。
+
 ## 配置业务模块
 
 ```
 modules do
   mod 'BigKeeperModular', :git => 'git@github.com:BigKeeper/BigKeeperModular.git', :pulls => 'https://github.com/BigKeeper/BigKeeperModular/pulls'
+  mod ...
 end
 ```
 

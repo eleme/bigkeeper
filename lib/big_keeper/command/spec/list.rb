@@ -2,7 +2,7 @@ require 'logger'
 require 'json'
 
 module BigKeeper
-  def self.module_list(path, user, options)
+  def self.spec_list(path, user, options)
       BigkeeperParser.parse("#{path}/Bigkeeper")
       module_dic = BigkeeperParser.parse_modules
       module_list = Array.new

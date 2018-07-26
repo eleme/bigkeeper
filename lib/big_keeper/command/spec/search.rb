@@ -4,6 +4,6 @@ require 'big_keeper/util/logger'
 
 module BigKeeper
   def self.spec_search
-    puts "Hello spec_search"
+    Logger.default('Coming soon.')
   end
 end

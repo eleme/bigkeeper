@@ -10,15 +10,15 @@ module BigKeeper
       Logger.error("parameter conflict: [--all] | [module_names]")
       return
     end
-    puts "start spec analyze..."
-    puts Time.now.to_s
+    Logger.highlight('Start spec analyze...')
+    Logger.default(Time.now.to_s)
 
     # Parse Bigkeeper file
     # BigkeeperParser.parse("#{path}/Bigkeeper")
     # module_names = BigkeeperParser.module_names
 
     # find modules
-    puts "get all modules..."
+    Logger.highlight('Get all modules...')
     module_names = []
     pod_path = path+"/Pods/"
     dir = Dir.open(pod_path)
@@ -28,15 +28,10 @@ module BigKeeper
       end
     end
 
-    is_legal = true
     for input_moudle_name in find_module_names do
       if !module_names.include?(input_moudle_name)
-        is_legal = false
         Logger.error("["+input_moudle_name+"] not exist.")
       end
-    end
-    if !is_legal
-      return
     end
 
     # setup modules
@@ -54,19 +49,21 @@ module BigKeeper
     end
     # analyze modules spec
 
-    puts "analyze modules "+Time.now.to_s
+    Logger.highlight('Analyze modules...')
+    Logger.default(Time.now.to_s)
     file_index = 0
     for library in module_list do
       if is_all || find_module_names.include?(library.name)
-        puts "analyzing "+library.name
+        Logger.default('Analyzing ' + library.name)
         file_index = file_index + library.file_list.size
         library.spec_dependece_library(module_keyword_map.clone)#(Hash.new(module_keyword_map)).to_hash)
         progress = (file_index*100.0)/file_count
         progress = format("%.02f", progress).to_f
-        puts "progress >>>> "+String(progress)+"% ["+library.name+" done] "
+        Logger.default('progress >>>> ' + String(progress) + '% [' + library.name + ' done] ')
       end
     end
-    puts "analyze complete "+Time.now.to_s
+    Logger.highlight('Analyze complete.')
+    Logger.default(Time.now.to_s)
 
     # log spec info
     for library in module_list do
