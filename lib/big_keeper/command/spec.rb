@@ -32,6 +32,17 @@ module BigKeeper
         end
       end
 
+      sepc.desc 'Sync Module dependency from Home.'
+      spec.command :sync do | sync|
+        sync.action do |global_options, options, args|
+          path = File.expand_path(global_options[:path])
+          version = global_options[:ver]
+          user = global_options[:user].gsub(/[^0-9A-Za-z]/, '').downcase
+          module_names = args
+
+        end
+      end
+
       spec.desc 'Add a spec (Coming soon).'
       spec.command :add do |add|
         add.action do
