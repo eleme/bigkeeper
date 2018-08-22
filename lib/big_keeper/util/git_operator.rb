@@ -70,7 +70,7 @@ module BigKeeper
     def commit(path, message)
       Dir.chdir(path) do
         `git add .`
-        `git commit -m "#{message}"`
+        `git commit -m "#{Logger.formatter_output(message)}"`
       end
     end
 

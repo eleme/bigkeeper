@@ -18,23 +18,27 @@ module BigKeeper
     end
 
     def self.default(sentence)
-      puts sentence.to_s.colorize(:default)
+      puts formatter_output(sentence).colorize(:default)
     end
 
     def self.highlight(sentence)
-      puts sentence.to_s.colorize(:green)
+      puts formatter_output(sentence).colorize(:green)
     end
 
     def self.error(sentence)
-      raise sentence.to_s.colorize(:red)
+      raise formatter_output(sentence).colorize(:red)
     end
 
     def self.warning(sentence)
-      puts sentence.to_s.colorize(:yellow)
+      puts formatter_output(sentence).colorize(:yellow)
     end
 
     def self.separator
       puts "- - - - - - - - - - - - - - - - - - - - - - - - - - -".colorize(:light_blue)
+    end
+
+    def self.formatter_output(sentence)
+      "[big] ".concat(sentence.to_s).to_s
     end
   end
 end
