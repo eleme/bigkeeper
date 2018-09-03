@@ -163,6 +163,9 @@ module BigKeeper
     end
 
     def self.global_config(key)
+      if @@config[:globalConfig] == nil
+        return
+      end
       @@config[:globalConfig][key]
     end
 
@@ -216,15 +219,4 @@ module BigKeeper
     end
   end
 
-  # BigkeeperParser.parse('/Users/mmoaay/Documents/eleme/BigKeeperMain/Bigkeeper')
-  # BigkeeperParser.parse('/Users/mmoaay/Documents/eleme/BigKeeperMain/Bigkeeper')
-  #
-  # p BigkeeperParser.home_git()
-  # p BigkeeperParser.home_pulls()
-  # p BigkeeperParser.module_path('perry', 'BigKeeperModular')
-  # p BigkeeperParser.module_path('', 'BigKeeperModular')
-  # p BigkeeperParser.module_git('BigKeeperModular')
-  # pulls = BigkeeperParser.module_pulls('BigKeeperModular')
-  # `open #{pulls}`
-  # p BigkeeperParser.module_names
 end

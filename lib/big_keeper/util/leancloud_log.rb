@@ -1,12 +1,13 @@
 require 'Singleton'
 require 'net/http'
 require 'net/https'
+require 'big_keeper/util/logger'
 
 module BigKeeper
   class LeanCloudLog
     include Singleton
 
-	  attr_accessor :user, :version, :startTimestamp, :endTimestamp, :command, :parameter, :isSuccess, :path
+    attr_accessor :user, :version, :startTimestamp, :endTimestamp, :command, :parameter, :isSuccess, :path
 
     def set_command(set_command)
       @command = set_command
@@ -43,7 +44,6 @@ module BigKeeper
         return
       end
 
-      BigkeeperParser.parse("#{@path}/Bigkeeper")
       if BigkeeperParser.global_config("LeanCloudId") == nil || BigkeeperParser.global_config("LeanCloudKey") == nil
         return
       end
@@ -60,7 +60,7 @@ module BigKeeper
       req.body = parameter.to_json
       res = https.request(req)
 
-      puts "Response #{res.code} #{res.message}: #{res.body}"
+      Logger.highlight("Send LeanCloud success, response #{res.body}")
     end
 
     def assemble_request
@@ -68,6 +68,5 @@ module BigKeeper
     end
 
     protected :send_log_cloud, :assemble_request
+    end
   end
-
-end

@@ -4,6 +4,7 @@ require 'json'
 module BigKeeper
   def self.spec_list(path, user, options)
       BigkeeperParser.parse("#{path}/Bigkeeper")
+      
       module_dic = BigkeeperParser.parse_modules
       module_list = Array.new
       module_dic.keys.each do | key |
