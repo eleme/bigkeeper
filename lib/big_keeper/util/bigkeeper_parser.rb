@@ -30,6 +30,16 @@ module BigKeeper
     yield if block_given?
   end
 
+  def self.globalConfig
+    BigkeeperParser.parse_global_config
+    yield if block_given?
+  end
+
+  def self.config(key, value)
+    BigkeeperParser.parse_config(key, value)
+    yield if block_given?
+  end
+
   # Bigkeeper file parser
   class BigkeeperParser
     @@config = {}
@@ -47,6 +57,8 @@ module BigKeeper
         content.gsub!(/source\s/, 'BigKeeper::source ')
         content.gsub!(/mod\s/, 'BigKeeper::mod ')
         content.gsub!(/modules\s/, 'BigKeeper::modules ')
+        content.gsub!(/global_config\s/, 'BigKeeper::globalConfig ')
+        content.gsub!(/config\s/, 'BigKeeper::config ')
         eval content
       end
     end
@@ -113,6 +125,14 @@ module BigKeeper
       @@config[:modules] = modules
     end
 
+    def self.parse_global_config
+      @@config[:globalConfig] = {}
+    end
+
+    def self.parse_config(key, value)
+      @@config[:globalConfig] = @@config[:globalConfig].merge(key => value)
+    end
+
     def self.version
       @@config[:version]
     end
@@ -140,6 +160,10 @@ module BigKeeper
 
     def self.sources
       @@config[:source].keys
+    end
+
+    def self.global_config(key)
+      @@config[:globalConfig][key]
     end
 
     def self.module_full_path(home_path, user_name, module_name)

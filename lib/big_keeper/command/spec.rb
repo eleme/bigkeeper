@@ -3,6 +3,8 @@ require 'big_keeper/command/spec/list'
 require 'big_keeper/command/spec/add'
 require 'big_keeper/command/spec/delete'
 require 'big_keeper/command/spec/search'
+require 'big_keeper/command/spec/sync'
+require 'big_keeper/util/leancloud_log'
 
 module BigKeeper
 
@@ -14,6 +16,8 @@ module BigKeeper
       spec.desc 'Analyze spec dependency infomation.'
       spec.command :analyze do |analyze|
         analyze.action do |global_options, options, args|
+          LeanCloudLog.instance.set_command("spec/analyze")
+
           path = File.expand_path(global_options[:path])
           is_all = options[:all]
           module_names = args
@@ -24,6 +28,8 @@ module BigKeeper
       spec.desc 'List all the specs.'
       spec.command :list do | list |
         list.action do |global_options, options, args|
+          LeanCloudLog.instance.set_command("spec/list")
+
           path = File.expand_path(global_options[:path])
           version = global_options[:ver]
           user = global_options[:user].gsub(/[^0-9A-Za-z]/, '').downcase
@@ -32,14 +38,17 @@ module BigKeeper
         end
       end
 
-      sepc.desc 'Sync Module dependency from Home.'
+      spec.desc 'Sync Module dependency from Home.'
       spec.command :sync do | sync|
         sync.action do |global_options, options, args|
+          LeanCloudLog.instance.set_command("spec/sync")
+
           path = File.expand_path(global_options[:path])
           version = global_options[:ver]
           user = global_options[:user].gsub(/[^0-9A-Za-z]/, '').downcase
-          module_names = args
+          module_name = args
 
+          spec_sync(path, version, user, module_name)
         end
       end
 
