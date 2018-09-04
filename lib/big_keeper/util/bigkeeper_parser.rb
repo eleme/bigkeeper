@@ -30,6 +30,16 @@ module BigKeeper
     yield if block_given?
   end
 
+  def self.configs
+    BigkeeperParser.parse_configs
+    yield if block_given?
+  end
+
+  def self.param(key, value)
+    BigkeeperParser.parse_param(key, value)
+    yield if block_given?
+  end
+
   # Bigkeeper file parser
   class BigkeeperParser
     @@config = {}
@@ -47,6 +57,8 @@ module BigKeeper
         content.gsub!(/source\s/, 'BigKeeper::source ')
         content.gsub!(/mod\s/, 'BigKeeper::mod ')
         content.gsub!(/modules\s/, 'BigKeeper::modules ')
+        content.gsub!(/configs\s/, 'BigKeeper::configs ')
+        content.gsub!(/param\s/, 'BigKeeper::param ')
         eval content
       end
     end
@@ -113,6 +125,14 @@ module BigKeeper
       @@config[:modules] = modules
     end
 
+    def self.parse_configs
+      @@config[:configs] = {}
+    end
+
+    def self.parse_param(key, value)
+      @@config[:configs] = @@config[:configs].merge(key => value)
+    end
+
     def self.version
       @@config[:version]
     end
@@ -140,6 +160,13 @@ module BigKeeper
 
     def self.sources
       @@config[:source].keys
+    end
+
+    def self.global_configs(key)
+      if @@config[:configs] == nil
+        return
+      end
+      @@config[:configs][key]
     end
 
     def self.module_full_path(home_path, user_name, module_name)
@@ -192,15 +219,4 @@ module BigKeeper
     end
   end
 
-  # BigkeeperParser.parse('/Users/mmoaay/Documents/eleme/BigKeeperMain/Bigkeeper')
-  # BigkeeperParser.parse('/Users/mmoaay/Documents/eleme/BigKeeperMain/Bigkeeper')
-  #
-  # p BigkeeperParser.home_git()
-  # p BigkeeperParser.home_pulls()
-  # p BigkeeperParser.module_path('perry', 'BigKeeperModular')
-  # p BigkeeperParser.module_path('', 'BigKeeperModular')
-  # p BigkeeperParser.module_git('BigKeeperModular')
-  # pulls = BigkeeperParser.module_pulls('BigKeeperModular')
-  # `open #{pulls}`
-  # p BigkeeperParser.module_names
 end
