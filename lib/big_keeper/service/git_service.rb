@@ -13,8 +13,8 @@ module BigKeeper
       branch_name = "#{GitflowType.name(type)}/#{name}"
       if !git.has_remote_branch(path, branch_name) && !git.has_local_branch(path, branch_name)
 
-        # verify_special_branch(path, 'master')
-        # verify_special_branch(path, 'develop')
+        verify_special_branch(path, 'master')
+        verify_special_branch(path, 'develop')
 
         GitflowOperator.new.verify_git_flow(path)
 
@@ -63,10 +63,6 @@ module BigKeeper
       else
         verify_checkout(path, name)
         git.push_to_remote(path, name)
-      end
-
-      if FileOperator.definitely_exists?("#{path}/.bigkeeper/module.cache")
-        Logger.error(%Q('#{name}' has '.bigkeeper/module.cache' cache path, you should fix it manually...))
       end
     end
 
