@@ -42,7 +42,6 @@ module BigKeeper
 
       if FileOperator.definitely_exists?("#{path}/.bigkeeper")
          p "rm -rf #{path}/.bigkeeper"
-         p "delete bigkeeper"
       end
 
       # Cache all path modules
