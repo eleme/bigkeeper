@@ -44,13 +44,13 @@ module BigKeeper
         return
       end
 
-      if BigkeeperParser.global_config("LeanCloudId") == nil || BigkeeperParser.global_config("LeanCloudKey") == nil
+      if BigkeeperParser.global_configs("LeanCloudId") == nil || BigkeeperParser.global_configs("LeanCloudKey") == nil
         return
       end
 
       header = assemble_request
-
-      uri = URI.parse("hhttps://api.leancloud.cn/1.1/classes/#{file_name}")
+      
+      uri = URI.parse("https://api.leancloud.cn/1.1/classes/#{file_name}")
 
       https = Net::HTTP.new(uri.host, 443)
       https.use_ssl = true
@@ -64,7 +64,7 @@ module BigKeeper
     end
 
     def assemble_request
-      return {'Content-Type' =>'application/json', 'X-LC-Id' =>BigkeeperParser.global_config("LeanCloudId"), 'X-LC-Key' =>BigkeeperParser.global_config("LeanCloudKey")}
+      return {'Content-Type' =>'application/json', 'X-LC-Id' =>BigkeeperParser.global_configs("LeanCloudId"), 'X-LC-Key' =>BigkeeperParser.global_configs("LeanCloudKey")}
     end
 
     protected :send_log_cloud, :assemble_request

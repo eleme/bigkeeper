@@ -11,15 +11,17 @@ module BigKeeper
       Logger.highlight('Start pod install, waiting...')
       cmd = "pod install --project-directory=#{path}"
       is_success = false
+      output_lines = ''
       Open3.popen3(cmd) do |stdin, stdout, stderr, wait_thr|
         while line = stdout.gets
-          puts line
+          output_lines.concat("#{line}\n")
           is_success = true if line.include? "Pod installation complete!"
         end
       end
       if is_success
         Logger.highlight('Finish pod install.')
       else
+        puts output_lines
         Logger.error("pod install error, please check your Podfile")
       end
     end
