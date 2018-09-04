@@ -1,6 +1,6 @@
 require 'big_keeper/command/release/home'
 require 'big_keeper/command/release/module'
-require 'big_keeper/util/leancloud_log'
+require 'big_keeper/util/leancloud_logger'
 
 module BigKeeper
   def self.release_command
@@ -15,7 +15,7 @@ module BigKeeper
             path = File.expand_path(global_options[:path])
             version = global_options[:ver]
             user = global_options[:user].gsub(/[^0-9A-Za-z]/, '').downcase
-            LeanCloudLog.instance.set_command("release/home/start")
+            LeanCloudLogger.instance.set_command("release/home/start")
 
             help_now!('user name is required') if user and user.empty?
             raise Logger.error("release version is required") if version == nil
@@ -28,7 +28,7 @@ module BigKeeper
           finish.action do |global_options, options, args|
             path = File.expand_path(global_options[:path])
             version = global_options[:ver]
-            LeanCloudLog.instance.set_command("release/home/finish")
+            LeanCloudLogger.instance.set_command("release/home/finish")
 
             raise Logger.error("release version is required") if version == nil
             release_home_finish(path, version)
@@ -45,7 +45,7 @@ module BigKeeper
             path = File.expand_path(global_options[:path])
             version = global_options[:ver]
             user = global_options[:user].gsub(/[^0-9A-Za-z]/, '').downcase
-            LeanCloudLog.instance.set_command("release/module/start")
+            LeanCloudLogger.instance.set_command("release/module/start")
 
             help_now!('module name is required') if args.length != 1
             raise Logger.error("release version is required") if version == nil
@@ -61,7 +61,7 @@ module BigKeeper
             path = File.expand_path(global_options[:path])
             version = global_options[:ver]
             user = global_options[:user].gsub(/[^0-9A-Za-z]/, '').downcase
-            LeanCloudLog.instance.set_command("release/module/finish")
+            LeanCloudLogger.instance.set_command("release/module/finish")
 
             help_now!('module name is required') if args.length != 1
             raise Logger.error("release version is required") if version == nil

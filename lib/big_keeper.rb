@@ -15,7 +15,7 @@ require 'big_keeper/command/spec'
 require 'big_keeper/command/image'
 
 require 'big_keeper/service/git_service'
-require 'big_keeper/util/leancloud_log'
+require 'big_keeper/util/leancloud_logger'
 
 require 'gli'
 
@@ -40,11 +40,11 @@ module BigKeeper
   end
 
   pre do |global_options,command,options,args|
-    LeanCloudLog.instance.start_log(global_options, args)
+    LeanCloudLogger.instance.start_log(global_options, args)
   end
 
   post do |global_options,command,options,args|
-    LeanCloudLog.instance.end_log(true)
+    LeanCloudLogger.instance.end_log(true)
   end
 
   feature_and_hotfix_command(GitflowType::FEATURE)

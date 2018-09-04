@@ -5,6 +5,9 @@ require 'big_keeper/model/library_model'
 
 module BigKeeper
   def self.spec_analyze(path,is_all,find_module_names)
+    # Parse Bigkeeper file
+    BigkeeperParser.parse("#{path}/Bigkeeper")
+    
     is_default = !is_all&&find_module_names.size==0
     if is_all && find_module_names.size>0
       Logger.error("parameter conflict: [--all] | [module_names]")

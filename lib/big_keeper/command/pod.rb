@@ -1,5 +1,5 @@
 require 'big_keeper/command/pod/podfile'
-require 'big_keeper/util/leancloud_log'
+require 'big_keeper/util/leancloud_logger'
 
 module BigKeeper
 
@@ -11,7 +11,7 @@ module BigKeeper
       podfile.desc 'Detect podname should be locked.'
       podfile.command :detect do |detect|
         detect.action do |global_options, options, args|
-          LeanCloudLog.instance.set_command("podfile/detect")
+          LeanCloudLogger.instance.set_command("podfile/detect")
 
           path = File.expand_path(global_options[:path])
           podfile_detect(path)
@@ -21,7 +21,7 @@ module BigKeeper
       podfile.desc 'Lock podname should be locked.'
       podfile.command :lock do |lock|
         lock.action do |global_options, options, args|
-          LeanCloudLog.instance.set_command("podfile/lock")
+          LeanCloudLogger.instance.set_command("podfile/lock")
 
           path = File.expand_path(global_options[:path])
           podfile_lock(path)
@@ -31,7 +31,7 @@ module BigKeeper
       podfile.desc 'Update modules should be upgrade.'
       podfile.command :update do |update|
         update.action do |global_options, options, args|
-          LeanCloudLog.instance.set_command("podfile/update")
+          LeanCloudLogger.instance.set_command("podfile/update")
 
           path = File.expand_path(global_options[:path])
           podfile_modules_update(path)

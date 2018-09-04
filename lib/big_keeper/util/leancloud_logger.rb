@@ -4,7 +4,7 @@ require 'net/https'
 require 'big_keeper/util/logger'
 
 module BigKeeper
-  class LeanCloudLog
+  class LeanCloudLogger
     include Singleton
 
     attr_accessor :user, :version, :startTimestamp, :endTimestamp, :command, :parameter, :isSuccess, :path

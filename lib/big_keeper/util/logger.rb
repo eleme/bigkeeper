@@ -1,5 +1,5 @@
 require 'colorize'
-require 'big_keeper/util/leancloud_log'
+require 'big_keeper/util/leancloud_logger'
 
 module BigKeeper
   DEFAULT_LOG = 1
@@ -27,7 +27,7 @@ module BigKeeper
     end
 
     def self.error(sentence)
-      LeanCloudLog.instance.end_log(false)
+      LeanCloudLogger.instance.end_log(false)
       raise formatter_output(sentence).colorize(:red)
     end
 
