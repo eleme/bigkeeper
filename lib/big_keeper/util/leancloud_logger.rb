@@ -7,27 +7,27 @@ module BigKeeper
   class LeanCloudLogger
     include Singleton
 
-    attr_accessor :user, :version, :startTimestamp, :endTimestamp, :command, :parameter, :isSuccess, :path
+    attr_accessor :user, :version, :start_timestamp, :end_timestamp, :command, :parameter, :is_success, :path
 
     def set_command(set_command)
       @command = set_command
     end
 
     def start_log(global_options, args)
-      @startTimestamp = Time.new.to_i
+      @start_timestamp = Time.new.to_i
       @user = global_options['user'].to_s
       @parameter = args.join(",")
       @version = global_options['ver']
       @path = global_options['path']
     end
 
-    def end_log(isSuccess)
-      @endTimestamp = Time.new.to_i
-      @isSuccess = isSuccess
+    def end_log(is_success)
+      @end_timestamp = Time.new.to_i
+      @is_success = is_success
       @version = BigkeeperParser.version if @version == 'Version in Bigkeeper file'
 
       # require
-      parameter = {'startTimestamp' => @startTimestamp, 'endTimestamp' =>@endTimestamp, 'user' =>@user, 'isSuccess' =>@isSuccess}
+      parameter = {'start_timestamp' => @start_timestamp, 'end_timestamp' =>@end_timestamp, 'user' =>@user, 'is_success' =>@is_success}
 
       # optional
       parameter = parameter.merge('command' => @command) unless @command == nil
@@ -49,7 +49,7 @@ module BigKeeper
       end
 
       header = assemble_request
-      
+
       uri = URI.parse("https://api.leancloud.cn/1.1/classes/#{file_name}")
 
       https = Net::HTTP.new(uri.host, 443)
