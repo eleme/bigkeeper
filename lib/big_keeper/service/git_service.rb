@@ -64,10 +64,6 @@ module BigKeeper
         verify_checkout(path, name)
         git.push_to_remote(path, name)
       end
-
-      if FileOperator.definitely_exists?("#{path}/.bigkeeper/module.cache")
-        Logger.error(%Q('#{name}' has '.bigkeeper/module.cache' cache path, you should fix it manually...))
-      end
     end
 
     def verify_home_branch(path, branch_name, type)
