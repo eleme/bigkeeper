@@ -37,14 +37,14 @@ module BigKeeper
 
       Logger.highlight("Finish branch '#{branch_name}' for 'Home'")
 
+      # Delete all path modules
+      ModuleCacheOperator.new(path).cache_path_modules([], [], [])
+
       # Install
       DepService.dep_operator(path, user).install(false)
 
       # Open home workspace
       DepService.dep_operator(path, user).open
-
-      # Delete all path modules
-      ModuleCacheOperator.new(path).cache_path_modules([], [], [])
 
       # Push home changes to remote
       GitService.new.verify_push(path, "finish branch #{branch_name}", branch_name, 'Home')

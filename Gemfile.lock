@@ -1,7 +1,7 @@
 PATH
   remote: .
   specs:
-    bigkeeper (0.8.6)
+    bigkeeper (0.8.7)
       big_resources
       big_stash (~> 0.1)
       cocoapods
@@ -10,7 +10,7 @@ PATH
       plist
 
 GEM
-  remote: https://gems.ruby-china.org/
+  remote: https://gems.ruby-china.com/
   specs:
     CFPropertyList (2.3.3)
     activesupport (4.2.7.1)
@@ -120,4 +120,4 @@ DEPENDENCIES
   rubocop (~> 0.50.0)
 
 BUNDLED WITH
-   1.16.2
+   1.16.4

@@ -102,6 +102,11 @@ module BigKeeper
       cache_modules
     end
 
+    def clean_modules
+      @modules = {"git" => {"all" => [], "current" => []}, "path" => {"all" => [], "add" => [], "del" => [], "current" => []}}
+      cache_modules
+    end
+
     def cache_modules
       file = File.new("#{@cache_path}/module.cache", 'w')
       file << @modules.to_json

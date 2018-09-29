@@ -40,9 +40,8 @@ module BigKeeper
       # Start home feature
       GitService.new.start(path, full_name, type)
 
-      if FileOperator.definitely_exists?("#{path}/.bigkeeper")
-         p "rm -rf #{path}/.bigkeeper"
-      end
+      # Clean module cache
+      ModuleCacheOperator.new(path).clean_modules
 
       # Cache all path modules
       ModuleCacheOperator.new(path).cache_path_modules(modules, modules, [])
