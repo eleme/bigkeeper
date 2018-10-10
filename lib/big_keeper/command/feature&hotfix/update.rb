@@ -37,6 +37,8 @@ module BigKeeper
       add_modules = modules - current_modules
       del_modules = current_modules - modules
 
+      # Clean module cache
+      ModuleCacheOperator.new(path).clean_modules
       ModuleCacheOperator.new(path).cache_path_modules(modules, add_modules, del_modules)
       remain_path_modules = ModuleCacheOperator.new(path).remain_path_modules
 
