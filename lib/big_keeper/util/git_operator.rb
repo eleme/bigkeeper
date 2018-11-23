@@ -11,7 +11,7 @@ module BigKeeper
 
     def has_remote_branch(path, branch_name)
       has_branch = false
-      IO.popen("cd #{path}; git branch -r") do |io|
+      IO.popen("cd '#{path}'; git branch -r") do |io|
         io.each do |line|
           has_branch = true if line.include? branch_name
         end
@@ -21,7 +21,7 @@ module BigKeeper
 
     def has_local_branch(path, branch_name)
       has_branch = false
-      IO.popen("cd #{path}; git branch") do |io|
+      IO.popen("cd '#{path}'; git branch") do |io|
         io.each do |line|
           has_branch = true if line.include? branch_name
         end
@@ -31,7 +31,7 @@ module BigKeeper
 
     def has_branch(path, branch_name)
       has_branch = false
-      IO.popen("cd #{path}; git branch -a") do |io|
+      IO.popen("cd '#{path}'; git branch -a") do |io|
         io.each do |line|
           has_branch = true if line.include? branch_name
         end
@@ -89,7 +89,7 @@ module BigKeeper
 
     def has_commits(path, branch_name)
       has_commits = false
-      IO.popen("cd #{path}; git log --branches --not --remotes") do |io|
+      IO.popen("cd '#{path}'; git log --branches --not --remotes") do |io|
         io.each do |line|
           has_commits = true if line.include? "(#{branch_name})"
         end
@@ -100,7 +100,7 @@ module BigKeeper
     def has_changes(path)
       has_changes = true
       clear_flag = 'nothing to commit, working tree clean'
-      IO.popen("cd #{path}; git status") do |io|
+      IO.popen("cd '#{path}'; git status") do |io|
         io.each do |line|
           has_changes = false if line.include? clear_flag
         end
@@ -132,7 +132,7 @@ module BigKeeper
 
     def tag(path, version)
       tags = Array.new
-      IO.popen("cd #{path}; git tag") do |io|
+      IO.popen("cd '#{path}'; git tag") do |io|
         io.each do |line|
           tags << line
         end
@@ -149,7 +149,7 @@ module BigKeeper
 
     def tag_list(path)
       tag_list = Array.new
-      IO.popen("cd #{path}; git tag -l") do |io|
+      IO.popen("cd '#{path}'; git tag -l") do |io|
         io.each do |line|
           unless line=~(/[a-zA-Z]/)
             tag_list << line
@@ -161,7 +161,7 @@ module BigKeeper
 
     def check_merge(path, condition)
       unmerged_branch = Array.new
-      IO.popen("cd #{path}; git branch --no-merged") do |io|
+      IO.popen("cd '#{path}'; git branch --no-merged") do |io|
         io.each do |line|
           unmerged_branch.push(line) if line.include? "#{condition}"
         end
@@ -176,7 +176,7 @@ module BigKeeper
 
     def check_diff(path, branch, compare_branch)
       compare_branch_commits = Array.new
-      IO.popen("cd #{path}; git log --left-right #{branch}...#{compare_branch} --pretty=oneline") do |io|
+      IO.popen("cd '#{path}'; git log --left-right #{branch}...#{compare_branch} --pretty=oneline") do |io|
         io.each do |line|
           compare_branch_commits.push(line) if (line.include? '>') && (line.include? "Merge branch #{branch} into #{compare_branch}")
         end
@@ -192,14 +192,14 @@ module BigKeeper
     end
 
     def merge(path, branch_name)
-      IO.popen("cd #{path}; git merge #{branch_name}") do |line|
+      IO.popen("cd '#{path}'; git merge #{branch_name}") do |line|
         Logger.error("Merge conflict in #{branch_name}") if line.include? 'Merge conflict'
       end
     end
 
     def check_push_success(path, branch, compare_branch)
       compare_branch_commits = Array.new
-      IO.popen("cd #{path}; git log --left-right #{branch}...#{compare_branch} --pretty=oneline") do |io|
+      IO.popen("cd '#{path}'; git log --left-right #{branch}...#{compare_branch} --pretty=oneline") do |io|
         io.each do |line|
           compare_branch_commits.push(line) if (line.include? '>') || (line.include? 'fatal')
         end

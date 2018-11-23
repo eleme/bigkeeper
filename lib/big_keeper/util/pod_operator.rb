@@ -9,7 +9,7 @@ module BigKeeper
         PodOperator.pod_update_private_repos(true)
       end
       Logger.highlight('Start pod install, waiting...')
-      cmd = "pod install --project-directory=#{path}"
+      cmd = "pod install --project-directory='#{path}'"
       Open3.popen3(cmd) do |stdin, stdout, stderr, wait_thr|
         while line = stdout.gets
           p line

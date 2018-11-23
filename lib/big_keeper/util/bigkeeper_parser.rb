@@ -64,12 +64,12 @@ module BigKeeper
     end
 
     def self.parse_source(name)
-      @@config.delete("tmpSpec")
+      @@config.delete("tmp_spec")
       source_split = name.split(",") unless name.split(",").length != 2
       if source_split != nil
         sources = Hash["#{source_split[1].lstrip}" => "#{source_split[0]}"]
         @@config[:source] = sources
-        @@config[:tmpSpec] = source_split[1].lstrip
+        @@config[:tmp_spec] = source_split[1].lstrip
       end
     end
 
@@ -112,7 +112,7 @@ module BigKeeper
 
     def self.parse_modules_mod(name, params)
       if @@config[:source] != nil
-          params[:spec] = "#{@@config[:tmpSpec]}"
+          params[:spec] = "#{@@config[:tmp_spec]}"
       end
       modules = @@config[:modules]
       modules[name] = params

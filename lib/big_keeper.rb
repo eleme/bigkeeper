@@ -62,6 +62,7 @@ module BigKeeper
   desc 'Show version of bigkeeper'
   command :version do |version|
     version.action do |global_options, options, args|
+      LeanCloudLogger.instance.set_command("version")
       p "bigkeeper (#{VERSION})"
     end
   end

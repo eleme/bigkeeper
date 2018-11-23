@@ -109,7 +109,7 @@ module BigKeeper
       end
       for pwd in tags_repos_pwd do
         path = pwd.chomp
-        IO.popen("cd #{path}; ls") do |io|
+        IO.popen("cd '#{path}'; ls") do |io|
           io.each do |line|
             tags_spec_list.push(line)
           end
