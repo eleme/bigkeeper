@@ -96,7 +96,7 @@ module BigKeeper
       elsif params[:git]
         parse_modules_mod(name, params)
       else
-        Logger.error(%(There should be ':path =>' or ':git =>' for mod #{name}))
+        Logger.error(%(There should be ':path =>' or ':git =>' ':alias =>' for mod #{name}))
       end
     end
 
@@ -145,6 +145,19 @@ module BigKeeper
       @@config[:home][:git]
     end
 
+    def self.home_modules_workspace()
+      if @@config[:home][:modules_workspace]
+        home_modules_workspace = @@config[:home][:modules_workspace]
+        if home_modules_workspace.rindex('/') != home_modules_workspace.length - 1
+          home_modules_workspace = home_modules_workspace + '/'
+        end
+
+        home_modules_workspace
+      else
+        '../'
+      end
+    end
+
     def self.home_pulls()
       @@config[:home][:pulls]
     end
@@ -175,9 +188,13 @@ module BigKeeper
         && @@config[:users][user_name][:mods] \
         && @@config[:users][user_name][:mods][module_name] \
         && @@config[:users][user_name][:mods][module_name][:path]
-        @@config[:users][user_name][:mods][module_name][:path]
+        File.expand_path(@@config[:users][user_name][:mods][module_name][:path])
       else
-        File.expand_path("#{home_path}/../#{module_name}")
+        if @@config[:modules][module_name][:alias]
+          File.expand_path("#{home_path}/#{home_modules_workspace}/#{@@config[:modules][module_name][:alias]}")
+        else
+          File.expand_path("#{home_path}/#{home_modules_workspace}/#{module_name}")
+        end
       end
     end
 
@@ -187,9 +204,14 @@ module BigKeeper
         && @@config[:users][user_name][:mods] \
         && @@config[:users][user_name][:mods][module_name] \
         && @@config[:users][user_name][:mods][module_name][:path]
-        @@config[:users][user_name][:mods][module_name][:path]
+        File.expand_path(@@config[:users][user_name][:mods][module_name][:path])
       else
-        "../#{module_name}"
+        p @@config[:modules][module_name]
+        if @@config[:modules][module_name][:alias]
+          "#{home_modules_workspace}#{@@config[:modules][module_name][:alias]}"
+        else
+          "#{home_modules_workspace}#{module_name}"
+        end
       end
     end
 
