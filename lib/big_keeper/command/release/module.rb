@@ -10,6 +10,8 @@ require 'big_keeper/util/pod_operator'
 module BigKeeper
   def self.release_module_start(path, version, user, module_name, ignore)
     BigkeeperParser.parse("#{path}/Bigkeeper")
+
+    version = BigkeeperParser.version if version == 'Version in Bigkeeper file'
     module_path = BigkeeperParser.module_full_path(path, user, module_name)
 
     # stash
@@ -32,6 +34,8 @@ module BigKeeper
 ## release finish
   def self.release_module_finish(path, version, user, module_name, spec)
     BigkeeperParser.parse("#{path}/Bigkeeper")
+
+    version = BigkeeperParser.version if version == 'Version in Bigkeeper file'
     module_path = BigkeeperParser.module_full_path(path, user, module_name)
 
     # check commit
