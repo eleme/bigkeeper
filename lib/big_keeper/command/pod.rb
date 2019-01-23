@@ -20,12 +20,25 @@ module BigKeeper
 
       podfile.desc 'Lock podname should be locked.'
       podfile.command :lock do |lock|
-        lock.action do |global_options, options, args|
-          LeanCloudLogger.instance.set_command("podfile/lock")
+        lock.desc 'Lock pods accouding to Podfile.'
+        lock.command :module do |m|
+          m.action do |global_options, options, args|
+            LeanCloudLogger.instance.set_command("podfile/lock/module")
 
-          path = File.expand_path(global_options[:path])
-          podfile_lock(path)
+            path = File.expand_path(global_options[:path])
+            podfile_lock(path, false)
+          end
         end
+        lock.desc 'Lock pods accouding to Podfile.lock.'
+        lock.command :submodule do |s|
+          s.action do |global_options, options, args|
+            LeanCloudLogger.instance.set_command("podfile/lock/submodule")
+
+            path = File.expand_path(global_options[:path])
+            podfile_lock(path, true)
+          end
+        end
+
       end
 
       podfile.desc 'Update modules should be upgrade.'
