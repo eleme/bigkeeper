@@ -20,7 +20,7 @@ module BigKeeper
     def generate_pod_config(pod_name, version, comment)
       module_config = ''
       if comment != nil
-        module_config = "  pod '#{pod_name}' , '#{version}' # #{comment}"
+        module_config = "  pod '#{pod_name}' , '#{version}'  #{comment}"
       else
         module_config =  "  pod '#{pod_name}' , '#{version}'"
       end
@@ -50,9 +50,6 @@ module BigKeeper
             end
           end
         end
-        Logger.warning('============================================')
-        print(dictionary)
-
         if !dictionary.empty?
           temp_file.puts 'def sub_dependency'
           dictionary.keys.each do |sub_pod|
