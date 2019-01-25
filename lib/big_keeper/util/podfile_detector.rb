@@ -29,9 +29,9 @@ class PodfileParser
 
   def get_unlock_pod_list
     podfile_lines = File.readlines("#{@main_path}/Podfile")
-    Logger.highlight("Analyzing Podfile...") unless podfile_lines.size.zero?
+    #Logger.highlight("Analyzing Podfile...") unless podfile_lines.size.zero?
     podfile_lines.collect do |sentence|
-    deal_podfile_line(sentence) unless sentence =~(/(\d+.){1,2}\d+/)
+    deal_podfile_line(sentence) unless sentence =~(/'(\d+.){1,2}\d+'/)
     end
     $unlock_pod_list
   end
@@ -57,6 +57,7 @@ class PodfileParser
   end
 
   def get_pod_name(sentence)
+
     pod_model = deal_podfile_line(sentence)
     if pod_model != nil
       return pod_model.name

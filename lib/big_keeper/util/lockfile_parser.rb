@@ -36,10 +36,10 @@ module BigKeeper
           $mode = 'PODFILE CHECKSUM'
         else
           if $mode == 'PODS'
-             deal_pod(sentence)
+             deal_pod(sentence.strip.delete('\n'))
           end
           if $mode == 'SPEC CHECKSUMS'
-             deal_spec(sentence)
+             deal_spec(sentence.strip.delete('\n'))
           end
         end
        end
@@ -51,7 +51,6 @@ module BigKeeper
        #podfile 中 unlock pods
        unlock_pods = pod_parser.get_unlock_pod_list
        # @unlock_pod_list << pod_name unless @module_list.include pod_name
-
        if is_all
          self.dependencies.each do |pod_name|
            if pod_parser.pod_list.include?(pod_name)
@@ -67,30 +66,32 @@ module BigKeeper
              result[pod_name] = self.pods[pod_name]
            end
          end
-         # print(result)
          return result
        else
-         return unlock_pods
+         unlock_pods.each do |pod_name|
+           if self.pods[pod_name] != nil
+             result[pod_name] = self.pods[pod_name]
+           end
+         end
+         return result
        end
      end
 
     #处理PODS
     # TODO 去除重复
     def deal_pod(s)
-      pod_name = get_lock_podname(s.strip)
-      pod_version = get_lock_version(s.strip)
+      pod_name = get_lock_podname(s)
+      return if pod_name == nil
+      pod_version = get_lock_version(s)
       if self.pods.keys.include?(pod_name)
         current_version = self.pods[pod_name]
-        if pod_version != nil
-          if current_version != nil
+        if pod_version != nil && current_version != nil
             self.pods[pod_name] = chose_version(current_version, pod_version)
-          else
-            self.pods[pod_name] = pod_version
-          end
+        else
+            self.pods[pod_name] = pod_version unless pod_version == nil
         end
-      else
-        self.pods[pod_name] = pod_version
       end
+      self.pods[pod_name] = pod_version unless pod_version == nil
     end
     #
     # #处理EXTERNAL SOURCES
@@ -118,7 +119,7 @@ module BigKeeper
 
     def get_lock_version(sentence)#获得lock pod版本号
       match_result = /(\d+.){1,2}\d+/.match(sentence)
-      return match_result[0] unless match_result == nil
+      return match_result[0].strip unless match_result == nil
     end
 
     def chose_version(cur_version,temp_version)
