@@ -40,8 +40,7 @@ module BigKeeper
       lock_parser.parse(path)
       # Get unlocked third party pods list
       unlock_pod_info = lock_parser.get_unlock_pod_list(is_all)
-      # print(unlock_pod_list
-      print(unlock_pod_info)
+      # Lock modules in podfile
       if unlock_pod_info.empty?
         Logger.warning("There is nothing to be locked.")
       else
