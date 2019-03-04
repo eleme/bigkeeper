@@ -17,7 +17,7 @@ module BigKeeper
 
     def recover()
       cache_operator = CacheOperator.new(@path)
-      cache_operator.load(PATH_VERSION_CONFIG)
+      # cache_operator.load(PATH_VERSION_CONFIG)
       cache_operator.clean
     end
 
