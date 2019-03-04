@@ -15,13 +15,18 @@ module BigKeeper
       cache_operator.save(PATH_VERSION_CONFIG)
     end
 
-    def recover(settings_config, build_config)
+    def recover()
       cache_operator = CacheOperator.new(@path)
-      cache_operator.load(PATH_VERSION_CONFIG)
+      # cache_operator.load(PATH_VERSION_CONFIG)
       cache_operator.clean
     end
 
     def update_version_config(module_name, module_operate_type)
+      module_full_path = BigkeeperParser.module_full_path(@path, @user, module_name)
+      if module_operate_type == ModuleOperateType::ADD
+        GradleOperator.new(module_full_path).backup
+      end
+
       temp_file = Tempfile.new('.version-config.gradle.tmp')
       begin
         File.open("#{@path}/#{PATH_VERSION_CONFIG}", 'r') do |file|
@@ -39,10 +44,14 @@ module BigKeeper
         temp_file.close
         temp_file.unlink
       end
+
+      if module_operate_type == ModuleOperateType::PUBLISH
+        GradleOperator.new(module_full_path).recover
+      end
     end
 
     def generate_version_config_of_line(line, module_name, module_operate_type)
-      if line.downcase.match(/([\s\S]*)#{module_name.downcase}version(\s*)=(\s*)('|")(\S*)('|")([\s\S]*)/)
+      if line.downcase.match(/([\s\S]*)#{module_name.downcase.gsub('-','')}version(\s*)=(\s*)('|")(\S*)('|")([\s\S]*)/)
         branch_name = GitOperator.new.current_branch(@path)
         version_name = ''
 
@@ -63,7 +72,7 @@ module BigKeeper
       origin_config = ''
       File.open("#{@path}/.bigkeeper/#{PATH_VERSION_CONFIG}", 'r') do |file|
         file.each_line do |line|
-          if line.downcase.match(/([\s\S]*)#{module_name.downcase}version(\s*)=(\s*)('|")(\S*)('|")([\s\S]*)/)
+          if line.downcase.match(/([\s\S]*)#{module_name.downcase.gsub('-','')}version(\s*)=(\s*)('|")(\S*)('|")([\s\S]*)/)
             origin_config = line
             break
           end

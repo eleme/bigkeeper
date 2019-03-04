@@ -9,20 +9,10 @@ module BigKeeper
 
     def backup
       GradleOperator.new(@path).backup
-      modules = ModuleCacheOperator.new(@path).all_path_modules
-      modules.each do |module_name|
-        module_full_path = BigkeeperParser.module_full_path(@path, @user, module_name)
-        GradleOperator.new(module_full_path).backup
-      end
     end
 
     def recover
       GradleOperator.new(@path).recover
-      modules = ModuleCacheOperator.new(@path).all_path_modules
-      modules.each do |module_name|
-        module_full_path = BigkeeperParser.module_full_path(@path, @user, module_name)
-        GradleOperator.new(module_full_path).recover
-      end
     end
 
     def update_module_config(module_name, module_operate_type)
@@ -52,7 +42,7 @@ module BigKeeper
     end
 
     def generate_version_config_of_line(line, module_name, module_operate_type)
-      if line.downcase.match(/([\s\S]*)#{module_name.downcase}version(\s*)=(\s*)('|")(\S*)('|")([\s\S]*)/)
+      if line.downcase.match(/([\s\S]*)#{module_name.downcase.gsub('-','')}version(\s*)=(\s*)('|")(\S*)('|")([\s\S]*)/)
         branch_name = GitOperator.new.current_branch(@path)
         version_name = ''
         # Get version part of source.addition
@@ -76,7 +66,7 @@ module BigKeeper
       origin_config = ''
       File.open("#{@path}/.bigkeeper/#{PATH_VERSION_CONFIG}", 'r') do |file|
         file.each_line do |line|
-          if line.downcase.match(/([\s\S]*)#{module_name.downcase}version(\s*)=(\s*)('|")(\S*)('|")([\s\S]*)/)
+          if line.downcase.match(/([\s\S]*)#{module_name.downcase.gsub('-','')}version(\s*)=(\s*)('|")(\S*)('|")([\s\S]*)/)
             origin_config = line
             break
           end
