@@ -3,7 +3,7 @@ require 'big_stash/stash_operator'
 require 'big_keeper/util/logger'
 require 'big_keeper/util/pod_operator'
 require 'big_keeper/util/xcode_operator'
-
+require 'big_keeper/model/operate_type'
 require 'big_keeper/dependency/dep_service'
 
 module BigKeeper
@@ -36,7 +36,7 @@ module BigKeeper
       end
 
       # Install
-      DepService.dep_operator(path, user).install(false)
+      DepService.dep_operator(path, user).install(modules, OperateType::SWITCH, false)
 
       # Open home workspace
       DepService.dep_operator(path, user).open

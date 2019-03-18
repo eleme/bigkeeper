@@ -5,6 +5,7 @@ require 'big_keeper/dependency/dep_type'
 require 'big_keeper/util/info_plist_operator'
 require 'big_keeper/util/logger'
 require 'big_keeper/util/xcode_operator'
+require 'big_keeper/model/operate_type'
 
 module BigKeeper
   def self.release_home_start(path, version, user)
@@ -46,7 +47,7 @@ module BigKeeper
     InfoPlistOperator.new.change_version_build(path, version)
 
     GitService.new.verify_push(path, "Change version to #{version}", "release/#{version}", 'Home')
-    DepService.dep_operator(path, user).install(true)
+    DepService.dep_operator(path, user).install(modules, OperateType::RELEASE, true)
     XcodeOperator.open_workspace(path)
   end
 

@@ -21,7 +21,7 @@ module BigKeeper
       raise "You should override this method in subclass."
     end
 
-    def install(should_update)
+    def install(modules, type, should_update)
       raise "You should override this method in subclass."
     end
 
