@@ -3,6 +3,9 @@ module BigKeeper
     START = 1
     UPDATE = 2
     SWITCH = 3
+    FINISH = 4
+    PUBLISH = 5
+    RELEASE = 6
 
     def self.name(type)
       if START == type
