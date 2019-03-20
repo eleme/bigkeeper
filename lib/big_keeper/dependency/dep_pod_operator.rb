@@ -36,7 +36,7 @@ module BigKeeper
       end
     end
 
-    def install(should_update)
+    def install(should_update, type, should_update)
       PodOperator.pod_install(@path, should_update)
     end
 
