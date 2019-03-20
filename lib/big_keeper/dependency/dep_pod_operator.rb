@@ -45,7 +45,7 @@ module BigKeeper
     end
 
     def generate_module_config(line, module_name, module_operate_type)
-      line.sub(/(\s*)pod(\s*)('|")#{module_name}('|")([\s\S]*)/){
+      line.sub(/(\s*)pod(\s*)('|")(#{module_name}|#{module_name}\/\S*)('|")([\s\S]*)/){
         if ModuleOperateType::ADD == module_operate_type
           module_path = BigkeeperParser.module_path(@user, module_name)
           "#{$1}pod '#{module_name}', :path => '#{module_path}'"
