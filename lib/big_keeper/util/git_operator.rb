@@ -127,7 +127,14 @@ module BigKeeper
     end
 
     def user
-      `git config user.name`.chop
+      name = `git config user.name`.chop
+      cn_reg = /[\u4e00-\u9fa5]{1}/
+      cn_arr = name.scan(cn_reg)
+      if cn_arr.count > 0
+        Logger.error("git config user.name has Chinese character")
+      else
+        name.gsub(/[^0-9A-Za-z]/, '').downcase
+      end
     end
 
     def tag(path, version)
@@ -216,6 +223,4 @@ module BigKeeper
 
   end
 
-  # p GitOperator.new.user
-  # BigStash::StashOperator.new("/Users/mmoaay/Documents/eleme/BigKeeperMain").list
 end
