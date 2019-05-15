@@ -19,7 +19,9 @@ module BigKeeper
     end
 
     def clean
-      FileUtils.rm_r(@cache_path)
+      if File.exist?(@cache_path)
+        FileUtils.rm_r(@cache_path)
+      end
     end
   end
 
