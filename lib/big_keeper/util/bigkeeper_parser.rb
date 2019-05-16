@@ -219,6 +219,18 @@ module BigKeeper
       @@config[:modules][module_name][:git]
     end
 
+    def self.module_source(module_name)
+      @@config[:modules][module_name][:mod_path]
+    end
+
+    def self.module_maven(module_name)
+      @@config[:modules][module_name][:maven_group] + ':' + @@config[:modules][module_name][:maven_artifact]
+    end
+
+    def self.module_maven_artifact(module_name)
+      @@config[:modules][module_name][:maven_artifact]
+    end
+
     def self.module_pulls(module_name)
       @@config[:modules][module_name][:pulls]
     end
