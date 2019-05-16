@@ -31,7 +31,7 @@ module BigKeeper
     def update_module_settings(module_name, settings_file, depend_modules)
       module_full_path = BigkeeperParser.module_full_path(@path, @user, module_name)
       cache_path = File.expand_path("#{module_full_path}/.bigkeeper")
-      big_settings_file = "#{cache_path}/#{module_name}/bigkeeper_settings.gradle"
+      big_settings_file = "#{cache_path}/bigkeeper_settings.gradle"
 
       if depend_modules.empty? && !File.exist?(big_settings_file)
         return
@@ -40,14 +40,13 @@ module BigKeeper
       result = ''
       depend_modules.each do |name|
         artifact_id = BigkeeperParser.module_maven_artifact(name)
-        path = BigkeeperParser.module_full_path(@path, @user, name)
         source = BigkeeperParser.module_source(name)
-        result << "include \':module:#{artifact_id}\'\nproject(':module:#{artifact_id}').projectDir = new File('#{path}/#{source}')\n"
+        result << "include \':module:#{artifact_id}\'\nproject(':module:#{artifact_id}').projectDir = new File(rootProject.projectDir, '../#{name}/#{source}')\n"
       end
 
       dest_path = File.dirname(big_settings_file)
       FileUtils.mkdir_p(dest_path) unless File.exist?(dest_path)
-      file = File.new("#{cache_path}/#{module_name}/bigkeeper_settings.gradle", 'w')
+      file = File.new(big_settings_file, 'w')
       begin
         file << result
         file.close
@@ -66,7 +65,7 @@ module BigKeeper
             temp_file.puts(line)
           end
         end
-        temp_file.puts(GradleConentGenerator.generate_bigkeeper_settings_gradle_content(big_settings_file))
+        temp_file.puts(GradleConentGenerator.generate_bigkeeper_settings_gradle_content())
         temp_file.close
         FileUtils.mv(temp_file.path, settings_file)
       ensure
@@ -78,7 +77,7 @@ module BigKeeper
     def update_module_build(build_file, module_name, depend_modules, version_name)
       module_full_path = BigkeeperParser.module_full_path(@path, @user, module_name)
       cache_path = File.expand_path("#{module_full_path}/.bigkeeper")
-      big_build_file = "#{cache_path}/#{module_name}/bigkeeper_build.gradle"
+      big_build_file = "#{cache_path}/bigkeeper_build.gradle"
 
       if depend_modules.empty? && !File.exist?(big_build_file)
         return
@@ -93,7 +92,7 @@ module BigKeeper
 
       dest_path = File.dirname(big_build_file)
       FileUtils.mkdir_p(dest_path) unless File.exist?(dest_path)
-      file = File.new("#{cache_path}/#{module_name}/bigkeeper_build.gradle", 'w')
+      file = File.new(big_build_file, 'w')
       begin
         file << result
         file.close
@@ -112,7 +111,7 @@ module BigKeeper
             temp_file.puts(line)
           end
         end
-        temp_file.puts(GradleConentGenerator.generate_bigkeeper_build_gradle_content(big_build_file))
+        temp_file.puts(GradleConentGenerator.generate_bigkeeper_build_gradle_content())
         temp_file.close
         FileUtils.mv(temp_file.path, build_file)
       ensure
@@ -140,12 +139,12 @@ module BigKeeper
         artifact_id = BigkeeperParser.module_maven(name).split(':')[1]
         path = BigkeeperParser.module_full_path(@path, @user, name)
         source = BigkeeperParser.module_source(name)
-        result << "include \':module:#{artifact_id}\'\nproject(':module:#{artifact_id}').projectDir = new File('#{path}/#{source}')\n"
+        result << "include \':module:#{artifact_id}\'\nproject(':module:#{artifact_id}').projectDir = new File(rootProject.projectDir, '../#{name}/#{source}')\n"
       end
 
       dest_path = File.dirname(big_settings_file)
       FileUtils.mkdir_p(dest_path) unless File.exist?(dest_path)
-      file = File.new("#{cache_path}/bigkeeper_settings.gradle", 'w')
+      file = File.new(big_settings_file, 'w')
       begin
         file << result
         file.close
@@ -164,7 +163,7 @@ module BigKeeper
             temp_file.puts(line)
           end
         end
-        temp_file.puts(GradleConentGenerator.generate_bigkeeper_settings_gradle_content(big_settings_file))
+        temp_file.puts(GradleConentGenerator.generate_bigkeeper_settings_gradle_content())
         temp_file.close
         FileUtils.mv(temp_file.path, settings_file)
       ensure
@@ -190,7 +189,7 @@ module BigKeeper
 
       dest_path = File.dirname(big_build_file)
       FileUtils.mkdir_p(dest_path) unless File.exist?(dest_path)
-      file = File.new("#{cache_path}/bigkeeper_build.gradle", 'w')
+      file = File.new(big_build_file, 'w')
       begin
         file << result
         file.close
@@ -209,7 +208,7 @@ module BigKeeper
             temp_file.puts(line)
           end
         end
-        temp_file.puts(GradleConentGenerator.generate_bigkeeper_build_gradle_content(big_build_file))
+        temp_file.puts(GradleConentGenerator.generate_bigkeeper_build_gradle_content())
         temp_file.close
         FileUtils.mv(temp_file.path, build_file)
       ensure
@@ -220,15 +219,15 @@ module BigKeeper
 
     def update_module_version_name(build_file, version_name)
       temp_file = Tempfile.new('.build.gradle.tmp')
-      isDefaultConfig = false
+      isModifyPom = false
       isBigkeeperScript = false
       isBigkeeperBackupScript = false
       hasBigkeeperBackup = false
       begin
         File.open(build_file, 'r') do |file|
           file.each_line do |line|
-            if line.include?('defaultConfig')
-              isDefaultConfig = true
+            if line.include?('modifyPom')
+              isModifyPom = true
             elsif line.include?('bigkeeper config start')
               isBigkeeperScript = true
             elsif line.include?('bigkeeper config end')
@@ -240,7 +239,7 @@ module BigKeeper
               isBigkeeperBackupScript = false
             end
 
-            if isDefaultConfig && !isBigkeeperBackupScript && line.include?('versionName')
+            if isModifyPom && !isBigkeeperBackupScript && line.match(/[\s\S]*version[\s\S]*/)
               if !hasBigkeeperBackup
                 temp_file.puts("\t\t//bigkeeper config backup start")
                 temp_file.puts("\t\t//"+line.strip)
@@ -248,13 +247,13 @@ module BigKeeper
               end
 
               if isBigkeeperScript
-                temp_file.puts("\t\tversionName \'#{version_name}\'")
+                temp_file.puts("\t\tversion \'#{version_name}\'")
               else
                 temp_file.puts("\t\t//bigkeeper config start")
-                temp_file.puts("\t\tversionName \'#{version_name}\'")
+                temp_file.puts("\t\tversion \'#{version_name}\'")
                 temp_file.puts("\t\t//bigkeeper config end")
               end
-              isDefaultConfig = false
+              isModifyPom = false
             else
               temp_file.puts(line)
             end
