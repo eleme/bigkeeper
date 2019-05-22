@@ -34,9 +34,10 @@ module BigKeeper
       parameter = parameter.merge('version' => @version) unless @version == nil || @version == ""
       parameter = parameter.merge('parameter' => @parameter) unless @parameter == nil || @parameter == ""
 
-      leancloud_file = @command.split("/").first
-
-      send_log_cloud(leancloud_file, parameter, is_show_log)
+      if @command
+        leancloud_file = @command.split("/").first
+        send_log_cloud(leancloud_file, parameter, is_show_log)
+      end
     end
 
     def send_log_cloud(file_name, parameter, is_show_log)

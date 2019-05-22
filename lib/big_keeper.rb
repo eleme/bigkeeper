@@ -27,7 +27,7 @@ module BigKeeper
 
   flag %i[p path], default_value: './'
   flag %i[v ver], default_value: 'Version in Bigkeeper file'
-  flag %i[u user], default_value: GitOperator.new.user.gsub(/[^0-9A-Za-z]/, '').downcase
+  flag %i[u user], default_value: GitOperator.new.user
   flag %i[l log], default_value: true
 
   if VerifyOperator.already_in_process?
