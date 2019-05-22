@@ -21,7 +21,7 @@ module BigKeeper
       @path = global_options['path']
     end
 
-    def end_log(is_success)
+    def end_log(is_success, is_show_log)
       @end_timestamp = Time.new.to_i
       @is_success = is_success
       @version = BigkeeperParser.version if @version == 'Version in Bigkeeper file'
@@ -36,11 +36,11 @@ module BigKeeper
 
       if @command
         leancloud_file = @command.split("/").first
-        send_log_cloud(leancloud_file, parameter)
+        send_log_cloud(leancloud_file, parameter, is_show_log)
       end
     end
 
-    def send_log_cloud(file_name, parameter)
+    def send_log_cloud(file_name, parameter, is_show_log)
       if file_name == nil
         return
       end
@@ -60,8 +60,7 @@ module BigKeeper
       req = Net::HTTP::Post.new(uri.path, header)
       req.body = parameter.to_json
       res = https.request(req)
-
-      Logger.highlight("Send LeanCloud success, response #{res.body}")
+      Logger.highlight("Send LeanCloud success, response #{res.body}") unless !is_show_log
     end
 
     def assemble_request

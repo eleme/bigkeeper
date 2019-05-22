@@ -110,7 +110,7 @@ module BigKeeper
 
     def discard(path)
       Dir.chdir(path) do
-        `git checkout . && git clean -xdf`
+        `git checkout . && git clean -df`
       end
     end
 

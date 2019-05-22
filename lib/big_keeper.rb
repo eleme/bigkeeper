@@ -28,6 +28,7 @@ module BigKeeper
   flag %i[p path], default_value: './'
   flag %i[v ver], default_value: 'Version in Bigkeeper file'
   flag %i[u user], default_value: GitOperator.new.user
+  flag %i[l log], default_value: true
 
   if VerifyOperator.already_in_process?
     p %Q(There is another 'big' command in process, please wait)
@@ -44,7 +45,7 @@ module BigKeeper
   end
 
   post do |global_options,command,options,args|
-    LeanCloudLogger.instance.end_log(true)
+    LeanCloudLogger.instance.end_log(true, global_options[:log] == "true")
   end
 
   feature_and_hotfix_command(GitflowType::FEATURE)
