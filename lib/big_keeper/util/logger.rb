@@ -27,7 +27,8 @@ module BigKeeper
     end
 
     def self.error(sentence)
-      LeanCloudLogger.instance.end_log(false)
+      is_need_log = LeanCloudLogger.instance.is_need_log
+      LeanCloudLogger.instance.end_log(false, is_need_log)
       raise formatter_output(sentence).colorize(:red)
     end
 
