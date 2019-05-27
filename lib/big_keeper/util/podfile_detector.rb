@@ -1,81 +1,75 @@
 require 'big_keeper/util/bigkeeper_parser'
 require 'big_keeper/model/podfile_model'
 require 'big_keeper/util/logger'
-
+require 'Singleton'
 module BigKeeper
 
-class PodfileDetector
-
-  attr_accessor :module_list, :main_path
+class PodfileParser
+  include Singleton
+  attr_accessor :module_list, :main_path, :pod_list
   $unlock_pod_list = []
   $modify_pod_list = {}
 
-  def initialize(main_path,module_list)
-    @module_list = module_list
-    @main_path = main_path
+  def initialize
+    @module_list = BigkeeperParser.module_names
+    @pod_list = []
+  end
+
+  def parse(path)
+    @main_path = path
+    podfile_lines = File.readlines("#{@main_path}/Podfile")
+    Logger.highlight("Analyzing Podfile...") unless podfile_lines.size.zero?
+    podfile_lines.collect do |sentence|
+      if /pod / =~ sentence
+        pod_name = get_pod_name(sentence)
+        @pod_list << pod_name
+      end
+    end
   end
 
   def get_unlock_pod_list
     podfile_lines = File.readlines("#{@main_path}/Podfile")
-    Logger.highlight("Analyzing Podfile...") unless podfile_lines.size.zero?
-      podfile_lines.collect do |sentence|
-      deal_podfile_line(sentence) unless sentence =~(/(\d+.){1,2}\d+/)
-      end
-      $unlock_pod_list
-      # p $unlock_pod_list
+    #Logger.highlight("Analyzing Podfile...") unless podfile_lines.size.zero?
+    podfile_lines.collect do |sentence|
+    deal_podfile_line(sentence) unless sentence =~(/'(\d+.){1,2}\d+'/)
+    end
+    $unlock_pod_list
   end
 
   def deal_podfile_line(sentence)
-    if sentence.include?('pod ')
-      pod_model = Podfile_Modle.new(sentence)
-      if !pod_model.name.empty? && pod_model.configurations != '[\'Debug\']' && pod_model.path == nil && pod_model.tag == nil
-            $unlock_pod_list << pod_model.name unless @module_list.include?(pod_model.name)
+    return unless !sentence.strip.start_with?("#")
+    if sentence.strip.include?('pod ')
+      pod_model = PodfileModel.new(sentence)
+      if !pod_model.name.empty? &&
+         pod_model.configurations != '[\'Debug\']' &&
+         pod_model.path == nil &&
+         pod_model.tag == nil
+            pod_names = pod_model.name.split('/')
+            if pod_names.size > 1
+              pod_name = pod_names[0]
+            else
+              pod_name = pod_model.name
+            end
+            $unlock_pod_list << pod_name unless @module_list.include?(pod_name)
       end
       pod_model
     end
   end
 
+  def get_pod_name(sentence)
 
-  def deal_lock_file(main_path,deal_list)
-      $result = {}
-      podfile_lock_lines = File.readlines("#{main_path}/Podfile.lock")
-      Logger.highlight("Analyzing Podfile.lock...") unless podfile_lock_lines.size.zero?
-      podfile_lock_lines.select do |sentence|
-      if sentence.include?('DEPENDENCIES')  #指定范围解析 Dependencies 之前
-        break
-      end
-
-      temp_sentence = sentence.strip
-      pod_name = get_lock_podname(temp_sentence)
-      if deal_list.include?(pod_name)
-        current_version = $result[pod_name]
-        temp_version = get_lock_version(temp_sentence)
-        if temp_version != nil
-          if current_version != nil
-            $result[pod_name] = chose_version(current_version,temp_version)
-          else
-            $result[pod_name] = temp_version
-          end
-        end
-      end
+    pod_model = deal_podfile_line(sentence)
+    if pod_model != nil
+      return pod_model.name
     end
-    return $result
   end
 
   def self.get_pod_model(sentence)
     if sentence.include?('pod ')
-      pod_model = Podfile_Modle.new(sentence)
+      pod_model = PodfileModel.new(sentence)
       return pod_model
     end
   end
-
-  def get_pod_name(sentence)
-    pod_model = deal_podfile_line(sentence)
-    pod_name = pod_model.name if pod_model != nil && pod_model.configurations.nil
-    @unlock_pod_list << pod_name unless @module_list.include pod_name
-  end
-
-
 
   def get_lock_podname(sentence) #获得pod名称
     match_result = /(\d+.){1,2}\d+/.match(sentence.delete('- :~>='))

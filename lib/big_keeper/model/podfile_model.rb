@@ -1,8 +1,8 @@
 
 module BigKeeper
 
-class Podfile_Modle
-  attr_accessor :name,:git,:path,:configurations,:branch,:tag,:comment
+class PodfileModel
+  attr_accessor :name, :git, :path, :configurations, :branch,:tag, :comment
   def initialize(sentence)
     if sentence.include?('#')
       list = sentence.split('#')

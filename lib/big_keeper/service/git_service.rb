@@ -43,6 +43,11 @@ module BigKeeper
       end
     end
 
+    def verify_checkout_pull(path, branch_name)
+      GitService.new.verify_checkout(path, branch_name)
+      GitService.new.pull(path, branch_name)
+    end
+
     def verify_special_branch(path, name)
       git = GitOperator.new
 
@@ -58,10 +63,6 @@ module BigKeeper
       else
         verify_checkout(path, name)
         git.push_to_remote(path, name)
-      end
-
-      if FileOperator.definitely_exists?("#{path}/.bigkeeper/module.cache")
-        Logger.error(%Q('#{name}' has '.bigkeeper/module.cache' cache path, you should fix it manually...))
       end
     end
 
@@ -113,9 +114,9 @@ module BigKeeper
     def branchs_with_type(path, type)
       branchs = []
       Dir.chdir(path) do
-        IO.popen('git branch -a') do |io|
-          io.each do |line|
-            branchs << line.rstrip if line =~ /(\* |  )#{GitflowType.name(type)}*/
+        IO.popen('git branch -r') do | io |
+          io.each do | line |
+            branchs << line.gsub(/\s/, '') if line =~ /[\s\S]*#{GitflowType.name(type)}*/
           end
         end
       end
@@ -166,6 +167,8 @@ module BigKeeper
         else
           git.push_to_remote(path, branch_name)
         end
+
+        GitOperator.new.check_push_success(path, branch_name, "origin/#{branch_name}")
       else
         Logger.default("Nothing to push for '#{name}'.")
       end

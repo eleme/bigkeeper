@@ -7,7 +7,7 @@ require 'big_keeper/util/logger'
 require 'big_keeper/util/pod_operator'
 require 'big_keeper/util/xcode_operator'
 require 'big_keeper/util/cache_operator'
-
+require 'big_keeper/model/operate_type'
 require 'big_keeper/dependency/dep_service'
 
 require 'big_keeper/dependency/dep_type'
@@ -37,6 +37,8 @@ module BigKeeper
       add_modules = modules - current_modules
       del_modules = current_modules - modules
 
+      # Clean module cache
+      ModuleCacheOperator.new(path).clean_modules
       ModuleCacheOperator.new(path).cache_path_modules(modules, add_modules, del_modules)
       remain_path_modules = ModuleCacheOperator.new(path).remain_path_modules
 
@@ -54,7 +56,7 @@ module BigKeeper
       end
 
       # Install
-      DepService.dep_operator(path, user).install(false)
+      DepService.dep_operator(path, user).install(modules, OperateType::UPDATE, false)
 
       # Open home workspace
       DepService.dep_operator(path, user).open
