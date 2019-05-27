@@ -7,10 +7,18 @@ module BigKeeper
   class LeanCloudLogger
     include Singleton
 
-    attr_accessor :user, :version, :start_timestamp, :end_timestamp, :command, :parameter, :is_success, :path
+    attr_accessor :user, :version, :start_timestamp, :end_timestamp, :command, :parameter, :is_success, :path, :need_log
+
+    def initialize
+      @need_log = "true"
+    end
 
     def set_command(set_command)
       @command = set_command
+    end
+
+    def is_need_log
+      @need_log == "true"
     end
 
     def start_log(global_options, args)
@@ -19,6 +27,7 @@ module BigKeeper
       @parameter = args.join(",")
       @version = global_options['ver']
       @path = global_options['path']
+      @need_log = "#{global_options[:log]}"
     end
 
     def end_log(is_success, is_show_log)
