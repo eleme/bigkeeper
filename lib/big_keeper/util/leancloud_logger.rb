@@ -7,10 +7,18 @@ module BigKeeper
   class LeanCloudLogger
     include Singleton
 
-    attr_accessor :user, :version, :start_timestamp, :end_timestamp, :command, :parameter, :is_success, :path
+    attr_accessor :user, :version, :start_timestamp, :end_timestamp, :command, :parameter, :is_success, :path, :need_log
+
+    def initialize
+      @need_log = "true"
+    end
 
     def set_command(set_command)
       @command = set_command
+    end
+
+    def is_need_log
+      @need_log == "true"
     end
 
     def start_log(global_options, args)
@@ -19,9 +27,10 @@ module BigKeeper
       @parameter = args.join(",")
       @version = global_options['ver']
       @path = global_options['path']
+      @need_log = "#{global_options[:log]}"
     end
 
-    def end_log(is_success)
+    def end_log(is_success, is_show_log)
       @end_timestamp = Time.new.to_i
       @is_success = is_success
       @version = BigkeeperParser.version if @version == 'Version in Bigkeeper file'
@@ -34,12 +43,13 @@ module BigKeeper
       parameter = parameter.merge('version' => @version) unless @version == nil || @version == ""
       parameter = parameter.merge('parameter' => @parameter) unless @parameter == nil || @parameter == ""
 
-      leancloud_file = @command.split("/").first
-
-      send_log_cloud(leancloud_file, parameter)
+      if @command
+        leancloud_file = @command.split("/").first
+        send_log_cloud(leancloud_file, parameter, is_show_log)
+      end
     end
 
-    def send_log_cloud(file_name, parameter)
+    def send_log_cloud(file_name, parameter, is_show_log)
       if file_name == nil
         return
       end
@@ -59,8 +69,7 @@ module BigKeeper
       req = Net::HTTP::Post.new(uri.path, header)
       req.body = parameter.to_json
       res = https.request(req)
-
-      Logger.highlight("Send LeanCloud success, response #{res.body}")
+      Logger.highlight("Send LeanCloud success, response #{res.body}") unless !is_show_log
     end
 
     def assemble_request
