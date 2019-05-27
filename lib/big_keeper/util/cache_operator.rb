@@ -33,7 +33,7 @@ module BigKeeper
 
       if File.exist?("#{@cache_path}/module.cache")
         file = File.open("#{@cache_path}/module.cache", 'r')
-        @modules = JSON.load(file.read())
+        @modules = JSON.load(file.read(), :encoding => 'UTF-8')
         file.close
       else
         @modules = {"git" => {"all" => [], "current" => []}, "path" => {"all" => [], "add" => [], "del" => [], "current" => []}}
