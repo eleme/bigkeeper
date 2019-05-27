@@ -8,6 +8,7 @@ require 'big_keeper/command/feature&hotfix/rebase'
 require 'big_keeper/command/feature&hotfix/publish'
 require 'big_keeper/command/feature&hotfix/delete'
 require 'big_keeper/command/feature&hotfix/list'
+require 'big_keeper/util/leancloud_logger'
 
 module BigKeeper
   def self.feature_and_hotfix_command(type)
@@ -19,6 +20,7 @@ module BigKeeper
           path = File.expand_path(global_options[:path])
           version = global_options[:ver]
           user = global_options[:user].gsub(/[^0-9A-Za-z]/, '').downcase
+          LeanCloudLogger.instance.set_command("#{GitflowType.command(type)}/start")
 
           help_now!('user name is required') if user and user.empty?
           help_now!("#{GitflowType.name(type)} name is required") if args.length < 1
@@ -33,6 +35,7 @@ module BigKeeper
         update.action do |global_options, options, args|
           path = File.expand_path(global_options[:path])
           user = global_options[:user].gsub(/[^0-9A-Za-z]/, '').downcase
+          LeanCloudLogger.instance.set_command("#{GitflowType.command(type)}/update")
 
           help_now!('user name is required') if user and user.empty?
           modules = args[(0...args.length)] if args.length > 0
@@ -46,6 +49,7 @@ module BigKeeper
           path = File.expand_path(global_options[:path])
           version = global_options[:ver]
           user = global_options[:user].gsub(/[^0-9A-Za-z]/, '').downcase
+          LeanCloudLogger.instance.set_command("#{GitflowType.command(type)}/switch")
 
           help_now!('user name is required') if user and user.empty?
           help_now!("#{GitflowType.name(type)} name is required") if args.length < 1
@@ -59,6 +63,7 @@ module BigKeeper
         pull.action do |global_options, options, args|
           path = File.expand_path(global_options[:path])
           user = global_options[:user].gsub(/[^0-9A-Za-z]/, '').downcase
+          LeanCloudLogger.instance.set_command("#{GitflowType.command(type)}/pull")
 
           help_now!('user name is required') if user and user.empty?
           pull(path, user, type)
@@ -70,6 +75,7 @@ module BigKeeper
         push.action do |global_options, options, args|
           path = File.expand_path(global_options[:path])
           user = global_options[:user].gsub(/[^0-9A-Za-z]/, '').downcase
+          LeanCloudLogger.instance.set_command("#{GitflowType.command(type)}/push")
 
           help_now!('user name is required') if user and user.empty?
           help_now!('comment message is required') if args.length < 1
@@ -84,6 +90,7 @@ module BigKeeper
         rebase.action do |global_options, options, args|
           path = File.expand_path(global_options[:path])
           user = global_options[:user].gsub(/[^0-9A-Za-z]/, '').downcase
+          LeanCloudLogger.instance.set_command("#{GitflowType.command(type)}/rebase")
 
           help_now!('user name is required') if user and user.empty?
           rebase(path, user, type)
@@ -95,6 +102,7 @@ module BigKeeper
         finish.action do |global_options, options, args|
           path = File.expand_path(global_options[:path])
           user = global_options[:user].gsub(/[^0-9A-Za-z]/, '').downcase
+          LeanCloudLogger.instance.set_command("#{GitflowType.command(type)}/finish")
 
           help_now!('user name is required') if user and user.empty?
           finish(path, user, type)
@@ -106,6 +114,7 @@ module BigKeeper
         publish.action do |global_options, options, args|
           path = File.expand_path(global_options[:path])
           user = global_options[:user].gsub(/[^0-9A-Za-z]/, '').downcase
+          LeanCloudLogger.instance.set_command("#{GitflowType.command(type)}/publish")
 
           help_now!('user name is required') if user and user.empty?
           publish(path, user, type)
@@ -117,6 +126,7 @@ module BigKeeper
         delete.action do |global_options, options, args|
           path = File.expand_path(global_options[:path])
           user = global_options[:user].gsub(/[^0-9A-Za-z]/, '').downcase
+          LeanCloudLogger.instance.set_command("#{GitflowType.command(type)}/delete")
 
           help_now!('user name is required') if user and user.empty?
           help_now!("#{GitflowType.name(type)} name is required") if args.length < 1
@@ -131,6 +141,8 @@ module BigKeeper
         list.desc "Print list of TREE format."
         list.command :tree do |tree|
           tree.action do |global_options, options, args|
+            LeanCloudLogger.instance.set_command("#{GitflowType.command(type)}/list/tree")
+
             Logger.highlight("Generating #{GitflowType.name(type)} tree of all version...") if args.length < 1
             path = File.expand_path(global_options[:path])
             user = global_options[:user].gsub(/[^0-9A-Za-z]/, '').downcase
@@ -141,6 +153,8 @@ module BigKeeper
         list.desc "Print list of JSON format."
         list.command :json do |json|
           json.action do |global_options, options, args|
+            LeanCloudLogger.instance.set_command("#{GitflowType.command(type)}/list/json")
+
             options[:json] = true
             path = File.expand_path(global_options[:path])
             user = global_options[:user].gsub(/[^0-9A-Za-z]/, '').downcase

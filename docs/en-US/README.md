@@ -1,8 +1,12 @@
+
+
 [中文](../zh-CN/README.md)
 
 ---
 
 # bigkeeper - All in home project
+
+![](../../resources/banner.png)
 
 [![Build Status](https://travis-ci.org/BigKeeper/bigkeeper.svg?branch=master)](https://travis-ci.org/BigKeeper/bigkeeper)
 [![Maintainability](https://api.codeclimate.com/v1/badges/c6dc4161e84fcec9a890/maintainability)](https://codeclimate.com/github/BigKeeper/bigkeeper/maintainability)

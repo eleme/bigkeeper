@@ -19,7 +19,9 @@ module BigKeeper
     end
 
     def clean
-      FileUtils.rm_r(@cache_path)
+      if File.exist?(@cache_path)
+        FileUtils.rm_r(@cache_path)
+      end
     end
   end
 
@@ -99,6 +101,11 @@ module BigKeeper
 
     def del_path_module(module_name)
       @modules["path"]["current"].delete(module_name) if @modules["path"]["current"].include?(module_name)
+      cache_modules
+    end
+
+    def clean_modules
+      @modules = {"git" => {"all" => [], "current" => []}, "path" => {"all" => [], "add" => [], "del" => [], "current" => []}}
       cache_modules
     end
 

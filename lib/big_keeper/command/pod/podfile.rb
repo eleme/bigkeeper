@@ -5,6 +5,7 @@ require 'big_keeper/util/gitflow_operator'
 require 'big_keeper/util/bigkeeper_parser'
 require 'big_keeper/dependency/dep_type'
 require 'big_keeper/util/logger'
+require 'big_keeper/util/lockfile_parser'
 
 module BigKeeper
 
@@ -12,9 +13,10 @@ module BigKeeper
       # Parse Bigkeeper file
       BigkeeperParser.parse("#{path}/Bigkeeper")
       # Get modules' name
-      module_list = BigkeeperParser.module_names
+      # module_list = BigkeeperParser.module_names
       # initialize PodfileDetector
-      detector = PodfileDetector.new(path, module_list)
+      detector = PodfileParser.instance
+      detactor.parse
       # Get unlocked third party pods list
       unlock_pod_list = detector.get_unlock_pod_list
       # Print out unlock pod list
@@ -25,26 +27,27 @@ module BigKeeper
 
   end
 
-  def self.podfile_lock(path)
+  def self.podfile_lock(path, is_all)
       # Parse Bigkeeper file
       BigkeeperParser.parse("#{path}/Bigkeeper")
-      # Get modules' name
-      module_list = BigkeeperParser.module_names
       # initialize PodfileDetector
-      detector = PodfileDetector.new(path, module_list)
+      pod_parser = PodfileParser.instance
+      #Parser Podfile.lock
+      pod_parser.parse(path)
+      #initialize LockfileParser
+      lock_parser = LockfileParser.instance
+      #Parser Podfile.lock
+      lock_parser.parse(path)
       # Get unlocked third party pods list
-      unlock_pod_list = detector.get_unlock_pod_list
-      # Get Version
-      dictionary = detector.deal_lock_file(path, unlock_pod_list)
-      if dictionary.empty?
+      unlock_pod_info = lock_parser.get_unlock_pod_list(is_all)
+      # Lock modules in podfile
+      if unlock_pod_info.empty?
         Logger.warning("There is nothing to be locked.")
       else
-        PodfileOperator.new.find_and_lock("#{path}/Podfile", dictionary)
+        PodfileOperator.new.find_and_lock("#{path}/Podfile", unlock_pod_info)
         Logger.highlight("The Podfile has been changed.")
         Logger.separator
       end
-
-
 
   end
 

@@ -4,12 +4,12 @@ module BigKeeper
   class XcodeOperator
     def self.open_workspace(path)
       # Close Xcode
-      `pkill Xcode`
+      # `pkill Xcode`
 
-      sleep 0.5
+      # sleep 0.5
 
       # Open home workspace
-      `open #{path}/*.xcworkspace`
+      # `open #{path}/*.xcworkspace`
     end
   end
 end

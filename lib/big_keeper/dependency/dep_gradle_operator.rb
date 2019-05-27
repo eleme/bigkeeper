@@ -1,53 +1,46 @@
 require 'big_keeper/dependency/dep_operator'
-require 'big_keeper/util/gradle_operator'
+require 'big_keeper/util/gradle_module_operator'
+require 'big_keeper/util/gradle_file_operator'
+require 'big_keeper/model/operate_type'
 
 module BigKeeper
   # Operator for podfile
   class DepGradleOperator < DepOperator
 
+    BUILD_GRADLE = "app/build.gradle"
+    SETTINGS_GRADLE = "settings.gradle"
+
     def backup
-      GradleOperator.new(@path).backup
-      modules = ModuleCacheOperator.new(@path).all_path_modules
-      modules.each do |module_name|
-        module_full_path = BigkeeperParser.module_full_path(@path, @user, module_name)
-        GradleOperator.new(module_full_path).backup
-      end
     end
 
     def recover
-      GradleOperator.new(@path).recover(true, false)
+      build_file = "#{@path}/#{BUILD_GRADLE}"
+      settings_file = "#{@path}/#{SETTINGS_GRADLE}"
+      GradleFileOperator.new(@path, @user).recover_bigkeeper_config_file(build_file)
+      GradleFileOperator.new(@path, @user).recover_bigkeeper_config_file(settings_file)
+
+      cache_operator = CacheOperator.new(@path)
+      cache_operator.clean
     end
 
     def update_module_config(module_name, module_operate_type)
-      module_full_path = BigkeeperParser.module_full_path(@path, @user, module_name)
-
-      # get modules
       if ModuleOperateType::ADD == module_operate_type
-        GradleOperator.new(module_full_path).backup
-
-        add_modules = ModuleCacheOperator.new(@path).add_path_modules
-        GradleOperator.new(module_full_path).update_build_config(module_name, add_modules, ModuleOperateType::ADD)
-        GradleOperator.new(module_full_path).update_settings_config(module_name, add_modules, ModuleOperateType::ADD, @user)
-
-        del_modules = ModuleCacheOperator.new(@path).del_path_modules
-        GradleOperator.new(module_full_path).update_build_config(module_name, del_modules, ModuleOperateType::DELETE)
-        GradleOperator.new(module_full_path).update_settings_config(module_name, del_modules, ModuleOperateType::DELETE, @user)
+        GradleModuleOperator.new(@path, @user, module_name).update_module(ModuleOperateType::ADD)
       elsif ModuleOperateType::DELETE == module_operate_type
-        GradleOperator.new(module_full_path).recover(true, true)
+        GradleModuleOperator.new(@path, @user, module_name).recover()
       elsif ModuleOperateType::FINISH == module_operate_type
-        modules = ModuleCacheOperator.new(@path).all_path_modules
-        GradleOperator.new(module_full_path).update_build_config(module_name, modules, ModuleOperateType::FINISH)
+        GradleModuleOperator.new(@path, @user, module_name).update_module(ModuleOperateType::FINISH)
       elsif ModuleOperateType::PUBLISH == module_operate_type
-        modules = ModuleCacheOperator.new(@path).all_git_modules
-        GradleOperator.new(module_full_path).update_build_config(module_name, modules, ModuleOperateType::PUBLISH)
-        GradleOperator.new(module_full_path).recover(true, false)
+        GradleModuleOperator.new(@path, @user, module_name).recover()
       end
-
-      GradleOperator.new(@path).update_build_config('', [module_name], module_operate_type)
-      GradleOperator.new(@path).update_settings_config('', [module_name], module_operate_type, @user)
     end
 
-    def install(should_update)
+    def install(modules, type, should_update)
+      if OperateType::START == type || OperateType::UPDATE == type || OperateType::SWITCH == type || OperateType::FINISH == type
+        GradleFileOperator.new(@path, @user).update_home_depends("#{@path}/#{BUILD_GRADLE}", "#{@path}/#{SETTINGS_GRADLE}",type)
+      elsif OperateType::PUBLISH == type
+        recover()
+      end
     end
 
     def open

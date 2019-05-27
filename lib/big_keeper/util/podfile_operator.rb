@@ -40,14 +40,21 @@ module BigKeeper
       begin
         File.open(podfile, 'r') do |file|
           file.each_line do |line|
-            pod_model = PodfileDetector.get_pod_model(line)
+            pod_model = PodfileParser.get_pod_model(line)
             if pod_model != nil && pod_model.name != nil && dictionary[pod_model.name] != nil
-                # p "#{pod_name},#{dictionary[pod_name]}"
                 temp_file.puts generate_pod_config(pod_model.name, dictionary[pod_model.name], pod_model.comment)
+                dictionary.delete(pod_model.name)
             else
                 temp_file.puts line
             end
           end
+        end
+        if !dictionary.empty?
+          temp_file.puts 'def sub_dependency'
+          dictionary.keys.each do |sub_pod|
+            temp_file.puts generate_pod_config(sub_pod, dictionary[sub_pod], 'bigkeeper')
+          end
+          temp_file.puts 'end'
         end
         temp_file.close
         FileUtils.mv(temp_file.path, podfile)
@@ -62,8 +69,9 @@ module BigKeeper
       begin
         File.open(podfile, 'r') do |file|
           file.each_line do |line|
-            pod_model = PodfileDetector.get_pod_model(line)
+            pod_model = PodfileParser.get_pod_model(line)
             if pod_model != nil && pod_model.name != nil && dictionary[pod_model.name] != nil
+                #替换
                 temp_file.puts generate_pod_config(pod_model.name, dictionary[pod_model.name], pod_model.comment)
             else
                 temp_file.puts line

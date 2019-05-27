@@ -1,0 +1,23 @@
+# TEMPLATE FOR BIGKEEPER
+# PLEASE CHANGE THE CONTENT FOR YOUR PROJECT
+# REMEMBER DELETE THESE TIPS
+
+# version '0.0.1'
+
+# home 'BigkeeperMain', :git => 'git@github.com:BigKeeper/BigKeeperMain.git', :pulls => 'https://github.com/BigKeeper/BigKeeperMain/pulls'
+
+# source 'git@github.com:CocoaPods/Specs.git, CocoaPods' do
+#   modules do
+#     mod 'BigKeeperUserCenterModule', :git => 'git@github.com:BigKeeper/BigKeeperUserCenterModule.git', :pulls => 'https://github.com/BigKeeper/BigKeeperUserCenterModule/pulls'
+#     mod 'BigKeeperOrderModule', :git => 'git@github.com:BigKeeper/BigKeeperOrderModule.git', :pulls => 'https://github.com/BigKeeper/BigKeeperOrderModule/pulls'
+#   end
+# end
+
+
+# user 'perry' do
+#  mod 'BigKeeperModular', :path => '../BigKeeperModular'
+# end
+
+# user 'tom' do
+#  mod 'BigKeeperModular', :path => '../BigKeeperModular'
+# end

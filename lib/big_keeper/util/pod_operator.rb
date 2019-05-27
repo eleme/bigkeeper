@@ -6,13 +6,13 @@ module BigKeeper
     def self.pod_install(path, repo_update)
       # pod install
       if repo_update
-        PodOperator.pod_update_private_repos()
+        PodOperator.pod_update_private_repos(true)
       end
       Logger.highlight('Start pod install, waiting...')
-      cmd = "pod install --project-directory=#{path}"
+      cmd = "pod install --project-directory='#{path}'"
       Open3.popen3(cmd) do |stdin, stdout, stderr, wait_thr|
         while line = stdout.gets
-          puts line
+          p line
         end
       end
       Logger.highlight('Finish pod install.')
@@ -45,9 +45,20 @@ module BigKeeper
       end
     end
 
-    def self.pod_update_private_repos(module_name)
-      Logger.highlight('Start pod repo update, waiting...')
-      cmd = "pod repo update #{BigkeeperParser.source_spec_name(module_name)}"
+    def self.pod_update_private_repos(update_private)
+      if update_private
+        BigkeeperParser.sources.map { |spec|
+          Logger.highlight('Start pod repo update, waiting...')
+          cmd = "pod repo update #{spec}"
+          cmd(cmd)
+        }
+      else
+        cmd = "pod repo update"
+        cmd(cmd)
+      end
+    end
+
+    def self.cmd(cmd)
       Open3.popen3(cmd) do |stdin , stdout , stderr, wait_thr|
         while line = stdout.gets
           puts line
