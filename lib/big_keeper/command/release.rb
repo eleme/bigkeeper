@@ -1,11 +1,36 @@
 require 'big_keeper/command/release/home'
 require 'big_keeper/command/release/module'
 require 'big_keeper/util/leancloud_logger'
+require 'big_keeper/command/release/start'
+require 'big_keeper/command/release/finish'
+require 'big_keeper/util/command_line_util'
 
 module BigKeeper
   def self.release_command
     desc 'Gitflow release operations'
     command :release do |c|
+
+      c.desc 'release project start'
+      c.command :start do |start|
+        start.action do |global_options, options, args|
+          path = File.expand_path(global_options[:path])
+          version = global_options[:ver]
+          user = global_options[:user].gsub(/[^0-9A-Za-z]/, '').downcase
+          modules = args[(0...args.length)] if args.length > 0
+          release_start(path, version, user, modules)
+        end
+      end
+
+      c.desc 'release project finish'
+      c.command :finish do |finish|
+        finish.action do |global_options, options, args|
+          path = File.expand_path(global_options[:path])
+          version = global_options[:ver]
+          user = global_options[:user].gsub(/[^0-9A-Za-z]/, '').downcase
+          modules = args[(0...args.length)] if args.length > 0
+          release_finish(path, version, user, modules)
+        end
+      end
 
       c.desc 'Release home project operations'
       c.command :home do |home|

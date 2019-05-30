@@ -286,6 +286,7 @@ module BigKeeper
         version_name = branch_name.sub(/([\s\S]*)\/(\d+.\d+.\d+)_([\s\S]*)/){ $2 }
       else
         version_name = branch_name.sub(/([\s\S]*)\/([\s\S]*)/){ $2 }
+        version_name = version_name.gsub('_', '-')
       end
       version_name
     end
