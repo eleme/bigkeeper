@@ -14,6 +14,7 @@ require 'big_keeper/command/pod'
 require 'big_keeper/command/spec'
 require 'big_keeper/command/image'
 require 'big_keeper/command/init'
+require 'big_keeper/command/client'
 require 'big_keeper/service/git_service'
 require 'big_keeper/util/leancloud_logger'
 
@@ -65,6 +66,8 @@ module BigKeeper
   image_command
 
   init_command
+
+  client_command
 
   desc 'Show version of bigkeeper'
   command :version do |version|
