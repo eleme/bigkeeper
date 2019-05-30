@@ -181,6 +181,22 @@ module BigKeeper
       end
     end
 
+    def check_remote_branch_diff(path, branch, compare_branch)
+      fetch(path)
+      compare_branch_commits = Array.new
+      IO.popen("cd '#{path}';git log --left-right #{branch}...origin/#{compare_branch} --pretty=oneline") do |io|
+        io.each do |line|
+          compare_branch_commits.push(line) unless (line.include? '>') && (line.include? "Merge branch \'#{branch}\' into \'#{compare_branch}\'")
+        end
+      end
+      if compare_branch_commits.size > 0
+        return true
+      else
+        return false
+      end
+    end
+
+    # TODO: 需要改造，util方法不应该有业务逻辑
     def check_diff(path, branch, compare_branch)
       compare_branch_commits = Array.new
       IO.popen("cd '#{path}'; git log --left-right #{branch}...#{compare_branch} --pretty=oneline") do |io|

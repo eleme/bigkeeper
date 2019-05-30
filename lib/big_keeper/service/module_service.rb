@@ -154,6 +154,71 @@ module BigKeeper
       result_dic
     end
 
+    def release_check_changed(path, user, module_name)
+      module_full_path = BigkeeperParser.module_full_path(path, user, module_name)
+
+      git = GitOperator.new
+      if !File.exist? module_full_path
+        Logger.default("No local repository for module '#{module_name}', clone it...")
+        module_git = BigkeeperParser.module_git(module_name)
+        git.clone(File.expand_path("#{module_full_path}/../"), module_git)
+      end
+      GitService.new.verify_checkout_pull(module_full_path, 'develop')
+      git.check_remote_branch_diff(module_full_path, 'develop', 'master')
+    end
+
+    def release_start(path, user, modules, module_name, version)
+      module_full_path = BigkeeperParser.module_full_path(path, user, module_name)
+
+      git = GitOperator.new
+      if !File.exist? module_full_path
+        Logger.default("No local repository for module '#{module_name}', clone it...")
+        module_git = BigkeeperParser.module_git(module_name)
+        git.clone(File.expand_path("#{module_full_path}/../"), module_git)
+      end
+      #stash module
+      StashService.new.stash(module_full_path, GitOperator.new.current_branch(module_full_path), module_name)
+      # delete cache
+      CacheOperator.new(module_full_path).clean()
+      # checkout develop
+      GitService.new.verify_checkout_pull(module_full_path, 'develop')
+      DepService.dep_operator(path, user).release_module_start(modules, module_name, version)
+
+      # Push home changes to remote
+      Logger.highlight("Push branch 'develop' for #{module_name}...")
+      GitService.new.verify_push(
+        module_full_path,
+        "release start for #{version}",
+        'develop',
+        "#{module_name}")
+    end
+
+    def release_finish(path, user, modules, module_name, version)
+      module_full_path = BigkeeperParser.module_full_path(path, user, module_name)
+
+      git = GitOperator.new
+      if !File.exist? module_full_path
+        Logger.default("No local repository for module '#{module_name}', clone it...")
+        module_git = BigkeeperParser.module_git(module_name)
+        git.clone(File.expand_path("#{module_full_path}/../"), module_git)
+      end
+      #stash module
+      StashService.new.stash(module_full_path, GitOperator.new.current_branch(module_full_path), module_name)
+      # delete cache
+      CacheOperator.new(module_full_path).clean()
+      # checkout develop
+      GitService.new.verify_checkout_pull(module_full_path, 'develop')
+      DepService.dep_operator(path, user).release_module_finish(modules, module_name, version)
+
+      # Push home changes to remote
+      Logger.highlight("Push branch 'develop' for #{module_name}...")
+      GitService.new.verify_push(
+        module_full_path,
+        "release finish for #{version}",
+        'develop',
+        "#{module_name}")
+    end
+
     private :verify_module
   end
 end
