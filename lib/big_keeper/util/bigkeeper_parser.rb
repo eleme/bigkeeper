@@ -231,6 +231,10 @@ module BigKeeper
       @@config[:modules][module_name][:maven_artifact]
     end
 
+    def self.module_version_alias(module_name)
+      @@config[:modules][module_name][:version_alias]
+    end
+
     def self.module_pulls(module_name)
       @@config[:modules][module_name][:pulls]
     end
