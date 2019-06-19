@@ -186,7 +186,7 @@ module BigKeeper
       compare_branch_commits = Array.new
       IO.popen("cd '#{path}';git log --left-right #{branch}...origin/#{compare_branch} --pretty=oneline") do |io|
         io.each do |line|
-          compare_branch_commits.push(line) unless (line.include? '>') && (line.include? "Merge branch \'#{branch}\' into \'#{compare_branch}\'")
+          compare_branch_commits.push(line) unless (line.include? '>') && (line.include? "Merge branch \'#{branch}\'")
         end
       end
       if compare_branch_commits.size > 0
