@@ -20,10 +20,10 @@ module BigKeeper
 
     def update_module_config(module_name, module_operate_type)
       file = "#{@path}/Podfile"
-      temp_file = Tempfile.new('.Podfile.tmp')
+      temp_file = Tempfile.new('.Podfile.tmp', :encoding => 'UTF-8')
 
       begin
-        File.open(file, 'r') do |file|
+        File.open(file, 'r', :encoding => 'UTF-8') do |file|
           file.each_line do |line|
             temp_file.puts generate_module_config(line, module_name, module_operate_type)
           end
@@ -84,7 +84,7 @@ module BigKeeper
     def origin_config_of_module(module_name)
       origin_config = ''
 
-      File.open("#{@path}/.bigkeeper/Podfile", 'r') do |file|
+      File.open("#{@path}/.bigkeeper/Podfile", 'r', :encoding => 'UTF-8') do |file|
         file.each_line do |line|
           if line =~ /(\s*)pod(\s*)('|")#{module_name}('|")([\s\S]*)/
             origin_config = line
