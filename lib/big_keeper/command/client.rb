@@ -1,6 +1,8 @@
 require 'big_keeper/util/leancloud_logger'
 require 'big_keeper/command/pod/podfile'
 require 'big_keeper/command/spec/list'
+require 'big_keeper/util/list_generator'
+
 module BigKeeper
 
   def self.client_command
@@ -33,12 +35,12 @@ module BigKeeper
       c.command :feature do |feature|
         feature.desc "List all the features including origin."
         feature.command :list do | list |
+            list.flag %i[v version] , default_value: 'all versions'
             list.action do |global_options, options, args|
               LeanCloudLogger.instance.set_command("feature/list/json")
               options[:json] = true
               path = File.expand_path(global_options[:path])
               user = global_options[:user].gsub(/[^0-9A-Za-z]/, '').downcase
-              print(1231231)
               list(path, user, GitflowType::FEATURE, options)
           end
         end

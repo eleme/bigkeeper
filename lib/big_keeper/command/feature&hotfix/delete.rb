@@ -20,9 +20,9 @@ module BigKeeper
       # Parse Bigkeeper file
       BigkeeperParser.parse("#{path}/Bigkeeper")
       branch_name = "#{GitflowType.name(type)}/#{name}"
+      version = 'all version'
 
       modules = BigkeeperParser.module_names
-
       modules.each do |module_name|
         module_full_path = BigkeeperParser.module_full_path(path, user, module_name)
 
