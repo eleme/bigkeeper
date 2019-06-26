@@ -19,7 +19,7 @@ module BigKeeper
     begin
       #get cache file path
       FileUtils.mkdir_p(cache_path) unless File.exist?(cache_path)
-      file = File.new(json_path, 'w')
+      file = File.new(json_path, 'w', :encoding => 'UTF-8')
       begin
         #get all modules info
         module_list_dic = get_module_info(path, user, type, version, branches, is_print_log)

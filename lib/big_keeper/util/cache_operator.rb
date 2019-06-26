@@ -32,7 +32,7 @@ module BigKeeper
       FileUtils.mkdir_p(@cache_path) unless File.exist?(@cache_path)
 
       if File.exist?("#{@cache_path}/module.cache")
-        file = File.open("#{@cache_path}/module.cache", 'r')
+        file = File.open("#{@cache_path}/module.cache", 'r', :encoding => 'UTF-8')
         @modules = JSON.load(file.read(), :encoding => 'UTF-8')
         file.close
       else
@@ -110,7 +110,7 @@ module BigKeeper
     end
 
     def cache_modules
-      file = File.new("#{@cache_path}/module.cache", 'w')
+      file = File.new("#{@cache_path}/module.cache", 'w', :encoding => 'UTF-8')
       file << @modules.to_json
       file.close
     end
