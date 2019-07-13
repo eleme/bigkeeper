@@ -41,8 +41,9 @@ module BigKeeper
 
       Logger.highlight("Publish branch '#{branch_name}' for 'Home'")
 
+      # [CHG] try to fix publish bug
       # Recover home
-      DepService.dep_operator(path, user).recover
+      # DepService.dep_operator(path, user).recover
 
       # Push home changes to remote
       GitService.new.verify_push(path, "publish branch #{branch_name}", branch_name, 'Home')
