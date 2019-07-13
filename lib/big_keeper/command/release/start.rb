@@ -3,34 +3,6 @@ module BigKeeper
     DepService.dep_operator(path, user).release_start(path, version, user, modules)
   end
 
-  def self.release_finish(path, version, user, modules)
-    BigkeeperParser.parse("#{path}/Bigkeeper")
-    version = BigkeeperParser.version if version == 'Version in Bigkeeper file'
-
-    #stash home
-    StashService.new.stash(path, GitOperator.new.current_branch(path), 'home')
-    # delete cache
-    CacheOperator.new(path).clean()
-    # checkout develop
-    GitService.new.verify_checkout_pull(path, 'develop')
-
-    modules.each do |module_name|
-      Logger.highlight("release start module #{module_name}")
-      ModuleService.new.release_finish(path, user, modules, module_name, version)
-    end
-
-    #release home
-    DepService.dep_operator(path, user).release_home_finish(modules, version)
-
-    # Push home changes to remote
-    Logger.highlight("Push branch 'develop' for 'Home'...")
-    GitService.new.verify_push(
-      path,
-      "release finish for #{version}",
-      'develop',
-      'Home')
-  end
-
   def self.release_check_changed_modules(path, user)
     changed_modules = []
     BigkeeperParser.parse("#{path}/Bigkeeper")
@@ -42,4 +14,5 @@ module BigKeeper
     end
     changed_modules
   end
+  
 end

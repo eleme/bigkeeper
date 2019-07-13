@@ -12,7 +12,9 @@ module BigKeeper
 
       c.desc 'release project start'
       c.command :start do |start|
+        start.desc 'Start release home project'
         start.action do |global_options, options, args|
+          LeanCloudLogger.instance.set_command("release/start")
           path = File.expand_path(global_options[:path])
           version = global_options[:ver]
           user = global_options[:user].gsub(/[^0-9A-Za-z]/, '').downcase
@@ -23,7 +25,9 @@ module BigKeeper
 
       c.desc 'release project finish'
       c.command :finish do |finish|
+        finish.desc 'Finish release home project'
         finish.action do |global_options, options, args|
+          LeanCloudLogger.instance.set_command("release/finish")
           path = File.expand_path(global_options[:path])
           version = global_options[:ver]
           user = global_options[:user].gsub(/[^0-9A-Za-z]/, '').downcase
@@ -32,37 +36,9 @@ module BigKeeper
         end
       end
 
-      c.desc 'Release home project operations'
-      c.command :home do |home|
-        home.desc 'Start release home project'
-        home.command :start do |start|
-          start.action do |global_options, options, args|
-            path = File.expand_path(global_options[:path])
-            version = global_options[:ver]
-            user = global_options[:user].gsub(/[^0-9A-Za-z]/, '').downcase
-            LeanCloudLogger.instance.set_command("release/home/start")
-
-            help_now!('user name is required') if user and user.empty?
-            raise Logger.error("release version is required") if version == nil
-            release_home_start(path, version, user)
-          end
-        end
-
-        home.desc 'Finish release home project'
-        home.command :finish do |finish|
-          finish.action do |global_options, options, args|
-            path = File.expand_path(global_options[:path])
-            version = global_options[:ver]
-            LeanCloudLogger.instance.set_command("release/home/finish")
-
-            raise Logger.error("release version is required") if version == nil
-            release_home_finish(path, version)
-          end
-        end
-      end
-
-      c.desc 'release module'
+      c.desc 'if ignore warning'
       c.switch [:i,:ignore]
+      c.desc 'Release single module operations'
       c.command :module do |m|
         m.desc 'Start release module project'
         m.command :start do |start|
@@ -79,8 +55,9 @@ module BigKeeper
           end
         end
 
-        m.desc 'finish release module project'
+        m.desc 'pod publish to spec'
         m.switch [:s,:spec]
+        m.desc 'finish release module project'
         m.command :finish do |finish|
           finish.action do |global_options, options, args|
             path = File.expand_path(global_options[:path])

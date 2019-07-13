@@ -143,7 +143,7 @@ module BigKeeper
       # delete cache
       CacheOperator.new(path).clean()
       # cache Podfile
-      # CacheOperator.new(path).save('Podfile')
+      CacheOperator.new(path).save('Podfile')
       # checkout develop
       GitService.new.verify_checkout_pull(path, 'develop')
       # check
@@ -154,7 +154,7 @@ module BigKeeper
 
       GitService.new.verify_checkout(path, "release/#{version}")
 
-      Logger.error("Chechout release/#{version} failed.") unless GitOperator.new.current_branch(path) == "release/#{version}"
+      raise Logger.error("Chechout release/#{version} failed.") unless GitOperator.new.current_branch(path) == "release/#{version}"
 
       Logger.highlight(%Q(Finish to release/#{version} for home project))
 
@@ -168,7 +168,7 @@ module BigKeeper
         else
           GitflowOperator.new.start(path, version, GitflowType::RELEASE)
           GitOperator.new.push_to_remote(path, "release/#{version}")
-          
+
           Logger.highlight("Push branch release/'#{version}' for #{module_name}...")
           GitOperator.new.push_to_remote(module_full_path, "release/#{version}")
         end
@@ -189,6 +189,44 @@ module BigKeeper
     def release_module_start(modules, module_name, version)
       module_full_path = BigkeeperParser.module_full_path(@path, @user, module_name)
       GitService.new.verify_checkout(module_full_path, "release/#{version}")
+    end
+
+    def release_finish(path, version, user, modules)
+      BigkeeperParser.parse("#{path}/Bigkeeper")
+      version = BigkeeperParser.version if version == 'Version in Bigkeeper file'
+      modules = BigkeeperParser.module_names
+
+      if GitOperator.new.has_branch(path, "release/#{version}")
+        GitService.new.verify_checkout(path, "release/#{version}")
+
+        PodfileOperator.new.replace_all_module_release(path, user, modules, ModuleOperateType::RELEASE)
+
+        GitService.new.verify_push(path, "finish release branch", "release/#{version}", 'Home')
+
+        # master
+        GitOperator.new.checkout(path, "master")
+        GitOperator.new.merge(path, "release/#{version}")
+        GitService.new.verify_push(path, "release V#{version}", "master", 'Home')
+
+        GitOperator.new.tag(path, version)
+
+        # release branch
+        GitOperator.new.checkout(path, "release/#{version}")
+        CacheOperator.new(path).load('Podfile')
+        CacheOperator.new(path).clean()
+        GitOperator.new.commit(path, "reset #{version} Podfile")
+        GitService.new.verify_push(path, "reset #{version} Podfile", "release/#{version}", 'Home')
+
+        # develop
+        GitOperator.new.checkout(path, "develop")
+        GitOperator.new.merge(path, "release/#{version}")
+        GitService.new.verify_push(path, "merge release/#{version} to develop", "develop", 'Home')
+        GitOperator.new.check_diff(path, "develop", "master")
+
+        Logger.highlight("Finish release home for #{version}")
+      else
+        raise Logger.error("There is no release/#{version} branch, please use release home start first.")
+      end
     end
 
     private :generate_module_config, :origin_config_of_module, :find_lastest_tag
