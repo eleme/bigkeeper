@@ -75,6 +75,10 @@ module BigKeeper
             Logger.default("#{module_name} lastest tag is #{lastest_tag}, this tag not publish.")
             "#{$1}pod '#{module_name}#{$4}', :git => '#{module_git}', :tag => '#{lastest_tag}'"
           end
+        elsif ModuleOperateType::RELEASE_START == module_operate_type
+          module_git = BigkeeperParser.module_git(module_name)
+          branch_name = GitOperator.new.current_branch(@path)
+          "#{$1}pod '#{module_name}#{$4}', :git => '#{module_git}', :branch => '#{branch_name}'"
         else
           line
         end
@@ -123,6 +127,68 @@ module BigKeeper
       else
         return [last_tag.chomp, false]
       end
+    end
+
+    def release_start(path, version, user, modules)
+      BigkeeperParser.parse("#{path}/Bigkeeper")
+      version = BigkeeperParser.version if version == 'Version in Bigkeeper file'
+      modules = release_check_changed_modules(path, user) if (modules.nil? || modules.empty?)
+
+      if modules.nil? || modules.empty?
+        Logger.default('no module need to release')
+      end
+
+      #stash home
+      StashService.new.stash(path, GitOperator.new.current_branch(path), 'home')
+      # delete cache
+      CacheOperator.new(path).clean()
+      # cache Podfile
+      # CacheOperator.new(path).save('Podfile')
+      # checkout develop
+      GitService.new.verify_checkout_pull(path, 'develop')
+      # check
+      GitOperator.new.check_diff(path, "develop", "master")
+
+      #checkout release branch
+      Logger.highlight(%Q(Start to checkout Branch release/#{version}))
+
+      GitService.new.verify_checkout(path, "release/#{version}")
+
+      Logger.error("Chechout release/#{version} failed.") unless GitOperator.new.current_branch(path) == "release/#{version}"
+
+      Logger.highlight(%Q(Finish to release/#{version} for home project))
+
+      modules.each do |module_name|
+        Logger.highlight("release checkout release/#{version} for #{module_name}")
+        module_full_path = BigkeeperParser.module_full_path(path, user, module_name)
+        ModuleService.new.release_start(path, user, modules, module_name, version)
+
+        if GitOperator.new.has_branch(module_full_path, "release/#{version}")
+          GitOperator.new.checkout(module_full_path, "release/#{version}")
+        else
+          GitflowOperator.new.start(path, version, GitflowType::RELEASE)
+          GitOperator.new.push_to_remote(path, "release/#{version}")
+          
+          Logger.highlight("Push branch release/'#{version}' for #{module_name}...")
+          GitOperator.new.push_to_remote(module_full_path, "release/#{version}")
+        end
+
+        DepService.dep_operator(path, user).update_module_config(
+                                             module_name,
+                                             ModuleOperateType::RELEASE_START)
+      end
+
+      # step 3 change Info.plist value
+      InfoPlistOperator.new.change_version_build(path, version)
+
+      GitService.new.verify_push(path, "Change version to #{version}", "release/#{version}", 'Home')
+      # DepService.dep_operator(path, user).install(modules, OperateType::RELEASE, true)
+      XcodeOperator.open_workspace(path)
+    end
+
+    def release_module_start(modules, module_name, version)
+      module_full_path = BigkeeperParser.module_full_path(@path, @user, module_name)
+      GitService.new.verify_checkout(module_full_path, "release/#{version}")
     end
 
     private :generate_module_config, :origin_config_of_module, :find_lastest_tag
