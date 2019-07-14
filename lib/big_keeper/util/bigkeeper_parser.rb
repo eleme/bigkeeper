@@ -206,7 +206,6 @@ module BigKeeper
         && @@config[:users][user_name][:mods][module_name][:path]
         File.expand_path(@@config[:users][user_name][:mods][module_name][:path])
       else
-        p @@config[:modules][module_name]
         if @@config[:modules][module_name][:alias]
           "#{home_modules_workspace}#{@@config[:modules][module_name][:alias]}"
         else

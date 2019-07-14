@@ -90,7 +90,7 @@ module BigKeeper
 
       File.open("#{@path}/.bigkeeper/Podfile", 'r', :encoding => 'UTF-8') do |file|
         file.each_line do |line|
-          if line =~ /(\s*)pod(\s*)('|")#{module_name}('|")([\s\S]*)/
+          if line =~ /(\s*)pod(\s*)('|")#{module_name}((\/[_a-zA-Z0-9]+)?)('|")([\s\S]*)/
             origin_config = line
             break
           end
