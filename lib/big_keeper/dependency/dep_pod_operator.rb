@@ -106,7 +106,7 @@ module BigKeeper
       tags_spec_list = Array.new
       tags_module_list = Array.new
 
-      IO.popen("find /Users/#{username}/.cocoapods/repos -type d -name #{module_name}") do |io|
+      IO.popen("find /Users/#{username}/.cocoapods/repos/#{BigkeeperParser.source_spec_name(module_name)} -type d -name #{module_name}") do |io|
         io.each do |line|
           tags_repos_pwd.push(line) if line.include? "#{module_name}"
         end

@@ -8,9 +8,15 @@ require 'big_keeper/util/logger'
 require 'big_keeper/util/pod_operator'
 
 module BigKeeper
-  def self.release_module_start(path, version, user, module_name, ignore)
-    BigkeeperParser.parse("#{path}/Bigkeeper")
+  def self.prerelease_module(path, version, user, modules, ignore)
+    for module_name in modules
+      release_module_start(path, version, user, module_name, ignore)
+    end
+  end
 
+  def self.release_module_start(path, version, user, module_name, ignore)
+    p module_name
+    BigkeeperParser.parse("#{path}/Bigkeeper")
     version = BigkeeperParser.version if version == 'Version in Bigkeeper file'
     module_path = BigkeeperParser.module_full_path(path, user, module_name)
 
@@ -28,37 +34,44 @@ module BigKeeper
     Logger.highlight(%Q(Start checkout #{module_name} to Branch develop))
     GitService.new.verify_checkout_pull(module_path, "develop")
 
-    Logger.highlight(%Q(#{module_name} release start finish))
+    Logger.highlight(%Q(#{module_name} prerelease finish))
   end
 
-## release finish
-  def self.release_module_finish(path, version, user, module_name, spec)
+  def self.release_module(path, version, user, modules, spec)
     BigkeeperParser.parse("#{path}/Bigkeeper")
 
-    version = BigkeeperParser.version if version == 'Version in Bigkeeper file'
-    module_path = BigkeeperParser.module_full_path(path, user, module_name)
+    if !CommandLineUtil.double_check("modules #{modules} will publish version #{version}, are you sure?")
+      Logger.error('module prerelease interrupt')
+    end
 
-    # check commit
-    Logger.error("current branch has unpush files") if GitOperator.new.has_changes(module_path)
+    for module_name in modules
+      release_module_start(path, version, user, module_name, true)
 
-    #修改 podspec 文件
-    # TO DO: - advanced to use Regular Expression
-    has_change = PodfileOperator.new.podspec_change(%Q(#{module_path}/#{module_name}.podspec), version, module_name)
-    GitService.new.verify_push(module_path, "Change version number", "develop", "#{module_name}") if has_change == true
+      version = BigkeeperParser.version if version == 'Version in Bigkeeper file'
+      module_path = BigkeeperParser.module_full_path(path, user, module_name)
 
-    # check out master
-    Logger.highlight("'#{module_name}' checkout branch to master...")
-    GitService.new.verify_checkout_pull(module_path, "master")
+      # check commit
+      Logger.error("current branch has unpush files") if GitOperator.new.has_changes(module_path)
 
-    Logger.highlight(%Q(Merge develop to master))
-    # merge develop to master
-    GitOperator.new.merge(module_path, "develop")
-    GitOperator.new.push_to_remote(module_path, "master")
+      #修改 podspec 文件
+      # TO DO: - advanced to use Regular Expression
+      has_change = PodfileOperator.new.podspec_change(%Q(#{module_path}/#{module_name}.podspec), version, module_name)
+      GitService.new.verify_push(module_path, "Change version number", "develop", "#{module_name}") if has_change == true
 
-    GitOperator.new.tag(module_path, version)
-    # pod repo push
-    if spec == true
-      PodOperator.pod_repo_push(module_path, module_name, BigkeeperParser.source_spec_path(module_name), version)
+      # check out master
+      Logger.highlight("'#{module_name}' checkout branch to master...")
+      GitService.new.verify_checkout_pull(module_path, "master")
+
+      Logger.highlight(%Q(Merge develop to master))
+      # merge develop to master
+      GitOperator.new.merge(module_path, "develop")
+      GitOperator.new.push_to_remote(module_path, "master")
+
+      GitOperator.new.tag(module_path, version)
+      # pod repo push
+      if spec == true
+        PodOperator.pod_repo_push(module_path, module_name, BigkeeperParser.source_spec_path(module_name), version)
+      end
     end
   end
 

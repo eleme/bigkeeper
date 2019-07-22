@@ -15,7 +15,9 @@ module BigKeeper
     end
 
     def load(file)
-      FileUtils.cp("#{@cache_path}/#{file}", "#{@path}/#{file}");
+      if File.exist?(@cache_path)
+        FileUtils.cp("#{@cache_path}/#{file}", "#{@path}/#{file}");
+      end
     end
 
     def clean
