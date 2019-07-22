@@ -42,13 +42,11 @@ module BigKeeper
       spec.command :sync do | sync|
         sync.action do |global_options, options, args|
           LeanCloudLogger.instance.set_command("spec/sync")
-
           path = File.expand_path(global_options[:path])
-          version = global_options[:ver]
           user = global_options[:user].gsub(/[^0-9A-Za-z]/, '').downcase
-          module_name = args
-
-          spec_sync(path, version, user, module_name)
+          help_now!('module name is required') if args.length != 1
+          module_name = args[0]
+          spec_sync(path, user, module_name)
         end
       end
 
