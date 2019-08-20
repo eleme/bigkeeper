@@ -150,7 +150,7 @@ module BigKeeper
       GitOperator.new.check_diff(path, "develop", "master")
 
       #checkout release branch
-      Logger.highlight(%Q(Start to checkout Branch release/#{version}))
+      Logger.highlight(%Q(Start to checkout Home Branch release/#{version}))
 
       GitService.new.verify_checkout(path, "release/#{version}")
 
@@ -161,14 +161,13 @@ module BigKeeper
       modules.each do |module_name|
         Logger.highlight("release checkout release/#{version} for #{module_name}")
         module_full_path = BigkeeperParser.module_full_path(path, user, module_name)
-        ModuleService.new.release_start(path, user, modules, module_name, version)
 
         if GitOperator.new.has_branch(module_full_path, "release/#{version}")
+          Logger.highlight("#{module_name} has release/#{version}")
           GitOperator.new.checkout(module_full_path, "release/#{version}")
         else
-          GitflowOperator.new.start(path, version, GitflowType::RELEASE)
-          GitOperator.new.push_to_remote(path, "release/#{version}")
-
+          Logger.highlight("#{module_name} dont have release/#{version}")
+          ModuleService.new.release_start(path, user, modules, module_name, version)
           Logger.highlight("Push branch release/'#{version}' for #{module_name}...")
           GitOperator.new.push_to_remote(module_full_path, "release/#{version}")
         end
