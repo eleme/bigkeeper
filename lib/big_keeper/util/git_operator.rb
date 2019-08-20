@@ -76,7 +76,6 @@ module BigKeeper
 
     def push_to_remote(path, branch_name)
       Dir.chdir(path) do
-        p GitOperator.remote_local_name(path)
         `git push -u #{GitOperator.remote_local_name(path)} #{branch_name}`
       end
       GitOperator.new.check_push_success(path, branch_name, "#{GitOperator.remote_local_name(path)}/#{branch_name}")

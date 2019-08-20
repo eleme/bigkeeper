@@ -25,20 +25,21 @@ module BigKeeper
 
     full_name = branch_name.gsub(/#{GitflowType.name(type)}\//, '')
 
-    current_modules = ModuleCacheOperator.new(path).current_path_modules
-
     # Verify input modules
     modules = BigkeeperParser.verify_modules(modules)
 
-    Logger.highlight("Start to update modules for branch '#{branch_name}'...")
+    current_modules = ModuleCacheOperator.new(path).current_path_modules
 
-    add_modules = modules - current_modules
-    
-    if add_modules.empty?
+    ModuleCacheOperator.new(path).clean_modules
+    ModuleCacheOperator.new(path).cache_path_modules(current_modules + modules, modules, [])
+
+    Logger.highlight("Start to add modules for branch '#{branch_name}'...")
+
+    if modules.empty?
       Logger.default("There is nothing changed with modules #{modules}.")
     else
       # Modify podfile as path and Start modules feature
-      add_modules.each do |module_name|
+      modules.each do |module_name|
         ModuleCacheOperator.new(path).add_path_module(module_name)
         ModuleService.new.add(path, user, module_name, full_name, type)
       end
@@ -64,7 +65,10 @@ module BigKeeper
     # Verify input modules
     modules = BigkeeperParser.verify_modules(modules)
 
-    Logger.highlight("Start to update modules for branch '#{branch_name}'...")
+    ModuleCacheOperator.new(path).clean_modules
+    ModuleCacheOperator.new(path).cache_path_modules(current_module + modules, [], modules)
+
+    Logger.highlight("Start to delete modules for branch '#{branch_name}'...")
 
     if modules.empty?
       Logger.default("There is nothing changed with modules #{modules}.")
