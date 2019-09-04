@@ -83,7 +83,8 @@ module BigKeeper
 
     def pull(path)
       Dir.chdir(path) do
-        `git pull`
+        #  git pull <remote> <branch>
+        `git pull #{GitOperator.remote_local_name(path)} #{GitOperator.new.current_branch(path)}`
       end
     end
 
@@ -219,15 +220,27 @@ module BigKeeper
         compare_branch_commits.map { |item|
             Logger.default(item)
         }
-        Logger.error("#{compare_branch} branch has commit doesn't committed in #{branch}, please check")
+        Logger.highlight("#{compare_branch} branch has commit doesn't committed in #{branch}, please check")
+        return false
       else
         Logger.highlight("#{compare_branch} branch doesn't have commit before #{branch}")
+        return true
       end
     end
 
     def merge(path, branch_name)
-      IO.popen("cd '#{path}'; git merge #{branch_name}") do |line|
-        Logger.error("Merge conflict in #{branch_name}") if line.include? 'Merge conflict'
+      IO.popen("cd '#{path}'; git merge #{branch_name}") do |io|
+        io.each do |line|
+          Logger.error("Merge conflict in #{line}") if line.include? 'Merge conflict'
+        end
+      end
+    end
+
+    def merge_no_ff(path, branch_name)
+      IO.popen("cd '#{path}'; git merge #{branch_name} --no-ff") do |io|
+        io.each do |line|
+          Logger.error("Merge conflict in #{line}") if line.include? 'Merge conflict'
+        end
       end
     end
 

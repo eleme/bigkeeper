@@ -63,15 +63,10 @@ module BigKeeper
       VersionConfigOperator.change_version(version_config_file, modules, version)
     end
 
-    def release_home_finish(modules, version)
-      version_config_file = "#{@path}/doc/config/version-config.gradle"
-      VersionConfigOperator.change_version(version_config_file, modules, version)
-    end
-
     def open
     end
 
-    def release_start(path, version, user, modules)
+    def release_home_start(path, version, user, modules)
       BigkeeperParser.parse("#{path}/Bigkeeper")
       version = BigkeeperParser.version if version == 'Version in Bigkeeper file'
       modules = release_check_changed_modules(path, user) if (modules.nil? || modules.empty?)
@@ -117,7 +112,7 @@ module BigKeeper
         'Home')
     end
 
-    def self.release_finish(path, version, user, modules)
+    def release_home_finish(path, version, user, modules)
       BigkeeperParser.parse("#{path}/Bigkeeper")
       version = BigkeeperParser.version if version == 'Version in Bigkeeper file'
       modules = release_check_changed_modules(path, user) if (modules.nil? || modules.empty?)
@@ -141,7 +136,8 @@ module BigKeeper
       end
 
       #release home
-      DepService.dep_operator(path, user).release_home_finish(modules, version)
+      version_config_file = "#{@path}/doc/config/version-config.gradle"
+      VersionConfigOperator.change_version(version_config_file, modules, version)
 
       # Push home changes to remote
       Logger.highlight("Push branch 'develop' for 'Home'...")

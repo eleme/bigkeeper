@@ -75,10 +75,6 @@ module BigKeeper
             Logger.default("#{module_name} lastest tag is #{lastest_tag}, this tag not publish.")
             "#{$1}pod '#{module_name}#{$4}', :git => '#{module_git}', :tag => '#{lastest_tag}'"
           end
-        elsif ModuleOperateType::RELEASE_START == module_operate_type
-          module_git = BigkeeperParser.module_git(module_name)
-          branch_name = GitOperator.new.current_branch(@path)
-          "#{$1}pod '#{module_name}#{$4}', :git => '#{module_git}', :branch => '#{branch_name}'"
         else
           line
         end
@@ -129,10 +125,9 @@ module BigKeeper
       end
     end
 
-    def release_start(path, version, user, modules)
+    def release_home_start(path, version, user, modules)
       BigkeeperParser.parse("#{path}/Bigkeeper")
       version = BigkeeperParser.version if version == 'Version in Bigkeeper file'
-      modules = release_check_changed_modules(path, user) if (modules.nil? || modules.empty?)
 
       if modules.nil? || modules.empty?
         Logger.default('no module need to release')
@@ -158,23 +153,25 @@ module BigKeeper
 
       Logger.highlight(%Q(Finish to release/#{version} for home project))
 
-      modules.each do |module_name|
-        Logger.highlight("release checkout release/#{version} for #{module_name}")
-        module_full_path = BigkeeperParser.module_full_path(path, user, module_name)
+      if !modules.nil? && !modules.empty?
+        modules.each do |module_name|
+          Logger.highlight("release checkout release/#{version} for #{module_name}")
+          module_full_path = BigkeeperParser.module_full_path(path, user, module_name)
 
-        if GitOperator.new.has_branch(module_full_path, "release/#{version}")
-          Logger.highlight("#{module_name} has release/#{version}")
-          GitOperator.new.checkout(module_full_path, "release/#{version}")
-        else
-          Logger.highlight("#{module_name} dont have release/#{version}")
-          ModuleService.new.release_start(path, user, modules, module_name, version)
-          Logger.highlight("Push branch release/'#{version}' for #{module_name}...")
-          GitOperator.new.push_to_remote(module_full_path, "release/#{version}")
+          if GitOperator.new.has_branch(module_full_path, "release/#{version}")
+            Logger.highlight("#{module_name} has release/#{version}")
+            GitService.new.verify_checkout_pull(module_full_path, "release/#{version}")
+          else
+            Logger.highlight("#{module_name} dont have release/#{version}")
+            ModuleService.new.release_start(path, user, modules, module_name, version)
+            Logger.highlight("Push branch release/'#{version}' for #{module_name}...")
+            GitOperator.new.push_to_remote(module_full_path, "release/#{version}")
+          end
+
+          DepService.dep_operator(path, user).update_module_config(
+                                               module_name,
+                                               ModuleOperateType::RELEASE_START)
         end
-
-        DepService.dep_operator(path, user).update_module_config(
-                                             module_name,
-                                             ModuleOperateType::RELEASE_START)
       end
 
       # step 3 change Info.plist value
@@ -190,20 +187,20 @@ module BigKeeper
       GitService.new.verify_checkout(module_full_path, "release/#{version}")
     end
 
-    def release_finish(path, version, user, modules)
+    def release_home_finish(path, version, user, modules)
       BigkeeperParser.parse("#{path}/Bigkeeper")
       version = BigkeeperParser.version if version == 'Version in Bigkeeper file'
-      modules = BigkeeperParser.module_names
 
       if GitOperator.new.has_branch(path, "release/#{version}")
-        GitService.new.verify_checkout(path, "release/#{version}")
+
+        GitService.new.verify_checkout_pull(path, "release/#{version}")
 
         PodfileOperator.new.replace_all_module_release(path, user, modules, ModuleOperateType::RELEASE)
 
         GitService.new.verify_push(path, "finish release branch", "release/#{version}", 'Home')
 
         # master
-        GitOperator.new.checkout(path, "master")
+        GitService.new.verify_checkout(path, "master")
         GitOperator.new.merge(path, "release/#{version}")
         GitService.new.verify_push(path, "release V#{version}", "master", 'Home')
 

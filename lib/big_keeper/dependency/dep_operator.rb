@@ -33,7 +33,7 @@ module BigKeeper
       raise "You should override this method in subclass."
     end
 
-    def release_home_finish(modules, version)
+    def release_home_finish(path, version, user, modules)
       raise "You should override this method in subclass."
     end
 
