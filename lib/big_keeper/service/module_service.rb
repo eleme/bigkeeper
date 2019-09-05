@@ -183,14 +183,6 @@ module BigKeeper
       # checkout develop
       GitService.new.verify_checkout_pull(module_full_path, 'develop')
       DepService.dep_operator(path, user).release_module_start(modules, module_name, version)
-
-      # Push home changes to remote
-      Logger.highlight("Push branch 'develop' for #{module_name}...")
-      GitService.new.verify_push(
-        module_full_path,
-        "release start for #{version}",
-        'develop',
-        "#{module_name}")
     end
 
     def release_finish(path, user, modules, module_name, version)

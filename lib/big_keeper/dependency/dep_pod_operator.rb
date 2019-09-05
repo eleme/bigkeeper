@@ -86,7 +86,7 @@ module BigKeeper
 
       File.open("#{@path}/.bigkeeper/Podfile", 'r', :encoding => 'UTF-8') do |file|
         file.each_line do |line|
-          if line =~ /(\s*)pod(\s*)('|")#{module_name}('|")([\s\S]*)/
+          if line =~ /(\s*)pod(\s*)('|")#{module_name}((\/[_a-zA-Z0-9]+)?)('|")([\s\S]*)/
             origin_config = line
             break
           end
@@ -102,7 +102,7 @@ module BigKeeper
       tags_spec_list = Array.new
       tags_module_list = Array.new
 
-      IO.popen("find /Users/#{username}/.cocoapods/repos -type d -name #{module_name}") do |io|
+      IO.popen("find /Users/#{username}/.cocoapods/repos/#{BigkeeperParser.source_spec_name(module_name)} -type d -name #{module_name}") do |io|
         io.each do |line|
           tags_repos_pwd.push(line) if line.include? "#{module_name}"
         end
@@ -122,6 +122,106 @@ module BigKeeper
         return [last_tag.chomp, true]
       else
         return [last_tag.chomp, false]
+      end
+    end
+
+    def release_home_start(path, version, user, modules)
+      BigkeeperParser.parse("#{path}/Bigkeeper")
+      version = BigkeeperParser.version if version == 'Version in Bigkeeper file'
+
+      if modules.nil? || modules.empty?
+        Logger.default('no module need to release')
+      end
+
+      #stash home
+      StashService.new.stash(path, GitOperator.new.current_branch(path), 'home')
+      # delete cache
+      CacheOperator.new(path).clean()
+      # cache Podfile
+      CacheOperator.new(path).save('Podfile')
+      # checkout develop
+      GitService.new.verify_checkout_pull(path, 'develop')
+      # check
+      GitOperator.new.check_diff(path, "develop", "master")
+
+      #checkout release branch
+      Logger.highlight(%Q(Start to checkout Home Branch release/#{version}))
+
+      GitService.new.verify_checkout(path, "release/#{version}")
+
+      raise Logger.error("Chechout release/#{version} failed.") unless GitOperator.new.current_branch(path) == "release/#{version}"
+
+      Logger.highlight(%Q(Finish to release/#{version} for home project))
+
+      if !modules.nil? && !modules.empty?
+        modules.each do |module_name|
+          Logger.highlight("release checkout release/#{version} for #{module_name}")
+          module_full_path = BigkeeperParser.module_full_path(path, user, module_name)
+
+          if GitOperator.new.has_branch(module_full_path, "release/#{version}")
+            Logger.highlight("#{module_name} has release/#{version}")
+            GitService.new.verify_checkout_pull(module_full_path, "release/#{version}")
+          else
+            Logger.highlight("#{module_name} dont have release/#{version}")
+            ModuleService.new.release_start(path, user, modules, module_name, version)
+            Logger.highlight("Push branch release/'#{version}' for #{module_name}...")
+            GitOperator.new.push_to_remote(module_full_path, "release/#{version}")
+          end
+
+          DepService.dep_operator(path, user).update_module_config(
+                                               module_name,
+                                               ModuleOperateType::RELEASE_START)
+        end
+      end
+
+      # step 3 change Info.plist value
+      InfoPlistOperator.new.change_version_build(path, version)
+
+      GitService.new.verify_push(path, "Change version to #{version}", "release/#{version}", 'Home')
+      DepService.dep_operator(path, user).install(modules, OperateType::RELEASE, true)
+      XcodeOperator.open_workspace(path)
+    end
+
+    def release_module_start(modules, module_name, version)
+      module_full_path = BigkeeperParser.module_full_path(@path, @user, module_name)
+      GitService.new.verify_checkout(module_full_path, "release/#{version}")
+    end
+
+    def release_home_finish(path, version, user, modules)
+      BigkeeperParser.parse("#{path}/Bigkeeper")
+      version = BigkeeperParser.version if version == 'Version in Bigkeeper file'
+
+      if GitOperator.new.has_branch(path, "release/#{version}")
+
+        GitService.new.verify_checkout_pull(path, "release/#{version}")
+
+        PodfileOperator.new.replace_all_module_release(path, user, modules, ModuleOperateType::RELEASE)
+
+        GitService.new.verify_push(path, "finish release branch", "release/#{version}", 'Home')
+
+        # master
+        GitService.new.verify_checkout(path, "master")
+        GitOperator.new.merge(path, "release/#{version}")
+        GitService.new.verify_push(path, "release V#{version}", "master", 'Home')
+
+        GitOperator.new.tag(path, version)
+
+        # release branch
+        GitOperator.new.checkout(path, "release/#{version}")
+        CacheOperator.new(path).load('Podfile')
+        CacheOperator.new(path).clean()
+        GitOperator.new.commit(path, "reset #{version} Podfile")
+        GitService.new.verify_push(path, "reset #{version} Podfile", "release/#{version}", 'Home')
+
+        # develop
+        GitOperator.new.checkout(path, "develop")
+        GitOperator.new.merge(path, "release/#{version}")
+        GitService.new.verify_push(path, "merge release/#{version} to develop", "develop", 'Home')
+        GitOperator.new.check_diff(path, "develop", "master")
+
+        Logger.highlight("Finish release home for #{version}")
+      else
+        raise Logger.error("There is no release/#{version} branch, please use release home start first.")
       end
     end
 

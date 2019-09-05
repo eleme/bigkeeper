@@ -8,6 +8,7 @@ require 'big_keeper/command/feature&hotfix/rebase'
 require 'big_keeper/command/feature&hotfix/publish'
 require 'big_keeper/command/feature&hotfix/delete'
 require 'big_keeper/command/feature&hotfix/list'
+require 'big_keeper/command/feature&hotfix/module'
 require 'big_keeper/util/leancloud_logger'
 
 module BigKeeper
@@ -40,6 +41,33 @@ module BigKeeper
           help_now!('user name is required') if user and user.empty?
           modules = args[(0...args.length)] if args.length > 0
           update(path, user, modules, type)
+        end
+      end
+
+      c.desc "Modules operate for the #{GitflowType.name(type)}"
+      c.command :module do |m|
+        m.desc "Add modules for the #{GitflowType.name(type)}"
+        m.command :add do |add|
+          add.action do |global_options, options, args|
+            path = File.expand_path(global_options[:path])
+            version = global_options[:ver]
+            user = global_options[:user].gsub(/[^0-9A-Za-z]/, '').downcase
+            LeanCloudLogger.instance.set_command("feature/module/add")
+            modules = args[(0...args.length)] if args.length > 0
+            module_add(path, user, modules, type)
+          end
+        end
+
+        m.desc "delete modules for the #{GitflowType.name(type)}"
+        m.command :delete do |delete|
+          delete.action do |global_options, options, args|
+            path = File.expand_path(global_options[:path])
+            version = global_options[:ver]
+            user = global_options[:user].gsub(/[^0-9A-Za-z]/, '').downcase
+            LeanCloudLogger.instance.set_command("feature/module/delete")
+            modules = args[(0...args.length)] if args.length > 0
+            module_del(path, user, modules, type)
+          end
         end
       end
 

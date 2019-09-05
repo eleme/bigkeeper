@@ -1,7 +1,7 @@
 PATH
   remote: .
   specs:
-    bigkeeper (0.9.11)
+    bigkeeper (0.9.14)
       big_resources
       big_stash (~> 0.1)
       cocoapods

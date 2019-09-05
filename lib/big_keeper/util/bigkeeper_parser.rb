@@ -46,8 +46,8 @@ module BigKeeper
     @@current_user = ''
 
     def self.parse(bigkeeper)
+      @@config = {}
       if @@config.empty?
-
         Logger.error("Can't find a Bigkeeper file in current directory.") if !FileOperator.definitely_exists?(bigkeeper)
 
         content = File.read(bigkeeper, :encoding => 'UTF-8')
@@ -183,6 +183,8 @@ module BigKeeper
     end
 
     def self.module_full_path(home_path, user_name, module_name)
+      Logger.error("Can't find a Pod named #{module_name} in current directory.") unless @@config[:modules].invert.has_value?(module_name)
+
       if @@config[:users] \
         && @@config[:users][user_name] \
         && @@config[:users][user_name][:mods] \
@@ -206,7 +208,6 @@ module BigKeeper
         && @@config[:users][user_name][:mods][module_name][:path]
         File.expand_path(@@config[:users][user_name][:mods][module_name][:path])
       else
-        p @@config[:modules][module_name]
         if @@config[:modules][module_name][:alias]
           "#{home_modules_workspace}#{@@config[:modules][module_name][:alias]}"
         else
