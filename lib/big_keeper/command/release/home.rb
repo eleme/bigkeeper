@@ -8,6 +8,20 @@ require 'big_keeper/util/xcode_operator'
 require 'big_keeper/model/operate_type'
 
 module BigKeeper
+  def self.prerelease_start(path, version, user, modules)
+    BigkeeperParser.parse("#{path}/Bigkeeper")
+    version = BigkeeperParser.version if version == 'Version in Bigkeeper file'
+    modules = BigkeeperParser.module_names
+    DepService.dep_operator(path, user).prerelease_start(path, version, user, modules)
+  end
+
+  def self.prerelease_finish(path, version, user, modules)
+    BigkeeperParser.parse("#{path}/Bigkeeper")
+    version = BigkeeperParser.version if version == 'Version in Bigkeeper file'
+    modules = BigkeeperParser.module_names
+    DepService.dep_operator(path, user).prerelease_finish(path, version, user, modules)
+  end
+
   def self.release_home_start(path, version, user, modules)
     DepService.dep_operator(path, user).release_home_start(path, version, user, modules)
   end
@@ -24,7 +38,7 @@ module BigKeeper
         modules << module_name
       end
     end
-
+54322
     DepService.dep_operator(path, user).release_home_finish(path, version, user, modules)
   end
 

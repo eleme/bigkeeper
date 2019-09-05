@@ -178,7 +178,7 @@ module BigKeeper
       InfoPlistOperator.new.change_version_build(path, version)
 
       GitService.new.verify_push(path, "Change version to #{version}", "release/#{version}", 'Home')
-      # DepService.dep_operator(path, user).install(modules, OperateType::RELEASE, true)
+      DepService.dep_operator(path, user).install(modules, OperateType::RELEASE, true)
       XcodeOperator.open_workspace(path)
     end
 

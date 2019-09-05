@@ -40,8 +40,6 @@ module BigKeeper
       # check commit
       Logger.error("current branch has unpush files") if GitOperator.new.has_changes(module_path)
 
-      GitService.new.verify_checkout_pull(module_path, "release/#{version}")
-
       # check out master
       Logger.highlight("'#{module_name}' checkout branch to master...")
       GitService.new.verify_checkout_pull(module_path, "master")
