@@ -21,6 +21,22 @@ module BigKeeper
       raise "You should override this method in subclass."
     end
 
+    def release_module_start(modules, module_name, version)
+      raise "You should override this method in subclass."
+    end
+
+    def release_module_finish(modules, module_name, version)
+      raise "You should override this method in subclass."
+    end
+
+    def release_home_start(modules, version)
+      raise "You should override this method in subclass."
+    end
+
+    def release_home_finish(modules, version)
+      raise "You should override this method in subclass."
+    end
+
     def install(modules, type, should_update)
       raise "You should override this method in subclass."
     end

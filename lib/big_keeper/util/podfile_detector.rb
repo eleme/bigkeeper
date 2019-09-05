@@ -17,7 +17,7 @@ class PodfileParser
 
   def parse(path)
     @main_path = path
-    podfile_lines = File.readlines("#{@main_path}/Podfile")
+    podfile_lines = File.readlines("#{@main_path}/Podfile", :encoding => 'UTF-8')
     Logger.highlight("Analyzing Podfile...") unless podfile_lines.size.zero?
     podfile_lines.collect do |sentence|
       if /pod / =~ sentence
@@ -28,7 +28,7 @@ class PodfileParser
   end
 
   def get_unlock_pod_list
-    podfile_lines = File.readlines("#{@main_path}/Podfile")
+    podfile_lines = File.readlines("#{@main_path}/Podfile", :encoding => 'UTF-8')
     #Logger.highlight("Analyzing Podfile...") unless podfile_lines.size.zero?
     podfile_lines.collect do |sentence|
     deal_podfile_line(sentence) unless sentence =~(/'(\d+.){1,2}\d+'/)

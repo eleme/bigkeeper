@@ -46,7 +46,7 @@ module BigKeeper
 
       dest_path = File.dirname(big_settings_file)
       FileUtils.mkdir_p(dest_path) unless File.exist?(dest_path)
-      file = File.new(big_settings_file, 'w')
+      file = File.new(big_settings_file, 'w', :encoding => 'UTF-8')
       begin
         file << result
         file.close
@@ -58,9 +58,9 @@ module BigKeeper
         return
       end
 
-      temp_file = Tempfile.new('.settings.gradle.tmp')
+      temp_file = Tempfile.new('.settings.gradle.tmp', :encoding => 'UTF-8')
       begin
-        File.open(settings_file, 'r') do |file|
+        File.open(settings_file, 'r', :encoding => 'UTF-8') do |file|
           file.each_line do |line|
             temp_file.puts(line)
           end
@@ -92,7 +92,7 @@ module BigKeeper
 
       dest_path = File.dirname(big_build_file)
       FileUtils.mkdir_p(dest_path) unless File.exist?(dest_path)
-      file = File.new(big_build_file, 'w')
+      file = File.new(big_build_file, 'w', :encoding => 'UTF-8')
       begin
         file << result
         file.close
@@ -286,6 +286,7 @@ module BigKeeper
         version_name = branch_name.sub(/([\s\S]*)\/(\d+.\d+.\d+)_([\s\S]*)/){ $2 }
       else
         version_name = branch_name.sub(/([\s\S]*)\/([\s\S]*)/){ $2 }
+        version_name = version_name.gsub('_', '-')
       end
       version_name
     end
@@ -294,7 +295,7 @@ module BigKeeper
       if !File.exist?(bigkeeper_config_file)
         return
       end
-      temp_file = Tempfile.new('.bigkeeper_config.tmp')
+      temp_file = Tempfile.new('.bigkeeper_config.tmp', :encoding => 'UTF-8')
       isBigkeeperScript = false
       isBigkeeperBackupScript = false
       begin

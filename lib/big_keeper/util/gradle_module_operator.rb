@@ -59,6 +59,7 @@ module BigKeeper
       version_name = ''
       if ModuleOperateType::ADD == module_operate_type
         version_name = branch_name.sub(/([\s\S]*)\/([\s\S]*)/){ $2 }
+        version_name = version_name.gsub('_', '-')
       elsif ModuleOperateType::FINISH == module_operate_type
         version_name = branch_name.sub(/([\s\S]*)\/(\d+.\d+.\d+)_([\s\S]*)/){ $2 }
       end

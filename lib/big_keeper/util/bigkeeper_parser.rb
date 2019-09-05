@@ -50,7 +50,7 @@ module BigKeeper
 
         Logger.error("Can't find a Bigkeeper file in current directory.") if !FileOperator.definitely_exists?(bigkeeper)
 
-        content = File.read bigkeeper
+        content = File.read(bigkeeper, :encoding => 'UTF-8')
         content.gsub!(/version\s/, 'BigKeeper::version ')
         content.gsub!(/user\s/, 'BigKeeper::user ')
         content.gsub!(/home\s/, 'BigKeeper::home ')
@@ -229,6 +229,10 @@ module BigKeeper
 
     def self.module_maven_artifact(module_name)
       @@config[:modules][module_name][:maven_artifact]
+    end
+
+    def self.module_version_alias(module_name)
+      @@config[:modules][module_name][:version_alias]
     end
 
     def self.module_pulls(module_name)

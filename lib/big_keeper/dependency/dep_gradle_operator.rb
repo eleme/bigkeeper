@@ -2,6 +2,7 @@ require 'big_keeper/dependency/dep_operator'
 require 'big_keeper/util/gradle_module_operator'
 require 'big_keeper/util/gradle_file_operator'
 require 'big_keeper/model/operate_type'
+require 'big_keeper/util/version_config_operator'
 
 module BigKeeper
   # Operator for podfile
@@ -41,6 +42,30 @@ module BigKeeper
       elsif OperateType::PUBLISH == type
         recover()
       end
+    end
+
+    def release_module_start(modules, module_name, version)
+        module_full_path = BigkeeperParser.module_full_path(@path, @user, module_name)
+        version_config_file = "#{module_full_path}/doc/config/version-config.gradle"
+        version = "#{version}-SNAPSHOT" unless version.include?'SNAPSHOT'
+        VersionConfigOperator.change_version(version_config_file, modules, version)
+    end
+
+    def release_module_finish(modules, module_name, version)
+        module_full_path = BigkeeperParser.module_full_path(@path, @user, module_name)
+        version_config_file = "#{module_full_path}/doc/config/version-config.gradle"
+        VersionConfigOperator.change_version(version_config_file, modules, version)
+    end
+
+    def release_home_start(modules, version)
+      version_config_file = "#{@path}/doc/config/version-config.gradle"
+      version = "#{version}-SNAPSHOT" unless version.include?'SNAPSHOT'
+      VersionConfigOperator.change_version(version_config_file, modules, version)
+    end
+
+    def release_home_finish(modules, version)
+      version_config_file = "#{@path}/doc/config/version-config.gradle"
+      VersionConfigOperator.change_version(version_config_file, modules, version)
     end
 
     def open

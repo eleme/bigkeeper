@@ -17,7 +17,7 @@ module BigKeeper
     def parse(main_path)
       self.main_path = main_path
       $mode = 'PODS'
-      podfile_lock_lines = File.readlines("#{main_path}/Podfile.lock")
+      podfile_lock_lines = File.readlines("#{main_path}/Podfile.lock", :encoding => 'UTF-8')
       Logger.highlight("Analyzing Podfile.lock...")
       podfile_lock_lines.each do |sentence|
         if sentence.include?('PODS')
