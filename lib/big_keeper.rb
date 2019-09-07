@@ -51,18 +51,6 @@ module BigKeeper
       is_show_log = false
     end
     LeanCloudLogger.instance.end_log(true, is_show_log)
-
-    current_cmd = LeanCloudLogger.instance.command
-
-    if BigkeeperParser.post_install_command.keys.include? current_cmd
-      path = global_options[:path]
-      cmd = BigkeeperParser.post_install_command[current_cmd]
-      if path
-        Dir.chdir(path) do
-          system cmd
-        end
-      end
-    end
   end
 
   feature_and_hotfix_command(GitflowType::FEATURE)

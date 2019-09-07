@@ -50,7 +50,19 @@ module BigKeeper
       # Rebase Home
       GitService.new.verify_rebase(path, GitflowType.base_branch(type), 'Home')
 
-      `open #{BigkeeperParser.home_pulls()}`
+      current_cmd = LeanCloudLogger.instance.command
+      cmds = BigkeeperParser.post_install_command
+
+      if cmds && (cmds.keys.include? current_cmd)
+        cmd = BigkeeperParser.post_install_command[current_cmd]
+        if path
+          Dir.chdir(path) do
+            system cmd
+          end
+        end
+      else
+        `open #{BigkeeperParser.home_pulls()}`
+      end
     ensure
     end
   end

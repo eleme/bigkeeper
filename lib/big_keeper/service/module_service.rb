@@ -87,7 +87,19 @@ module BigKeeper
       module_full_path = BigkeeperParser.module_full_path(path, user, module_name)
       GitService.new.verify_push(module_full_path, "publish branch #{home_branch_name}", home_branch_name, module_name)
 
-      `open #{BigkeeperParser.module_pulls(module_name)}`
+      current_cmd = LeanCloudLogger.instance.command
+      cmds = BigkeeperParser.post_install_command
+
+      if cmds && (cmds.keys.include? current_cmd)
+        cmd = BigkeeperParser.post_install_command[current_cmd]
+        if module_full_path
+          Dir.chdir(module_full_path) do
+            system cmd
+          end
+        end
+      else
+        `open #{BigkeeperParser.module_pulls(module_name)}`
+      end
 
       ModuleCacheOperator.new(path).del_git_module(module_name)
     end
