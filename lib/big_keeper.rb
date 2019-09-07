@@ -41,17 +41,29 @@ module BigKeeper
     exit
   end
 
-   # pre do |global_options, command, options, args|
-   #   LeanCloudLogger.instance.start_log(global_options, args)
-   # end
-   #
-   # post do |global_options, command, options, args|
-   #   is_show_log = true
-   #   if global_options[:log] == 'true'
-   #     is_show_log = false
-   #   end
-   #   LeanCloudLogger.instance.end_log(true, is_show_log)
-   # end
+  pre do |global_options, command, options, args|
+    LeanCloudLogger.instance.start_log(global_options, args)
+  end
+
+  post do |global_options, command, options, args|
+    is_show_log = true
+    if global_options[:log] == 'true'
+      is_show_log = false
+    end
+    LeanCloudLogger.instance.end_log(true, is_show_log)
+
+    current_cmd = LeanCloudLogger.instance.command
+
+    if BigkeeperParser.post_install_command.keys.include? current_cmd
+      path = global_options[:path]
+      cmd = BigkeeperParser.post_install_command[current_cmd]
+      if path
+        Dir.chdir(path) do
+          system cmd
+        end
+      end
+    end
+  end
 
   feature_and_hotfix_command(GitflowType::FEATURE)
 
