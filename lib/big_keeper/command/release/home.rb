@@ -11,7 +11,6 @@ module BigKeeper
   def self.prerelease_start(path, version, user, modules)
     BigkeeperParser.parse("#{path}/Bigkeeper")
     version = BigkeeperParser.version if version == 'Version in Bigkeeper file'
-    modules = BigkeeperParser.module_names
     DepService.dep_operator(path, user).prerelease_start(path, version, user, modules)
   end
 

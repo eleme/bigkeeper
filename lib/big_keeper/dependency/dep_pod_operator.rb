@@ -170,7 +170,7 @@ module BigKeeper
 
           DepService.dep_operator(path, user).update_module_config(
                                                module_name,
-                                               ModuleOperateType::RELEASE_START)
+                                               ModuleOperateType::FINISH)
         end
       end
 
