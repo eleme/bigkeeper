@@ -20,9 +20,9 @@ module BigKeeper
     def generate_pod_config(pod_name, version, comment)
       module_config = ''
       if comment != nil
-        module_config = "  pod '#{pod_name}' , '#{version}' # #{comment}"
+        module_config = "  pod '#{pod_name}', '#{version}' # #{comment}"
       else
-        module_config =  "  pod '#{pod_name}' , '#{version}'"
+        module_config =  "  pod '#{pod_name}', '#{version}'"
       end
     end
 
@@ -36,7 +36,7 @@ module BigKeeper
     end
 
     def find_and_lock(podfile, dictionary)
-      temp_file = Tempfile.new('.Podfile.tmp')
+      temp_file = Tempfile.new('.Podfile.tmp', :encoding => 'UTF-8')
       begin
         File.open(podfile, 'r') do |file|
           file.each_line do |line|
@@ -50,6 +50,7 @@ module BigKeeper
           end
         end
         if !dictionary.empty?
+          temp_file.puts ''
           temp_file.puts 'def sub_dependency'
           dictionary.keys.each do |sub_pod|
             temp_file.puts generate_pod_config(sub_pod, dictionary[sub_pod], 'bigkeeper')
@@ -65,9 +66,9 @@ module BigKeeper
     end
 
     def find_and_upgrade(podfile, dictionary)
-      temp_file = Tempfile.new('.Podfile.tmp')
+      temp_file = Tempfile.new('.Podfile.tmp', :encoding => 'UTF-8')
       begin
-        File.open(podfile, 'r') do |file|
+        File.open(podfile, 'r', :encoding => 'UTF-8') do |file|
           file.each_line do |line|
             pod_model = PodfileParser.get_pod_model(line)
             if pod_model != nil && pod_model.name != nil && dictionary[pod_model.name] != nil
@@ -87,10 +88,10 @@ module BigKeeper
     end
 
     def podspec_change(podspec_file, version, module_name)
-      temp_file = Tempfile.new(".#{module_name}.podspec")
+      temp_file = Tempfile.new(".#{module_name}.podspec", :encoding => 'UTF-8')
       has_change = false
       begin
-        File.open(podspec_file, 'r') do |file|
+        File.open(podspec_file, 'r', :encoding => 'UTF-8') do |file|
           file.each_line do |line|
             if line.include?("s.version")
               temp_line = line

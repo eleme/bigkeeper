@@ -51,7 +51,7 @@ module BigKeeper
             branch_dic["is_remote"] = true
           end
 
-          if home_branch_name =~ /^origin\//
+          if home_branch_name =~ /^#{GitOperator.remote_local_name(path)}\//
             home_branch_name = $~.post_match
           end
 

@@ -1,38 +1,46 @@
 require 'big_keeper/command/release/home'
 require 'big_keeper/command/release/module'
 require 'big_keeper/util/leancloud_logger'
-require 'big_keeper/command/release/start'
-require 'big_keeper/command/release/finish'
 require 'big_keeper/util/command_line_util'
 
 module BigKeeper
   def self.release_command
-    desc 'Gitflow release operations'
-    command :release do |c|
-
-      c.desc 'release project start'
+    desc 'Prerelease home project command'
+    command :prerelease do |c|
+      c.desc 'Prerelease home project start. (for Andriod)'
       c.command :start do |start|
         start.action do |global_options, options, args|
           path = File.expand_path(global_options[:path])
           version = global_options[:ver]
           user = global_options[:user].gsub(/[^0-9A-Za-z]/, '').downcase
+          LeanCloudLogger.instance.set_command("prerelease/start")
+
+          help_now!('user name is required') if user and user.empty?
+          raise Logger.error("release version is required") if version == nil
           modules = args[(0...args.length)] if args.length > 0
-          release_start(path, version, user, modules)
+          prerelease_start(path, version, user, modules)
         end
       end
 
-      c.desc 'release project finish'
+      c.desc 'Prerelease home project finish.'
       c.command :finish do |finish|
         finish.action do |global_options, options, args|
           path = File.expand_path(global_options[:path])
           version = global_options[:ver]
           user = global_options[:user].gsub(/[^0-9A-Za-z]/, '').downcase
+          LeanCloudLogger.instance.set_command("prerelease/start")
+
+          help_now!('user name is required') if user and user.empty?
+          raise Logger.error("release version is required") if version == nil
           modules = args[(0...args.length)] if args.length > 0
-          release_finish(path, version, user, modules)
+          prerelease_finish(path, version, user, modules)
         end
       end
+    end
 
-      c.desc 'Release home project operations'
+    desc 'Release home project & module.'
+    command :release do |c|
+      c.desc 'Release home project & module.'
       c.command :home do |home|
         home.desc 'Start release home project'
         home.command :start do |start|
@@ -44,7 +52,8 @@ module BigKeeper
 
             help_now!('user name is required') if user and user.empty?
             raise Logger.error("release version is required") if version == nil
-            release_home_start(path, version, user)
+            modules = args[(0...args.length)] if args.length > 0
+            release_home_start(path, version, user, modules)
           end
         end
 
@@ -53,46 +62,29 @@ module BigKeeper
           finish.action do |global_options, options, args|
             path = File.expand_path(global_options[:path])
             version = global_options[:ver]
+            user = global_options[:user].gsub(/[^0-9A-Za-z]/, '').downcase
             LeanCloudLogger.instance.set_command("release/home/finish")
 
+            help_now!('user name is required') if user and user.empty?
             raise Logger.error("release version is required") if version == nil
-            release_home_finish(path, version)
+            release_home_finish(path, version, user, modules)
           end
         end
       end
 
-      c.desc 'release module'
+      c.desc 'if ignore warning'
       c.switch [:i,:ignore]
+      c.desc 'Release single module operations (for iOS)'
       c.command :module do |m|
-        m.desc 'Start release module project'
-        m.command :start do |start|
-          start.action do |global_options, options, args|
-            path = File.expand_path(global_options[:path])
-            version = global_options[:ver]
-            user = global_options[:user].gsub(/[^0-9A-Za-z]/, '').downcase
-            LeanCloudLogger.instance.set_command("release/module/start")
-
-            help_now!('module name is required') if args.length != 1
-            raise Logger.error("release version is required") if version == nil
-            module_name = args[0]
-            release_module_start(path, version, user, module_name, options[:ignore])
-          end
-        end
-
-        m.desc 'finish release module project'
-        m.switch [:s,:spec]
-        m.command :finish do |finish|
-          finish.action do |global_options, options, args|
-            path = File.expand_path(global_options[:path])
-            version = global_options[:ver]
-            user = global_options[:user].gsub(/[^0-9A-Za-z]/, '').downcase
-            LeanCloudLogger.instance.set_command("release/module/finish")
-
-            help_now!('module name is required') if args.length != 1
-            raise Logger.error("release version is required") if version == nil
-            module_name = args[0]
-            release_module_finish(path, version, user, module_name, options[:spec])
-          end
+        m.action do |global_options, options, args|
+          LeanCloudLogger.instance.set_command("release/module")
+          path = File.expand_path(global_options[:path])
+          version = global_options[:ver]
+          user = global_options[:user].gsub(/[^0-9A-Za-z]/, '').downcase
+          help_now!('module name is required') if args.length == 0
+          raise Logger.error("release version is required") if version == nil
+          modules = args[(0...args.length)] if args.length > 0
+          release_module(path, version, user, modules, options[:spec])
         end
       end
     end

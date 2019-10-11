@@ -14,6 +14,7 @@ require 'big_keeper/command/pod'
 require 'big_keeper/command/spec'
 require 'big_keeper/command/image'
 require 'big_keeper/command/init'
+require 'big_keeper/command/client'
 require 'big_keeper/service/git_service'
 require 'big_keeper/util/leancloud_logger'
 
@@ -46,7 +47,7 @@ module BigKeeper
 
   post do |global_options, command, options, args|
     is_show_log = true
-    if global_options[:log] == 'false'
+    if global_options[:log] == 'true'
       is_show_log = false
     end
     LeanCloudLogger.instance.end_log(true, is_show_log)
@@ -65,6 +66,8 @@ module BigKeeper
   image_command
 
   init_command
+
+  client_command
 
   desc 'Show version of bigkeeper'
   command :version do |version|

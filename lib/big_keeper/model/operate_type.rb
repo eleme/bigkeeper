@@ -26,5 +26,6 @@ module BigKeeper
     FINISH = 3
     PUBLISH = 4
     RELEASE = 5
+    RELEASE_START = 6
   end
 end
