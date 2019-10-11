@@ -51,13 +51,13 @@ module BigKeeper
 
     def fetch(path)
       Dir.chdir(path) do
-        `git fetch origin`
+        `git fetch #{GitOperator.remote_local_name(path)}`
       end
     end
 
     def rebase(path, branch_name)
       Dir.chdir(path) do
-        `git rebase origin/#{branch_name}`
+        `git rebase #{GitOperator.remote_local_name(path)}/#{branch_name}`
       end
     end
 
@@ -76,14 +76,15 @@ module BigKeeper
 
     def push_to_remote(path, branch_name)
       Dir.chdir(path) do
-        `git push -u origin #{branch_name}`
+        `git push -u #{GitOperator.remote_local_name(path)} #{branch_name}`
       end
-      GitOperator.new.check_push_success(path, branch_name, "origin/#{branch_name}")
+      GitOperator.new.check_push_success(path, branch_name, "#{GitOperator.remote_local_name(path)}/#{branch_name}")
     end
 
     def pull(path)
       Dir.chdir(path) do
-        `git pull`
+        #  git pull <remote> <branch>
+        `git pull #{GitOperator.remote_local_name(path)} #{GitOperator.new.current_branch(path)}`
       end
     end
 
@@ -122,7 +123,7 @@ module BigKeeper
 
     def del_remote(path, branch_name)
       Dir.chdir(path) do
-        `git push origin --delete #{branch_name}`
+        `git push #{GitOperator.remote_local_name(path)} --delete #{branch_name}`
       end
     end
 
@@ -181,6 +182,33 @@ module BigKeeper
       end
     end
 
+    def check_remote_branch_diff(path, branch, compare_branch)
+      fetch(path)
+      compare_branch_commits = Array.new
+      IO.popen("cd '#{path}';git log --left-right #{branch}...#{GitOperator.remote_local_name(path)}/#{compare_branch} --pretty=oneline") do |io|
+        io.each do |line|
+          compare_branch_commits.push(line) unless (line.include? '>') && (line.include? "Merge branch \'#{branch}\'")
+        end
+      end
+      if compare_branch_commits.size > 0
+        return true
+      else
+        return false
+      end
+    end
+
+    def self.remote_local_name(path)
+      Dir.chdir(path) do
+        IO.popen("git remote") do |io|
+          io.each do |line|
+            Logger.error("Check git remote setting.") if line.length == 0
+            return line.chomp
+          end
+        end
+      end
+    end
+
+    # TODO: 需要改造，util方法不应该有业务逻辑
     def check_diff(path, branch, compare_branch)
       compare_branch_commits = Array.new
       IO.popen("cd '#{path}'; git log --left-right #{branch}...#{compare_branch} --pretty=oneline") do |io|
@@ -192,15 +220,27 @@ module BigKeeper
         compare_branch_commits.map { |item|
             Logger.default(item)
         }
-        Logger.error("#{compare_branch} branch has commit doesn't committed in #{branch}, please check")
+        Logger.highlight("#{compare_branch} branch has commit doesn't committed in #{branch}, please check")
+        return false
       else
         Logger.highlight("#{compare_branch} branch doesn't have commit before #{branch}")
+        return true
       end
     end
 
     def merge(path, branch_name)
-      IO.popen("cd '#{path}'; git merge #{branch_name}") do |line|
-        Logger.error("Merge conflict in #{branch_name}") if line.include? 'Merge conflict'
+      IO.popen("cd '#{path}'; git merge #{branch_name}") do |io|
+        io.each do |line|
+          Logger.error("Merge conflict in #{line}") if line.include? 'Merge conflict'
+        end
+      end
+    end
+
+    def merge_no_ff(path, branch_name)
+      IO.popen("cd '#{path}'; git merge #{branch_name} --no-ff") do |io|
+        io.each do |line|
+          Logger.error("Merge conflict in #{line}") if line.include? 'Merge conflict'
+        end
       end
     end
 

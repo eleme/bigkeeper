@@ -17,7 +17,7 @@ module BigKeeper
     def parse(main_path)
       self.main_path = main_path
       $mode = 'PODS'
-      podfile_lock_lines = File.readlines("#{main_path}/Podfile.lock")
+      podfile_lock_lines = File.readlines("#{main_path}/Podfile.lock", :encoding => 'UTF-8')
       Logger.highlight("Analyzing Podfile.lock...")
       podfile_lock_lines.each do |sentence|
         if sentence.include?('PODS')
@@ -36,10 +36,10 @@ module BigKeeper
           $mode = 'PODFILE CHECKSUM'
         else
           if $mode == 'PODS'
-             deal_pod(sentence.strip.delete('\n'))
+             deal_pod(sentence.strip.chomp)
           end
           if $mode == 'SPEC CHECKSUMS'
-             deal_spec(sentence.strip.delete('\n'))
+             deal_spec(sentence.strip.chomp)
           end
         end
        end
@@ -105,10 +105,10 @@ module BigKeeper
 
     #处理SPEC CHECKSUMS
     def deal_spec(s)
-        if /: +/ =~ s
+      if /: +/ =~ s
         dependency = $~.pre_match.strip
         self.dependencies << dependency unless self.dependencies.include?(dependency)
-        end
+      end
     end
 
     def get_lock_podname(sentence) #获得lock pod名称

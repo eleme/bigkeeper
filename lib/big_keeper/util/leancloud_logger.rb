@@ -69,7 +69,10 @@ module BigKeeper
       req = Net::HTTP::Post.new(uri.path, header)
       req.body = parameter.to_json
       res = https.request(req)
-      Logger.highlight("Send LeanCloud success, response #{res.body}") unless !is_show_log
+
+      if is_show_log == true
+        Logger.highlight("Send LeanCloud success, response #{res.body}")
+      end
     end
 
     def assemble_request

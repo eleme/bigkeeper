@@ -14,6 +14,7 @@ require 'big_keeper/command/pod'
 require 'big_keeper/command/spec'
 require 'big_keeper/command/image'
 require 'big_keeper/command/init'
+require 'big_keeper/command/client'
 require 'big_keeper/service/git_service'
 require 'big_keeper/util/leancloud_logger'
 
@@ -40,12 +41,16 @@ module BigKeeper
     exit
   end
 
-  pre do |global_options,command,options,args|
+  pre do |global_options, command, options, args|
     LeanCloudLogger.instance.start_log(global_options, args)
   end
 
-  post do |global_options,command,options,args|
-    LeanCloudLogger.instance.end_log(true, global_options[:log] == "true")
+  post do |global_options, command, options, args|
+    is_show_log = true
+    if global_options[:log] == 'true'
+      is_show_log = false
+    end
+    LeanCloudLogger.instance.end_log(true, is_show_log)
   end
 
   feature_and_hotfix_command(GitflowType::FEATURE)
@@ -61,6 +66,8 @@ module BigKeeper
   image_command
 
   init_command
+
+  client_command
 
   desc 'Show version of bigkeeper'
   command :version do |version|

@@ -6,7 +6,7 @@ module BigKeeper
     #generate tree print throught console
     def self.generate_tree(file_path, home_branches, version)
       module_branches_dic = {}
-      json_data = File.read(file_path)
+      json_data = File.read(file_path, :encoding => 'UTF-8')
       module_branches_dic = JSON.parse(json_data)
       to_tree(module_branches_dic, home_branches, version)
       File.delete(file_path)
@@ -15,7 +15,7 @@ module BigKeeper
       #generate json print throught console
     def self.generate_json(file_path, home_branches, version)
       module_branches_dic = {}
-      json_data = File.read(file_path)
+      json_data = File.read(file_path, :encoding => 'UTF-8')
       module_branches_dic = JSON.parse(json_data)
       json = to_json(home_branches, module_branches_dic, version)
       puts JSON.pretty_generate(json)
@@ -51,7 +51,7 @@ module BigKeeper
             branch_dic["is_remote"] = true
           end
 
-          if home_branch_name =~ /^origin\//
+          if home_branch_name =~ /^#{GitOperator.remote_local_name(path)}\//
             home_branch_name = $~.post_match
           end
 

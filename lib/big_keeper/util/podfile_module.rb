@@ -37,7 +37,7 @@ class PodfileModuleDetector
   end
 
   def deal_module_info
-    podfile_lines = File.readlines("#{@main_path}/bigKeeperPodInfo.tmp")
+    podfile_lines = File.readlines("#{@main_path}/bigKeeperPodInfo.tmp", :encoding => 'UTF-8')
     Logger.highlight("Analyzing modules info...") unless podfile_lines.size.zero?
       podfile_lines.collect do |sentence|
         if sentence =~(/pod/)
