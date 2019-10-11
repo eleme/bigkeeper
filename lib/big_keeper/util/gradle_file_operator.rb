@@ -310,7 +310,7 @@ module BigKeeper
             elsif line.include?('bigkeeper config backup end')
               isBigkeeperBackupScript = false
             elsif isBigkeeperBackupScript
-              temp_file.puts(line.gsub('//',''))
+              temp_file.puts(line.sub('//',''))
             elsif !isBigkeeperScript
               temp_file.puts(line)
             end

@@ -40,14 +40,24 @@ module BigKeeper
     yield if block_given?
   end
 
+  def self.post_install
+    BigkeeperParser.parse_post_install
+    yield if block_given?
+  end
+
+  def self.cmd(key, value)
+    BigkeeperParser.parse_command(key, value)
+    yield if block_given?
+  end
+
   # Bigkeeper file parser
   class BigkeeperParser
     @@config = {}
     @@current_user = ''
 
     def self.parse(bigkeeper)
+      @@config = {}
       if @@config.empty?
-
         Logger.error("Can't find a Bigkeeper file in current directory.") if !FileOperator.definitely_exists?(bigkeeper)
 
         content = File.read(bigkeeper, :encoding => 'UTF-8')
@@ -59,6 +69,8 @@ module BigKeeper
         content.gsub!(/modules\s/, 'BigKeeper::modules ')
         content.gsub!(/configs\s/, 'BigKeeper::configs ')
         content.gsub!(/param\s/, 'BigKeeper::param ')
+        content.gsub!(/post_install\s/, 'BigKeeper::post_install ')
+        content.gsub!(/cmd\s/, 'BigKeeper::cmd ')
         eval content
       end
     end
@@ -133,6 +145,14 @@ module BigKeeper
       @@config[:configs] = @@config[:configs].merge(key => value)
     end
 
+    def self.parse_post_install
+      @@config[:post_install] = {}
+    end
+
+    def self.parse_command(key, value)
+      @@config[:post_install] = @@config[:post_install].merge(key => value)
+    end
+
     def self.version
       @@config[:version]
     end
@@ -175,6 +195,10 @@ module BigKeeper
       @@config[:source].keys
     end
 
+    def self.post_install_command
+      @@config[:post_install]
+    end
+
     def self.global_configs(key)
       if @@config[:configs] == nil
         return
@@ -183,6 +207,8 @@ module BigKeeper
     end
 
     def self.module_full_path(home_path, user_name, module_name)
+      Logger.error("Can't find a Pod named #{module_name} in current directory.") unless @@config[:modules].invert.has_value?(module_name)
+
       if @@config[:users] \
         && @@config[:users][user_name] \
         && @@config[:users][user_name][:mods] \
@@ -206,7 +232,6 @@ module BigKeeper
         && @@config[:users][user_name][:mods][module_name][:path]
         File.expand_path(@@config[:users][user_name][:mods][module_name][:path])
       else
-        p @@config[:modules][module_name]
         if @@config[:modules][module_name][:alias]
           "#{home_modules_workspace}#{@@config[:modules][module_name][:alias]}"
         else

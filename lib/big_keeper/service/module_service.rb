@@ -87,7 +87,19 @@ module BigKeeper
       module_full_path = BigkeeperParser.module_full_path(path, user, module_name)
       GitService.new.verify_push(module_full_path, "publish branch #{home_branch_name}", home_branch_name, module_name)
 
-      `open #{BigkeeperParser.module_pulls(module_name)}`
+      current_cmd = LeanCloudLogger.instance.command
+      cmds = BigkeeperParser.post_install_command
+
+      if cmds && (cmds.keys.include? current_cmd)
+        cmd = BigkeeperParser.post_install_command[current_cmd]
+        if module_full_path
+          Dir.chdir(module_full_path) do
+            system cmd
+          end
+        end
+      else
+        `open #{BigkeeperParser.module_pulls(module_name)}`
+      end
 
       ModuleCacheOperator.new(path).del_git_module(module_name)
     end
@@ -183,14 +195,6 @@ module BigKeeper
       # checkout develop
       GitService.new.verify_checkout_pull(module_full_path, 'develop')
       DepService.dep_operator(path, user).release_module_start(modules, module_name, version)
-
-      # Push home changes to remote
-      Logger.highlight("Push branch 'develop' for #{module_name}...")
-      GitService.new.verify_push(
-        module_full_path,
-        "release start for #{version}",
-        'develop',
-        "#{module_name}")
     end
 
     def release_finish(path, user, modules, module_name, version)
